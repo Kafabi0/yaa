@@ -45,9 +45,9 @@ class CustomBottomNavigationBar extends StatelessWidget {
             child: CurvedNavigationBar(
               index: currentIndex,
               onTap: onTap,
-              color: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
+              color: isDark ? const Color(0xFF1E1E2C) : const Color.fromARGB(255, 255, 102, 0),
               backgroundColor: Colors.transparent,
-              buttonBackgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
+              buttonBackgroundColor: isDark ? const Color(0xFF1E1E2C) : const Color.fromARGB(255, 255, 119, 0),
               height: 60,
               animationCurve: Curves.easeInOut,
               animationDuration: const Duration(milliseconds: 300),
