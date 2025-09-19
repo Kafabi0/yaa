@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class CustomBottomNavigationBar extends StatelessWidget {
   final int currentIndex;
@@ -15,59 +16,62 @@ class CustomBottomNavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return BottomNavigationBar(
-      currentIndex: currentIndex,
-      onTap: onTap,
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.white,
-      selectedItemColor: const Color(0xFF0D6EFD),
-      unselectedItemColor: isDark ? Colors.grey[400] : Colors.grey[600],
-      items: [
-        _buildBarItem(FontAwesomeIcons.house, 'Home', 0, isDark),
-        _buildBarItem(
-          FontAwesomeIcons.notesMedical,
-          'Health Records',
-          1,
-          isDark,
+    return Stack(
+      alignment: Alignment.bottomCenter,
+      children: [
+        // Latar belakang transparan untuk memberi ruang bagi navigasi
+        Container(
+          height: 80,
+          color: Colors.transparent,
         ),
-        _buildBarItem(FontAwesomeIcons.solidBell, 'Notifications', 2, isDark),
-        _buildBarItem(FontAwesomeIcons.gear, 'Settings', 3, isDark),
+        // Navigasi melayang dengan bayangan
+        Positioned(
+          bottom: 20,
+          left: 0,
+          right: 0,
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: 20),
+            decoration: BoxDecoration(
+              color: isDark ? const Color(0xFF1E1E2C) : Colors.white,
+              borderRadius: BorderRadius.circular(30),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 10,
+                  offset: Offset(0, 5),
+                ),
+              ],
+            ),
+            child: CurvedNavigationBar(
+              index: currentIndex,
+              onTap: onTap,
+              color: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
+              backgroundColor: Colors.transparent,
+              buttonBackgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
+              height: 60,
+              animationCurve: Curves.easeInOut,
+              animationDuration: const Duration(milliseconds: 300),
+              items: [
+                _buildBarItem(FontAwesomeIcons.house, 0, isDark),
+                _buildBarItem(FontAwesomeIcons.magnifyingGlass, 1, isDark),
+                _buildBarItem(FontAwesomeIcons.solidHeart, 2, isDark),
+                _buildBarItem(FontAwesomeIcons.solidBell, 3, isDark),
+                _buildBarItem(FontAwesomeIcons.user, 4, isDark),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }
 
-  BottomNavigationBarItem _buildBarItem(
-    IconData icon,
-    String label,
-    int index,
-    bool isDark,
-  ) {
-    return BottomNavigationBarItem(
-      label: label,
-      icon: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 250),
-            curve: Curves.easeInOut,
-            height: 4,
-            width: currentIndex == index ? 24 : 0,
-            decoration: BoxDecoration(
-              color: const Color(0xFF0D6EFD),
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-          const SizedBox(height: 4),
-          FaIcon(
-            icon,
-            size: 20,
-            color:
-                currentIndex == index
-                    ? const Color(0xFF0D6EFD)
-                    : (isDark ? Colors.grey[400] : Colors.grey[600]),
-          ),
-        ],
-      ),
+  Widget _buildBarItem(IconData icon, int index, bool isDark) {
+    return Icon(
+      icon,
+      size: 24,
+      color: currentIndex == index
+          ? Colors.white
+          : Colors.white.withOpacity(0.7),
     );
   }
 }
