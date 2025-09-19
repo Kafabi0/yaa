@@ -1,155 +1,123 @@
 import 'package:flutter/material.dart';
-import 'package:inocare/screens/adminlayanan_screen.dart';
-import 'package:inocare/screens/billingpayment_screen.dart';
-import 'package:inocare/screens/chart.dart';
-import 'package:inocare/screens/dashboard.dart';
-import 'package:inocare/screens/diklat_penelitian.dart';
-import 'package:inocare/screens/emergency_protocols_screen.dart';
-import 'package:inocare/screens/ermbedah_sentral_screen.dart';
-import 'package:inocare/screens/ermperawat_screen.dart';
-import 'package:inocare/screens/ermdoctor_screen.dart';
-import 'package:inocare/screens/farmasi_screen.dart';
-import 'package:inocare/screens/feedback_screen.dart';
-import 'package:inocare/screens/healthanalytics_screen.dart';
-import 'package:inocare/screens/healthfacilities_screen.dart';
-import 'package:inocare/screens/input_transaksi_page.dart';
-import 'package:inocare/screens/inputpasien.dart';
-import 'package:inocare/screens/kasir_screen.dart';
-import 'package:inocare/screens/manajemen_bed.dart';
-import 'package:inocare/screens/medical_equipment.dart';
-import 'package:inocare/screens/pasien_profile_page.dart';
-import 'package:inocare/screens/patient_records_screen.dart';
-import 'package:inocare/screens/patientmonitoring_screen.dart';
-import 'package:inocare/screens/pegawai_screen.dart';
-import 'package:inocare/screens/rekam_medik_screen.dart';
-import 'package:inocare/screens/shift_screen.dart';
-import 'package:inocare/screens/staff_screen.dart';
-import '../data/app_data.dart';
-import '../widgets/top_header_section.dart';
-import '../widgets/quick_access_card.dart';
-import '../screens/doctor_list.dart';
-import '../screens/appointment_screen.dart';
-import '../screens/prescription_screen.dart';
-import '../data/appointment_data.dart';
-import '../screens/casemix.dart';
-import 'pilihpasien.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HealthAppHomePage extends StatefulWidget {
+  const HealthAppHomePage({Key? key}) : super(key: key);
 
   @override
-  State createState() => _HomeScreenState();
+  State<HealthAppHomePage> createState() => _HealthAppHomePageState();
 }
 
-class _HomeScreenState extends State<HomeScreen>
-    with SingleTickerProviderStateMixin {
-  bool _showAllQuickAccess = false;
-  late ScrollController _scrollController;
-  late AnimationController _fadeController;
-
-  String _searchQuery = "";
+class _HealthAppHomePageState extends State<HealthAppHomePage> {
   final TextEditingController _searchController = TextEditingController();
-
-  int? selectedPasienId;
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController =
-        ScrollController()..addListener(() {
-          if (_scrollController.offset >= 300) {
-            if (!_fadeController.isAnimating &&
-                _fadeController.status != AnimationStatus.forward) {
-              _fadeController.forward();
-            }
-          } else {
-            if (!_fadeController.isAnimating &&
-                _fadeController.status != AnimationStatus.reverse) {
-              _fadeController.reverse();
-            }
-          }
-        });
-    _fadeController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 400),
-    );
-    selectedPasienId = 1;
-  }
 
   @override
   void dispose() {
-    _scrollController.dispose();
-    _fadeController.dispose();
     _searchController.dispose();
-
     super.dispose();
-  }
-
-  void _scrollToTop() {
-    _scrollController.animateTo(
-      0,
-      duration: const Duration(milliseconds: 500),
-      curve: Curves.easeInOut,
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final backgroundColor =
-        isDark ? const Color(0xFF1E1E2C) : const Color(0xFFF3F4F6);
-    final cardColor = isDark ? const Color(0xFF2D2D44) : Colors.white;
-    final primaryColor = Theme.of(context).primaryColor;
-
     return Scaffold(
-      backgroundColor: backgroundColor,
-      body: SingleChildScrollView(
-        controller: _scrollController,
-        child: Column(
-          children: [
-            const MedicalTopHeaderSection(),
-            Transform.translate(
-              offset: const Offset(0, -50),
-              child: _buildQuickAccessGrid(cardColor, primaryColor),
+      backgroundColor: Colors.grey[50],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(),
+              _buildSearchSection(),
+              _buildNearestHospitalSection(),
+              _buildQuickAccessSection(),
+              _buildTodaySection(),
+              _buildPromoSection(),
+              _buildHealthArticlesSection(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFFFF6B35), Color(0xFFFF8A50)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(25),
+          bottomRight: Radius.circular(25),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Selamat Datang',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Login / Register',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                children: [
+                  Icon(Icons.notifications, color: Colors.white, size: 24),
+                  const SizedBox(width: 12),
+                  Icon(Icons.location_on, color: Colors.white, size: 24),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSearchSection() {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 10,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
-      ),
-      floatingActionButton: ScaleTransition(
-        scale: Tween<double>(begin: 0.0, end: 1.0).animate(
-          CurvedAnimation(parent: _fadeController, curve: Curves.easeOutCubic),
-        ),
-        child: FadeTransition(
-          opacity: _fadeController,
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [primaryColor, primaryColor.withOpacity(0.7)],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(100),
-              boxShadow: [
-                BoxShadow(
-                  color: primaryColor.withOpacity(0.3),
-                  blurRadius: 10,
-                  spreadRadius: 2,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: FloatingActionButton(
-              onPressed: _scrollToTop,
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              highlightElevation: 0,
-              shape: const CircleBorder(),
-              splashColor: Colors.white.withOpacity(0.3),
-              child: const Icon(
-                Icons.arrow_upward_rounded,
-                color: Colors.white,
-                size: 28,
-              ),
+        child: TextField(
+          controller: _searchController,
+          decoration: InputDecoration(
+            hintText: 'Cari Apa Dulu ...',
+            prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
             ),
           ),
         ),
@@ -157,358 +125,499 @@ class _HomeScreenState extends State<HomeScreen>
     );
   }
 
-  Widget _buildQuickAccessGrid(Color cardColor, Color primaryColor) {
-    final filteredItems =
-        quickAccessItems.where((item) {
-          final label = (item['label'] as String).toLowerCase();
-          return label.contains(_searchQuery.toLowerCase());
-        }).toList();
-
-    // tampilkan semua hasil pencarian, atau kalau kosong pakai default showAll
-    final displayedItems =
-        _showAllQuickAccess ? filteredItems : filteredItems.take(9).toList();
+  Widget _buildNearestHospitalSection() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Card(
-        color: cardColor,
-        elevation: 6,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              TextField(
-                controller: _searchController, // ✅ hubungkan controller
-                decoration: InputDecoration(
-                  hintText: "Search menu...",
-                  prefixIcon: const Icon(Icons.search, color: Colors.white),
-                  suffixIcon:
-                      _searchQuery.isNotEmpty
-                          ? IconButton(
-                            icon: const Icon(Icons.close, color: Colors.white),
-                            onPressed: () {
-                              setState(() {
-                                _searchQuery = "";
-                                _searchController.clear();
-                              });
-                              FocusScope.of(context).unfocus();
-                            },
-                          )
-                          : null,
-
-                  filled: true,
-                  fillColor: Colors.blue.shade600,
-                  hintStyle: const TextStyle(color: Colors.white70),
-
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(
-                      color: Colors.lightBlueAccent,
-                      width: 1.5,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: const BorderSide(color: Colors.white, width: 2),
-                  ),
-
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
+              Text(
+                'Rumah Sakit Terdekat',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
                 ),
-                style: const TextStyle(color: Colors.white),
-                onChanged: (value) {
-                  setState(() {
-                    _searchQuery = value;
-                  });
-                },
               ),
-
-              const SizedBox(height: 16),
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: displayedItems.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  childAspectRatio: 0.85,
-                  crossAxisSpacing: 12,
-                  mainAxisSpacing: 12,
-                ),
-                itemBuilder: (context, index) {
-                  final item = displayedItems[index];
-                  return Align(
-                    alignment: Alignment.topCenter,
-                    child: QuickAccessCard(
-                      icon: item['icon'],
-                      color: item['color'],
-                      label: item['label'],
-                      onTap: () {
-                        switch (item['label']) {
-                          case 'Doctor':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const DoctorListScreen(),
-                              ),
-                            );
-                            break;
-                          case 'Appointments':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (_) => const AppointmentCalendarScreen(),
-                              ),
-                            );
-                            break;
-                          case 'Prescription Management':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (_) => const PrescriptionManagementScreen(),
-                              ),
-                            );
-                            break;
-                          case 'Emergency Protocols':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (_) => const EmergencyProtocolsScreen(),
-                              ),
-                            );
-                            break;
-                          case 'Medical Equipment':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const MedicalEquipmentScreen(),
-                              ),
-                            );
-                            break;
-                          case 'Health Facilities':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const HealthFacilitiesScreen(),
-                              ),
-                            );
-                            break;
-                          case 'Patient Records':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (_) => PatientRecordsScreen(
-                                      appointments: appointmentsData,
-                                    ),
-                              ),
-                            );
-                            break;
-                          case 'Billing & Payments':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const BillingPaymentsScreen(),
-                              ),
-                            );
-                            break;
-                          case 'Health Analytics':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const HealthAnalyticsScreen(),
-                              ),
-                            );
-                            break;
-                          case 'Patient Monitoring':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const PatientMonitoring(),
-                              ),
-                            );
-                            break;
-                          case 'Feedback & Reviews':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const FeedbackList(),
-                              ),
-                            );
-                            break;
-                          case 'Shift Schedule':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const ShiftSchedule(),
-                              ),
-                            );
-                            break;
-                          case 'Staff Directory':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const StaffDirectory(),
-                              ),
-                            );
-                            break;
-                          case 'Tugas Transaksi':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const InputTransaksiPage(),
-                              ),
-                            );
-                            break;
-                          case 'Tugas Chart':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const TransPage(),
-                              ),
-                            );
-                            break;
-                          case 'Tugas Pendaftaran':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const InputPasienPage(),
-                              ),
-                            );
-                            break;
-                          case 'ERM Doctor':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const ErmDoctorPage(),
-                              ),
-                            );
-                            break;
-                          case 'Pengguna Pasien':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const PasienSelectionPage(),
-                              ),
-                            );
-                            break;
-
-                          case 'ERM Perawat':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const ErmPerawatScreen(),
-                              ),
-                            );
-                            break;
-                          case 'Dashboard & Reporting':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const DashboardReporting(),
-                              ),
-                            );
-                            break;
-                          case 'Kepegawaian':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const PegawaiScreen(),
-                              ),
-                            );
-                            break;
-                          case 'Manajemen Bed':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const ManajemenBed(),
-                              ),
-                            );
-                            break;
-                          case 'Rekam Medik':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const RekamMedisPage(),
-                              ),
-                            );
-                            break;
-                          case 'Administrasi Layanan':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const AdminLayanan(),
-                              ),
-                            );
-                          case 'ERM Bedah Sentral':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const ErmBedahSentralPage(),
-                              ),
-                            );
-                            break;
-                          case 'Casemix':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const CasemixPage(),
-                              ),
-                            );
-                            break;
-                          case 'Kasir':
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const KasirPage(),
-                              ),
-                            );
-                            break;
-                          default:
-                            print('Clicked: ${item['label']}');
-                        }
-                      },
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 12),
-              InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () {
-                  setState(() {
-                    _showAllQuickAccess = !_showAllQuickAccess;
-                  });
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      _showAllQuickAccess ? 'See Less' : 'See All',
-                      style: TextStyle(
-                        color: primaryColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    AnimatedRotation(
-                      duration: const Duration(milliseconds: 300),
-                      turns: _showAllQuickAccess ? 0.5 : 0,
-                      child: Icon(
-                        Icons.keyboard_arrow_down,
-                        color: primaryColor,
-                      ),
-                    ),
-                  ],
+              TextButton(
+                onPressed: () {},
+                child: Text(
+                  'View All',
+                  style: TextStyle(
+                    color: Color(0xFFFF6B35),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
           ),
+          const SizedBox(height: 12),
+          Container(
+            height: 180,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              image: const DecorationImage(
+                image: NetworkImage('https://via.placeholder.com/400x180/4A90E2/FFFFFF?text=RS+Dr.+H.+Abdul+Moeloek'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.black.withOpacity(0.6),
+                    Colors.transparent,
+                  ],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                ),
+              ),
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'RSUD Dr. H.ABDUL MOELOEK',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    'Jl. Dr. Rivai No.6, Penengahan, Kec. Tlk Betung\nKota Bandar Lampung, Lampung 35128',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickAccessSection() {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          _buildQuickAccessItem(
+            icon: Icons.book,
+            label: 'Panduan\nSingkat',
+            onTap: () {},
+          ),
+          _buildQuickAccessItem(
+            icon: Icons.how_to_reg,
+            label: 'Cara\nMendaftar',
+            onTap: () {},
+          ),
+          _buildQuickAccessItem(
+            icon: Icons.headset_mic,
+            label: 'FAQ',
+            onTap: () {},
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildQuickAccessItem({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Color(0xFFFF6B35).withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                icon,
+                color: Color(0xFFFF6B35),
+                size: 24,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTodaySection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Icon(Icons.calendar_today, color: Color(0xFFFF6B35)),
+                const SizedBox(width: 8),
+                Text(
+                  'Hari Ini',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            _buildTodayItem(
+              icon: Icons.warning,
+              iconColor: Colors.red,
+              title: 'Cek Ketersediaan Labu Darah',
+              onTap: () {},
+            ),
+            const SizedBox(height: 12),
+            _buildTodayItem(
+              icon: Icons.hotel,
+              iconColor: Colors.blue,
+              title: 'Cek Ketersediaan Bed',
+              onTap: () {},
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTodayItem({
+    required IconData icon,
+    required Color iconColor,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.grey[50],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: iconColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: iconColor, size: 20),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[600]),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPromoSection() {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Text(
+                'Hot Promo',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              Icon(Icons.local_fire_department, color: Color(0xFFFF6B35)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            height: 200,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(16),
+              gradient: LinearGradient(
+                colors: [Color(0xFFFFB6C1), Color(0xFFDDA0DD)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 16,
+                  left: 16,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.9),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      'Mustang Royal Hospital',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 50,
+                  left: 16,
+                  child: Text(
+                    "WOMAN'S HEALTH\nCHECK UP",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 40,
+                  left: 16,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'PAPSMEAR',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      Text(
+                        'RP 788.000',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  bottom: 16,
+                  left: 16,
+                  child: Text(
+                    'PAPSMEAR + HPV\nGENOTYPING + KONSULTASI\nRP 1.788.000',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 10,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHealthArticlesSection() {
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Baca 100+ Artikel\nKesehatan',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Color(0xFFFF6B35),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  'Lihat Semua',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _buildArticleCard(
+            category: 'Kesehatan Gigi',
+            title: '5 Cara Merawat Ginjal agar Sehat & Cegah Penyakit Ginjal',
+            date: 'Rabu, 3 September 2025',
+            gradient: [Color(0xFF87CEEB), Color(0xFFB0E0E6)],
+          ),
+          const SizedBox(height: 12),
+          _buildArticleCard(
+            category: 'Nutrisi',
+            title: '9 manfaat kolang kaling yang perlu kamu ketahui',
+            date: 'Selasa, 30 Juni 2025',
+            gradient: [Color(0xFF98FB98), Color(0xFF90EE90)],
+          ),
+          const SizedBox(height: 12),
+          _buildArticleCard(
+            category: 'Pencernaan',
+            title: 'Kenali Jenis Makanan Penyebab GERD',
+            date: 'Jumat, 12 Juni 2025',
+            gradient: [Color(0xFFFFA07A), Color(0xFFFF7F50)],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildArticleCard({
+    required String category,
+    required String title,
+    required String date,
+    required List<Color> gradient,
+  }) {
+    return Container(
+      height: 120,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        gradient: LinearGradient(
+          colors: gradient,
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+      ),
+      child: Stack(
+        children: [
+          Positioned(
+            top: 12,
+            left: 12,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                category,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 30,
+            left: 12,
+            right: 60,
+            child: Text(
+              title,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 14,
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          Positioned(
+            bottom: 12,
+            left: 12,
+            child: Text(
+              date,
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.9),
+                fontSize: 10,
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 12,
+            right: 12,
+            child: Text(
+              'Baca Selengkapnya →',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

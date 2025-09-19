@@ -139,7 +139,7 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     _pages = [
-      const HomeScreen(),
+      const HealthAppHomePage(),
       const HealthRecordsScreen(),
       const NotificationsScreen(),
       SettingsScreen(
