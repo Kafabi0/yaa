@@ -137,7 +137,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
         child: TextField(
           controller: _searchController,
           decoration: InputDecoration(
-            hintText: 'Cari Apa Dulu ...',
+            hintText: 'Cari DiSini ...',
             prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
             border: InputBorder.none,
             contentPadding: const EdgeInsets.symmetric(
