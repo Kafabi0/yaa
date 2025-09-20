@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'rumahsakitmember.dart';
+import 'profilepagepasien.dart'; // Import halaman profile yang baru dibuat
 
 class HomePagePasien extends StatefulWidget {
   final Hospital selectedHospital;
@@ -73,63 +74,124 @@ class _HomePagePasienState extends State<HomePagePasien> {
   }
 
   Widget _buildHeader() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Color(0xFFFF6B35),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(20),
-          bottomRight: Radius.circular(20),
-        ),
+  return Container(
+    decoration: BoxDecoration(
+      color: Color(0xFFFF6B35),
+      borderRadius: BorderRadius.only(
+        bottomLeft: Radius.circular(20),
+        bottomRight: Radius.circular(20),
       ),
-      child: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(20),
-          child: Row(
-            children: [
-              CircleAvatar(
-                radius: 25,
-                backgroundColor: Colors.grey[300],
-                child: Icon(Icons.person, color: Colors.grey[600], size: 30),
-              ),
-              SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    ),
+    child: SafeArea(
+      child: Padding(
+        padding: EdgeInsets.all(20),
+        child: Row(
+          children: [
+            // Buat bagian avatar dan info user menjadi clickable
+            GestureDetector(
+              onTap: () {
+                // Navigasi ke halaman profile
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ProfilePagePasien(),
+                  ),
+                );
+              },
+              child: Row(
                 children: [
-                  Text(
-                    _patientName,
-                    style: TextStyle(
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
                       color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        _patientName.isNotEmpty ? _patientName[0].toUpperCase() : 'P',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFFFF6B35),
+                        ),
+                      ),
                     ),
                   ),
-                  Text(
-                    'Laki-Laki',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
-                      fontSize: 14,
-                    ),
-                  ),
-                  Text(
-                    widget.selectedHospital.name,
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
-                      fontSize: 12,
-                    ),
+                  SizedBox(width: 12),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        _patientName,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'Laki-Laki',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 14,
+                        ),
+                      ),
+                      Text(
+                        widget.selectedHospital.name,
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 12,
+                        ),
+                      ),
+                      // Tambahkan indikator bahwa area ini clickable
+                      SizedBox(height: 2),
+                      // Text(
+                      //   'Ketuk untuk lihat profil',
+                      //   style: TextStyle(
+                      //     color: Colors.white.withOpacity(0.7),
+                      //     fontSize: 10,
+                      //     fontStyle: FontStyle.italic,
+                      //   ),
+                      // ),
+                    ],
                   ),
                 ],
               ),
-              Spacer(),
-              IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.notifications_outlined, color: Colors.white, size: 24),
+            ),
+            Spacer(),
+            IconButton(
+              onPressed: () {
+                // TODO: Implement notifications
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Fitur notifikasi akan segera hadir'),
+                    backgroundColor: Color(0xFFFF6B35),
+                  ),
+                );
+              },
+              icon: Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(Icons.notifications_outlined, color: Colors.white, size: 24),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildSearchBar() {
     return Container(

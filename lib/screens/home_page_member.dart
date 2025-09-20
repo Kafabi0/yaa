@@ -5,7 +5,8 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:inocare/services/user_prefs.dart';
 import 'settings_screen.dart';
 import 'profile_page.dart'; // Import halaman profile yang baru dibuat
-
+import 'package:url_launcher/url_launcher.dart';
+import 'webview_page.dart';
 
 class HomePageMember extends StatefulWidget {
   final VoidCallback? onHospitalSelected;
@@ -28,6 +29,14 @@ class _HomePageMemberState extends State<HomePageMember> {
     super.initState();
     _loadUserData();
   }
+  void _openArticle(String url, String title) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => HybridWebView(url: url,),
+    ),
+  );
+}
 
   Future<void> _loadUserData() async {
     final user = await UserPrefs.getUser();
@@ -140,14 +149,14 @@ class _HomePageMemberState extends State<HomePageMember> {
               ),
               // Tambahkan indikator bahwa area ini clickable
               const SizedBox(height: 4),
-              Text(
-                'Ketuk untuk lihat profil',
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.8),
-                  fontSize: 12,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
+              // Text(
+              //   'Ketuk untuk lihat profil',
+              //   style: TextStyle(
+              //     color: Colors.white.withOpacity(0.8),
+              //     fontSize: 12,
+              //     fontStyle: FontStyle.italic,
+              //   ),
+              // ),
             ],
           ),
         ),
@@ -573,14 +582,28 @@ class _HomePageMemberState extends State<HomePageMember> {
               icon: Icons.bloodtype,
               iconColor: Colors.red,
               title: 'Cek Ketersediaan Labu Darah',
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RumahSakitMemberPage(),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 12),
             _buildTodayItem(
               icon: Icons.hotel,
               iconColor: Colors.blue,
               title: 'Cek Ketersediaan Bed',
-              onTap: () {},
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RumahSakitMemberPage(),
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -785,6 +808,7 @@ class _HomePageMemberState extends State<HomePageMember> {
             date: 'Rabu, 3 September 2025',
             imagePath: 'assets/images/ginjal.jpg',
             gradient: [Color(0xFF87CEEB), Color(0xFFB0E0E6)],
+            url: 'https://www.biofarma.co.id/id/announcement/detail/5-cara-merawat-ginjal-agar-sehat-cegah-penyakit-ginjal',
           ),
           const SizedBox(height: 12),
           _buildArticleCard(
@@ -793,6 +817,7 @@ class _HomePageMemberState extends State<HomePageMember> {
             date: 'Senin, 30 Juni 2025',
             imagePath: 'assets/images/olang.jpg',
             gradient: [Color(0xFF98FB98), Color(0xFF90EE90)],
+            url: 'https://www.biofarma.co.id/id/announcement/detail/9-manfaat-kolang-kaling-yang-perlu-kamu-ketahui',
           ),
           const SizedBox(height: 12),
           _buildArticleCard(
@@ -801,6 +826,7 @@ class _HomePageMemberState extends State<HomePageMember> {
             date: 'Jumat, 12 Juni 2025',
             imagePath: 'assets/images/gerd.png',
             gradient: [Color(0xFFFFA07A), Color(0xFF7F50)],
+            url: 'https://www.biofarma.co.id/id/announcement/detail/kenali-jenis-makanan-penyebab-gerd',
           ),
         ],
       ),
@@ -813,8 +839,12 @@ class _HomePageMemberState extends State<HomePageMember> {
     required String date,
     required String imagePath,
     required List<Color> gradient,
+      required String url, // 🔥 tambahkan parameter URL
+
   }) {
-    return Container(
+    return GestureDetector(
+    onTap: () => _openArticle(url, title), // buka link artikel
+    child: Container(
       height: 180,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
@@ -944,7 +974,9 @@ class _HomePageMemberState extends State<HomePageMember> {
           ],
         ),
       ),
+    ),
     );
+
   }
 
   void _showFAQ() {
