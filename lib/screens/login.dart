@@ -4,7 +4,6 @@ import 'package:inocare/screens/home_page_member.dart';
 import 'package:inocare/services/user_prefs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
-import '../main.dart'; // biar bisa akses MainPage setelah login
 
 // =================================== LOGIN ===================================
 class LoginPage extends StatefulWidget {
