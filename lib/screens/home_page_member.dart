@@ -4,6 +4,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:inocare/services/user_prefs.dart';
 import 'settings_screen.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'webview_page.dart';
+
 
 class HomePageMember extends StatefulWidget {
   final VoidCallback? onHospitalSelected;
@@ -35,7 +38,14 @@ class _HomePageMemberState extends State<HomePageMember> {
       });
     }
   }
-
+void _openArticle(String url, String title) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => HybridWebView(url: url,),
+    ),
+  );
+}
   @override
   void dispose() {
     _searchController.dispose();
@@ -51,9 +61,9 @@ class _HomePageMemberState extends State<HomePageMember> {
     });
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Logout berhasil')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Logout berhasil')));
     }
   }
 
@@ -195,6 +205,7 @@ class _HomePageMemberState extends State<HomePageMember> {
       ),
     );
   }
+
   Widget _buildSearchSection() {
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -510,14 +521,28 @@ class _HomePageMemberState extends State<HomePageMember> {
               icon: Icons.bloodtype,
               iconColor: Colors.red,
               title: 'Cek Ketersediaan Labu Darah',
-              onTap: () => ('Cek Labu Darah'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RumahSakitMemberPage(),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 12),
             _buildTodayItem(
               icon: Icons.hotel,
               iconColor: Colors.blue,
               title: 'Cek Ketersediaan Bed',
-              onTap: () => ('Cek Bed'),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RumahSakitMemberPage(),
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -560,7 +585,21 @@ class _HomePageMemberState extends State<HomePageMember> {
                 ),
               ),
             ),
-            Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey[600]),
+            IconButton(
+              onPressed: onTap,
+              icon: Container(
+                padding: const EdgeInsets.all(6), // jarak biar icon ada ruang
+                decoration: BoxDecoration(
+                  color: Colors.blue, // bg biru
+                  shape: BoxShape.circle, // bulat
+                ),
+                child: const Icon(
+                  Icons.arrow_forward_ios,
+                  size: 14, // lebih kecil supaya muat
+                  color: Colors.white, // icon putih biar kontras
+                ),
+              ),
+            ),
           ],
         ),
       ),
@@ -707,6 +746,8 @@ class _HomePageMemberState extends State<HomePageMember> {
             title: '5 Cara Merawat Ginjal agar Sehat & Cegah Penyakit Ginjal',
             date: 'Rabu, 3 September 2025',
             imagePath: 'assets/images/ginjal.jpg',
+              url: 'https://www.biofarma.co.id/id/announcement/detail/5-cara-merawat-ginjal-agar-sehat-cegah-penyakit-ginjal', // 🔥 link artikel
+
             gradient: [Color(0xFF87CEEB), Color(0xFFB0E0E6)],
           ),
           const SizedBox(height: 12),
@@ -716,6 +757,8 @@ class _HomePageMemberState extends State<HomePageMember> {
             date: 'Senin, 30 Juni 2025',
             imagePath: 'assets/images/olang.jpg',
             gradient: [Color(0xFF98FB98), Color(0xFF90EE90)],
+              url: 'https://www.biofarma.co.id/id/announcement/detail/9-manfaat-kolang-kaling-yang-perlu-kamu-ketahui', // 🔥 link artikel
+
           ),
           const SizedBox(height: 12),
           _buildArticleCard(
@@ -724,6 +767,8 @@ class _HomePageMemberState extends State<HomePageMember> {
             date: 'Jumat, 12 Juni 2025',
             imagePath: 'assets/images/gerd.png',
             gradient: [Color(0xFFFFA07A), Color(0xFFFF7F50)],
+              url: 'https://www.biofarma.co.id/id/announcement/detail/kenali-jenis-makanan-penyebab-gerd', // 🔥 link artikel
+
           ),
         ],
       ),
@@ -731,14 +776,18 @@ class _HomePageMemberState extends State<HomePageMember> {
   }
 
   Widget _buildArticleCard({
-    required String category,
-    required String title,
-    required String date,
-    required String imagePath,
-    required List<Color> gradient,
-  }) {
-    return Container(
+  required String category,
+  required String title,
+  required String date,
+  required String imagePath,
+  required List<Color> gradient,
+  required String url, // 🔥 tambahkan parameter URL
+}) {
+  return GestureDetector(
+    onTap: () => _openArticle(url, title), // buka link artikel
+    child: Container(
       height: 180,
+      margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
@@ -797,7 +846,7 @@ class _HomePageMemberState extends State<HomePageMember> {
                 ),
                 child: Text(
                   category,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87,
@@ -811,7 +860,7 @@ class _HomePageMemberState extends State<HomePageMember> {
               right: 80,
               child: Text(
                 title,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -819,7 +868,7 @@ class _HomePageMemberState extends State<HomePageMember> {
                     Shadow(
                       offset: Offset(1, 1),
                       blurRadius: 3,
-                      color: Colors.black.withOpacity(0.5),
+                      color: Colors.black54,
                     ),
                   ],
                 ),
@@ -845,7 +894,7 @@ class _HomePageMemberState extends State<HomePageMember> {
                 ),
               ),
             ),
-            Positioned(
+            const Positioned(
               bottom: 12,
               right: 12,
               child: Text(
@@ -854,82 +903,77 @@ class _HomePageMemberState extends State<HomePageMember> {
                   color: Colors.white,
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(1, 1),
-                      blurRadius: 3,
-                      color: Colors.black.withOpacity(0.5),
-                    ),
-                  ],
                 ),
               ),
             ),
           ],
         ),
       ),
-    );
-  }
-// Future<void> _handleLogout() async {
-//     await UserPrefs.clearUser();
-//     setState(() {
-//       _currentIndex = 0;
-//     });
+    ),
+  );
+}
 
-//     if (mounted) {
-//       ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(content: Text('Logout berhasil')),
-//       );
-//     }
-//   }
-//   Widget _buildBottomNavigation() {
-//     final isDark = Theme.of(context).brightness == Brightness.dark;
+  // Future<void> _handleLogout() async {
+  //     await UserPrefs.clearUser();
+  //     setState(() {
+  //       _currentIndex = 0;
+  //     });
 
-//     return CurvedNavigationBar(
-//       index: _currentIndex,
-//       onTap: (index) {
-//         setState(() {
-//           _currentIndex = index;
-//         });
-//         if (index == 4) {
-//           // Index ke-4 adalah ikon user
-//           Navigator.of(
-//             context,
-//           ).push(MaterialPageRoute(builder: (context) => SettingsScreen(onLogout: _handleLogout),));
-//         }
-//       },
-//       color: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
-//       backgroundColor: Colors.transparent,
-//       buttonBackgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
-//       height: 60,
-//       animationCurve: Curves.easeInOut,
-//       animationDuration: const Duration(milliseconds: 300),
-//       items: [
-//         Icon(FontAwesomeIcons.house, color: Colors.white, size: 24),
-//         Icon(FontAwesomeIcons.calendarDay, color: Colors.white, size: 24),
-//         Icon(FontAwesomeIcons.solidHeart, color: Colors.white, size: 24),
-//         Icon(FontAwesomeIcons.solidCommentDots, color: Colors.white, size: 24),
-//         Icon(FontAwesomeIcons.user, color: Colors.white, size: 24),
-//       ],
-//     );
-//   }
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text('Logout berhasil')),
+  //       );
+  //     }
+  //   }
+  //   Widget _buildBottomNavigation() {
+  //     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-//   Widget _buildOtherPages() {
-//     return Center(
-//       child: Column(
-//         mainAxisAlignment: MainAxisAlignment.center,
-//         children: [
-//           Icon(Icons.construction, size: 80, color: Colors.grey[400]),
-//           SizedBox(height: 16),
-//           Text(
-//             'Halaman dalam pengembangan',
-//             style: TextStyle(
-//               fontSize: 16,
-//               color: Colors.grey[600],
-//               fontWeight: FontWeight.w500,
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
+  //     return CurvedNavigationBar(
+  //       index: _currentIndex,
+  //       onTap: (index) {
+  //         setState(() {
+  //           _currentIndex = index;
+  //         });
+  //         if (index == 4) {
+  //           // Index ke-4 adalah ikon user
+  //           Navigator.of(
+  //             context,
+  //           ).push(MaterialPageRoute(builder: (context) => SettingsScreen(onLogout: _handleLogout),));
+  //         }
+  //       },
+  //       color: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
+  //       backgroundColor: Colors.transparent,
+  //       buttonBackgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
+  //       height: 60,
+  //       animationCurve: Curves.easeInOut,
+  //       animationDuration: const Duration(milliseconds: 300),
+  //       items: [
+  //         Icon(FontAwesomeIcons.house, color: Colors.white, size: 24),
+  //         Icon(FontAwesomeIcons.calendarDay, color: Colors.white, size: 24),
+  //         Icon(FontAwesomeIcons.solidHeart, color: Colors.white, size: 24),
+  //         Icon(FontAwesomeIcons.solidCommentDots, color: Colors.white, size: 24),
+  //         Icon(FontAwesomeIcons.user, color: Colors.white, size: 24),
+  //       ],
+  //     );
+  //   }
+
+  //   Widget _buildOtherPages() {
+  //     return Center(
+  //       child: Column(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: [
+  //           Icon(Icons.construction, size: 80, color: Colors.grey[400]),
+  //           SizedBox(height: 16),
+  //           Text(
+  //             'Halaman dalam pengembangan',
+  //             style: TextStyle(
+  //               fontSize: 16,
+  //               color: Colors.grey[600],
+  //               fontWeight: FontWeight.w500,
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     );
+  //   }
 }
