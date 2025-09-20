@@ -749,7 +749,7 @@ class _HomePagePasienState extends State<HomePagePasien> {
           ),
           SizedBox(height: 12),
           Container(
-            height: 120,
+            height: 200,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),
               color: Colors.teal[100],

@@ -24,7 +24,7 @@ class _HomePageMemberState extends State<HomePageMember> {
   @override
   void initState() {
     super.initState();
-    _loadUserData(); // ✅ ambil nama user dari prefs
+    _loadUserData();
   }
 
   Future<void> _loadUserData() async {
@@ -60,10 +60,10 @@ class _HomePageMemberState extends State<HomePageMember> {
   @override
   Widget build(BuildContext context) {
     final pages = [
-      _buildHomePage(), // index 0: home
-      _buildOtherPages(), // index 1: jadwal
-      _buildOtherPages(), // index 2: heart/favorite
-      _buildOtherPages(), // index 3: chat
+      _buildHomePage(),
+      _buildOtherPages(),
+      _buildOtherPages(),
+      _buildOtherPages(),
     ];
 
     return Scaffold(
@@ -75,7 +75,6 @@ class _HomePageMemberState extends State<HomePageMember> {
     );
   }
 
-  // ================= HALAMAN HOME =================
   Widget _buildHomePage() {
     return SingleChildScrollView(
       child: Column(
@@ -88,7 +87,7 @@ class _HomePageMemberState extends State<HomePageMember> {
           _buildTodaySection(),
           _buildPromoSection(),
           _buildHealthArticlesSection(),
-          const SizedBox(height: 100),
+          const SizedBox(height: 20),
         ],
       ),
     );
@@ -140,7 +139,6 @@ class _HomePageMemberState extends State<HomePageMember> {
     );
   }
 
-  // ================= NAVBAR =================
   Widget _buildBottomNavigation() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -175,7 +173,6 @@ class _HomePageMemberState extends State<HomePageMember> {
     );
   }
 
-  // ================= PLACEHOLDER HALAMAN LAIN =================
   Widget _buildOtherPages() {
     return Center(
       child: Column(
@@ -369,7 +366,7 @@ class _HomePageMemberState extends State<HomePageMember> {
 
   Widget _buildQuickAccessSection() {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -571,7 +568,7 @@ class _HomePageMemberState extends State<HomePageMember> {
 
   Widget _buildPromoSection() {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -590,7 +587,7 @@ class _HomePageMemberState extends State<HomePageMember> {
           ),
           const SizedBox(height: 12),
           SizedBox(
-            height: 200,
+            height: 180,
             child: PageView(
               controller: _promoPageController,
               onPageChanged: (index) {
@@ -669,7 +666,7 @@ class _HomePageMemberState extends State<HomePageMember> {
 
   Widget _buildHealthArticlesSection() {
     return Padding(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 10),
       child: Column(
         children: [
           Row(
@@ -725,7 +722,7 @@ class _HomePageMemberState extends State<HomePageMember> {
             title: 'Kenali Jenis Makanan Penyebab GERD',
             date: 'Jumat, 12 Juni 2025',
             imagePath: 'assets/images/gerd.png',
-            gradient: [Color(0xFFFFA07A), Color(0xFFFF7F50)],
+            gradient: [Color(0xFFFFA07A), Color(0xFF7F50)],
           ),
         ],
       ),
@@ -872,7 +869,6 @@ class _HomePageMemberState extends State<HomePageMember> {
     );
   }
 
-  // Metode untuk menampilkan FAQ
   void _showFAQ() {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -882,7 +878,6 @@ class _HomePageMemberState extends State<HomePageMember> {
     );
   }
 
-  // Metode untuk menampilkan Panduan Singkat
   void _showPanduanSingkat() {
     Navigator.of(context).push(
       MaterialPageRoute(
@@ -893,7 +888,6 @@ class _HomePageMemberState extends State<HomePageMember> {
   }
 }
 
-// Widget Panduan Singkat
 class PanduanSingkatWidget extends StatefulWidget {
   const PanduanSingkatWidget({Key? key}) : super(key: key);
 
@@ -905,13 +899,12 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
 
-  // Define colors for each page
   final List<Color> _pageColors = [
-    Color(0xFF2196F3), // Blue for page 1
-    Color(0xFF03A9F4), // Light blue for page 2
-    Color(0xFF00BCD4), // Cyan for page 3
-    Color(0xFF009688), // Teal for page 4
-    Color(0xFF4CAF50), // Green for page 5
+    Color(0xFF2196F3),
+    Color(0xFF03A9F4),
+    Color(0xFF00BCD4),
+    Color(0xFF009688),
+    Color(0xFF4CAF50),
   ];
 
   @override
@@ -927,7 +920,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header
             Container(
               padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
               decoration: BoxDecoration(
@@ -960,7 +952,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
               ),
             ),
 
-            // Page content
             Expanded(
               child: PageView(
                 controller: _pageController,
@@ -979,12 +970,10 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
               ),
             ),
 
-            // Bottom navigation
             Container(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 20),
               child: Column(
                 children: [
-                  // Page indicator
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(5, (index) {
@@ -1001,9 +990,8 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                     }),
                   ),
 
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
 
-                  // Navigation buttons
                   if (_currentPage < 4)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1048,7 +1036,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                       ],
                     )
                   else
-                    // Last page buttons
                     Column(
                       children: [
                         ElevatedButton(
@@ -1082,12 +1069,11 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
   Widget _buildPage1() {
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Illustration - reduced size
             Container(
-              height: 220, // Reduced from 300 to 220
+              height: 200,
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
@@ -1102,7 +1088,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                 ],
               ),
               child: Padding(
-                padding: const EdgeInsets.all(12), // Reduced padding
+                padding: const EdgeInsets.all(12),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: Image.asset(
@@ -1120,7 +1106,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                             children: [
                               Icon(
                                 Icons.phone_android,
-                                size: 50, // Reduced size
+                                size: 50,
                                 color: Color(0xFF2196F3),
                               ),
                               const SizedBox(height: 8),
@@ -1128,7 +1114,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                                 'Gambar tidak tersedia',
                                 style: TextStyle(
                                   color: Colors.grey[600],
-                                  fontSize: 12, // Reduced font size
+                                  fontSize: 12,
                                 ),
                               ),
                             ],
@@ -1140,32 +1126,29 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                 ),
               ),
             ),
-            const SizedBox(height: 16), // Reduced spacing
-            // Title
+            const SizedBox(height: 16),
             Text(
               'Panduan Siagat',
               style: TextStyle(
-                fontSize: 20, // Reduced font size
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF2196F3),
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16), // Reduced spacing
-            // Description
+            const SizedBox(height: 16),
             Text(
               'Selamat Datang! Ikuti langkah ini agar pengalaman kamu lebih mudah.',
               style: TextStyle(
-                fontSize: 14, // Reduced font size
+                fontSize: 14,
                 color: Colors.grey[600],
                 height: 1.4,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16), // Reduced spacing
-            // Steps
+            const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.all(12), // Reduced padding
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Color(0xFFE3F2FD),
                 borderRadius: BorderRadius.circular(12),
@@ -1176,12 +1159,12 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                   Text(
                     'Langkah-langkah:',
                     style: TextStyle(
-                      fontSize: 14, // Reduced font size
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF2196F3),
                     ),
                   ),
-                  const SizedBox(height: 8), // Reduced spacing
+                  const SizedBox(height: 8),
                   _buildStepItem('1. Pilih Rumah Sakit Terdekat'),
                   _buildStepItem('2. Aktifkan lokasi pada ponsel Anda'),
                   _buildStepItem('3. Klik tombol pilih rumah sakit'),
@@ -1198,12 +1181,11 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
   Widget _buildPage2() {
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Illustration - reduced size
             Container(
-              height: 220, // Reduced from 300 to 220
+              height: 200,
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
@@ -1218,7 +1200,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                 ],
               ),
               child: Padding(
-                padding: const EdgeInsets.all(12), // Reduced padding
+                padding: const EdgeInsets.all(12),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: Image.asset(
@@ -1236,7 +1218,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                             children: [
                               Icon(
                                 Icons.map,
-                                size: 50, // Reduced size
+                                size: 50,
                                 color: Color(0xFF03A9F4),
                               ),
                               const SizedBox(height: 8),
@@ -1244,7 +1226,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                                 'Gambar tidak tersedia',
                                 style: TextStyle(
                                   color: Colors.grey[600],
-                                  fontSize: 12, // Reduced font size
+                                  fontSize: 12,
                                 ),
                               ),
                             ],
@@ -1256,32 +1238,29 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                 ),
               ),
             ),
-            const SizedBox(height: 16), // Reduced spacing
-            // Title
+            const SizedBox(height: 16),
             Text(
               'Lihat Status & Informasi',
               style: TextStyle(
-                fontSize: 20, // Reduced font size
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF03A9F4),
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16), // Reduced spacing
-            // Description
+            const SizedBox(height: 16),
             Text(
               'Dapatkan informasi terkini tentang status layanan rumah sakit.',
               style: TextStyle(
-                fontSize: 14, // Reduced font size
+                fontSize: 14,
                 color: Colors.grey[600],
                 height: 1.4,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16), // Reduced spacing
-            // Features
+            const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.all(12), // Reduced padding
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Color(0xFFE1F5FE),
                 borderRadius: BorderRadius.circular(12),
@@ -1292,12 +1271,12 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                   Text(
                     'Fitur yang tersedia:',
                     style: TextStyle(
-                      fontSize: 14, // Reduced font size
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF03A9F4),
                     ),
                   ),
-                  const SizedBox(height: 8), // Reduced spacing
+                  const SizedBox(height: 8),
                   _buildFeatureItem(Icons.access_time, 'Status Real-time'),
                   _buildFeatureItem(Icons.local_hospital, 'Informasi Layanan'),
                   _buildFeatureItem(Icons.event_available, 'Jadwal Dokter'),
@@ -1314,12 +1293,11 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
   Widget _buildPage3() {
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Illustration - reduced size
             Container(
-              height: 220, // Reduced from 300 to 220
+              height: 200,
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
@@ -1334,7 +1312,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                 ],
               ),
               child: Padding(
-                padding: const EdgeInsets.all(12), // Reduced padding
+                padding: const EdgeInsets.all(12),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: Image.asset(
@@ -1352,7 +1330,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                             children: [
                               Icon(
                                 Icons.medical_services,
-                                size: 50, // Reduced size
+                                size: 50,
                                 color: Color(0xFF00BCD4),
                               ),
                               const SizedBox(height: 8),
@@ -1360,7 +1338,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                                 'Gambar tidak tersedia',
                                 style: TextStyle(
                                   color: Colors.grey[600],
-                                  fontSize: 12, // Reduced font size
+                                  fontSize: 12,
                                 ),
                               ),
                             ],
@@ -1372,32 +1350,29 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                 ),
               ),
             ),
-            const SizedBox(height: 16), // Reduced spacing
-            // Title
+            const SizedBox(height: 16),
             Text(
               'Daftar Periksa',
               style: TextStyle(
-                fontSize: 20, // Reduced font size
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF00BCD4),
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16), // Reduced spacing
-            // Description
+            const SizedBox(height: 16),
             Text(
               'Daftar untuk pemeriksaan medis dengan mudah melalui aplikasi.',
               style: TextStyle(
-                fontSize: 14, // Reduced font size
+                fontSize: 14,
                 color: Colors.grey[600],
                 height: 1.4,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16), // Reduced spacing
-            // Services
+            const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.all(12), // Reduced padding
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Color(0xFFE0F7FA),
                 borderRadius: BorderRadius.circular(12),
@@ -1408,12 +1383,12 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                   Text(
                     'Layanan yang tersedia:',
                     style: TextStyle(
-                      fontSize: 14, // Reduced font size
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF00BCD4),
                     ),
                   ),
-                  const SizedBox(height: 8), // Reduced spacing
+                  const SizedBox(height: 8),
                   _buildServiceItem('Daftar Rawat Jalan langsung dari aplikasi'),
                   _buildServiceItem('Antri IGD jika darurat'),
                   _buildServiceItem('MCU sesuai jadwal'),
@@ -1430,12 +1405,11 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
   Widget _buildPage4() {
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Illustration - reduced size
             Container(
-              height: 220, // Reduced from 300 to 220
+              height: 200,
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
@@ -1450,7 +1424,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                 ],
               ),
               child: Padding(
-                padding: const EdgeInsets.all(12), // Reduced padding
+                padding: const EdgeInsets.all(12),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: Image.asset(
@@ -1468,7 +1442,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                             children: [
                               Icon(
                                 Icons.apps,
-                                size: 50, // Reduced size
+                                size: 50,
                                 color: Color(0xFF009688),
                               ),
                               const SizedBox(height: 8),
@@ -1476,7 +1450,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                                 'Gambar tidak tersedia',
                                 style: TextStyle(
                                   color: Colors.grey[600],
-                                  fontSize: 12, // Reduced font size
+                                  fontSize: 12,
                                 ),
                               ),
                             ],
@@ -1488,32 +1462,29 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                 ),
               ),
             ),
-            const SizedBox(height: 16), // Reduced spacing
-            // Title
+            const SizedBox(height: 16),
             Text(
               'Fitur Tambahan',
               style: TextStyle(
-                fontSize: 20, // Reduced font size
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF009688),
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16), // Reduced spacing
-            // Description
+            const SizedBox(height: 16),
             Text(
               'Nikmati fitur tambahan untuk memudahkan pengalaman Anda.',
               style: TextStyle(
-                fontSize: 14, // Reduced font size
+                fontSize: 14,
                 color: Colors.grey[600],
                 height: 1.4,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16), // Reduced spacing
-            // Additional Features
+            const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.all(12), // Reduced padding
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Color(0xFFE0F2F1),
                 borderRadius: BorderRadius.circular(12),
@@ -1524,12 +1495,12 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                   Text(
                     'Fitur Tambahan:',
                     style: TextStyle(
-                      fontSize: 14, // Reduced font size
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF009688),
                     ),
                   ),
-                  const SizedBox(height: 8), // Reduced spacing
+                  const SizedBox(height: 8),
                   _buildAdditionalFeatureItem(
                     Icons.bloodtype,
                     'Cek Stok Darah',
@@ -1557,12 +1528,11 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
   Widget _buildPage5() {
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Illustration - reduced size
             Container(
-              height: 220, // Reduced from 300 to 220
+              height: 200,
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(16),
@@ -1577,7 +1547,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                 ],
               ),
               child: Padding(
-                padding: const EdgeInsets.all(12), // Reduced padding
+                padding: const EdgeInsets.all(12),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(16),
                   child: Image.asset(
@@ -1595,7 +1565,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                             children: [
                               Icon(
                                 Icons.lightbulb,
-                                size: 50, // Reduced size
+                                size: 50,
                                 color: Color(0xFF4CAF50),
                               ),
                               const SizedBox(height: 8),
@@ -1603,7 +1573,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                                 'Gambar tidak tersedia',
                                 style: TextStyle(
                                   color: Colors.grey[600],
-                                  fontSize: 12, // Reduced font size
+                                  fontSize: 12,
                                 ),
                               ),
                             ],
@@ -1615,32 +1585,29 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                 ),
               ),
             ),
-            const SizedBox(height: 16), // Reduced spacing
-            // Title
+            const SizedBox(height: 16),
             Text(
               'Tips Penting',
               style: TextStyle(
-                fontSize: 20, // Reduced font size
+                fontSize: 20,
                 fontWeight: FontWeight.bold,
                 color: Color(0xFF4CAF50),
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16), // Reduced spacing
-            // Description
+            const SizedBox(height: 16),
             Text(
               'Tips penting untuk pengalaman terbaik menggunakan aplikasi.',
               style: TextStyle(
-                fontSize: 14, // Reduced font size
+                fontSize: 14,
                 color: Colors.grey[600],
                 height: 1.4,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 16), // Reduced spacing
-            // Tips
+            const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.all(12), // Reduced padding
+              padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: Color(0xFFE8F5E9),
                 borderRadius: BorderRadius.circular(12),
@@ -1651,12 +1618,12 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                   Text(
                     'Tips Penting:',
                     style: TextStyle(
-                      fontSize: 14, // Reduced font size
+                      fontSize: 14,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF4CAF50),
                     ),
                   ),
-                  const SizedBox(height: 8), // Reduced spacing
+                  const SizedBox(height: 8),
                   _buildTipItem('Aktifkan lokasi untuk mendapatkan data yang akurat'),
                   _buildTipItem('Ubah kota jika Anda pindah kota'),
                   _buildTipItem('Lihat FAQ jika ada kendala'),
@@ -1664,7 +1631,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                   Text(
                     'Kesehatan adalah investasi jangka panjang',
                     style: TextStyle(
-                      fontSize: 12, // Reduced font size
+                      fontSize: 12,
                       fontWeight: FontWeight.bold,
                       color: Color(0xFF4CAF50),
                       fontStyle: FontStyle.italic,
@@ -1674,8 +1641,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                 ],
               ),
             ),
-            const SizedBox(height: 16), // Reduced spacing
-            // Progress indicator
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -1694,23 +1660,22 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
     );
   }
 
-  // Helper widgets
   Widget _buildStepItem(String text) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3), // Reduced padding
+      padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
           Icon(
             Icons.check_circle,
             color: Color(0xFF2196F3),
-            size: 14, // Reduced size
+            size: 14,
           ),
-          const SizedBox(width: 6), // Reduced spacing
+          const SizedBox(width: 6),
           Expanded(
             child: Text(
               text,
               style: TextStyle(
-                fontSize: 12, // Reduced font size
+                fontSize: 12,
                 color: Colors.grey[700],
               ),
             ),
@@ -1722,20 +1687,20 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
 
   Widget _buildFeatureItem(IconData icon, String text) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3), // Reduced padding
+      padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
           Icon(
             icon,
             color: Color(0xFF03A9F4),
-            size: 14, // Reduced size
+            size: 14,
           ),
-          const SizedBox(width: 6), // Reduced spacing
+          const SizedBox(width: 6),
           Expanded(
             child: Text(
               text,
               style: TextStyle(
-                fontSize: 12, // Reduced font size
+                fontSize: 12,
                 color: Colors.grey[700],
               ),
             ),
@@ -1747,20 +1712,20 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
 
   Widget _buildServiceItem(String text) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3), // Reduced padding
+      padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
           Icon(
             Icons.medical_services,
             color: Color(0xFF00BCD4),
-            size: 14, // Reduced size
+            size: 14,
           ),
-          const SizedBox(width: 6), // Reduced spacing
+          const SizedBox(width: 6),
           Expanded(
             child: Text(
               text,
               style: TextStyle(
-                fontSize: 12, // Reduced font size
+                fontSize: 12,
                 color: Colors.grey[700],
               ),
             ),
@@ -1772,7 +1737,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
 
   Widget _buildAdditionalFeatureItem(IconData icon, String title, String description) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4), // Reduced padding
+      padding: const EdgeInsets.symmetric(vertical: 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1781,26 +1746,26 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
               Icon(
                 icon,
                 color: Color(0xFF009688),
-                size: 14, // Reduced size
+                size: 14,
               ),
-              const SizedBox(width: 6), // Reduced spacing
+              const SizedBox(width: 6),
               Text(
                 title,
                 style: TextStyle(
-                  fontSize: 12, // Reduced font size
+                  fontSize: 12,
                   fontWeight: FontWeight.bold,
                   color: Colors.grey[800],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 3), // Reduced spacing
+          const SizedBox(height: 3),
           Padding(
-            padding: const EdgeInsets.only(left: 20), // Reduced padding
+            padding: const EdgeInsets.only(left: 20),
             child: Text(
               description,
               style: TextStyle(
-                fontSize: 11, // Reduced font size
+                fontSize: 11,
                 color: Colors.grey[600],
               ),
             ),
@@ -1812,20 +1777,20 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
 
   Widget _buildTipItem(String text) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3), // Reduced padding
+      padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
           Icon(
             Icons.lightbulb,
             color: Color(0xFF4CAF50),
-            size: 14, // Reduced size
+            size: 14,
           ),
-          const SizedBox(width: 6), // Reduced spacing
+          const SizedBox(width: 6),
           Expanded(
             child: Text(
               text,
               style: TextStyle(
-                fontSize: 12, // Reduced font size
+                fontSize: 12,
                 color: Colors.grey[700],
               ),
             ),
@@ -1836,7 +1801,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
   }
 }
 
-// Widget FAQ
 class FAQWidget extends StatelessWidget {
   const FAQWidget({Key? key}) : super(key: key);
 
@@ -1846,13 +1810,12 @@ class FAQWidget extends StatelessWidget {
       backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
               Container(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 16),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -1872,7 +1835,6 @@ class FAQWidget extends StatelessWidget {
                   ],
                 ),
               ),
-              // FAQ Items
               _buildFAQItem(
                 question: 'Apa itu aplikasi Digital Hospital?',
                 answer:
@@ -1917,7 +1879,7 @@ class FAQWidget extends StatelessWidget {
 
   Widget _buildFAQItem({required String question, required String answer}) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20),
+      padding: const EdgeInsets.only(bottom: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -875,7 +875,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
     return GestureDetector(
       onTap: () => _openArticle(url, title), // buka link artikel
       child: Container(
-        height: 180,
+        height: 200,
         margin: const EdgeInsets.only(bottom: 12),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
