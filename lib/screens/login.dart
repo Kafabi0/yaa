@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:inocare/screens/home_page_member.dart';
 import 'package:inocare/services/user_prefs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:async';
 import '../main.dart'; // biar bisa akses MainPage setelah login
 
 // =================================== LOGIN ===================================
@@ -43,6 +44,32 @@ class _LoginPageState extends State<LoginPage> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  // Method untuk menampilkan OTP Modal
+  void _showOTPModal() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return OTPModal(
+          onOTPVerified: () async {
+            // SIMPAN STATUS LOGIN KE UserPrefs setelah OTP berhasil
+            await UserPrefs.saveUser(
+              email: registeredEmail!,
+              nik: registeredNik!,
+              password: registeredPassword!,
+              name: registeredName!,
+            );
+
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => HomePageMember()),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -156,7 +183,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Di login.dart, perbaiki bagian login button
   Widget _buildLoginButton() {
     return Container(
       width: double.infinity,
@@ -166,25 +192,14 @@ class _LoginPageState extends State<LoginPage> {
         borderRadius: BorderRadius.circular(25),
       ),
       child: ElevatedButton(
-        onPressed: () async {
-          // tambahkan async
+        onPressed: () {
           final emailOrNik = _emailController.text.trim();
           final password = _passwordController.text.trim();
 
           if ((emailOrNik == registeredEmail || emailOrNik == registeredNik) &&
               password == registeredPassword) {
-            // SIMPAN STATUS LOGIN KE UserPrefs
-            await UserPrefs.saveUser(
-              email: registeredEmail!,
-              nik: registeredNik!,
-              password: registeredPassword!,
-              name: registeredName!,
-            );
-
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) =>  HomePageMember()),
-            );
+            // Tampilkan OTP Modal sebelum login
+            _showOTPModal();
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -239,6 +254,319 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ],
+    );
+  }
+}
+
+// =================================== OTP MODAL ===================================
+class OTPModal extends StatefulWidget {
+  final VoidCallback onOTPVerified;
+
+  const OTPModal({Key? key, required this.onOTPVerified}) : super(key: key);
+
+  @override
+  State<OTPModal> createState() => _OTPModalState();
+}
+
+class _OTPModalState extends State<OTPModal> {
+  final List<TextEditingController> _otpControllers = 
+      List.generate(6, (index) => TextEditingController());
+  final List<FocusNode> _focusNodes = 
+      List.generate(6, (index) => FocusNode());
+  
+  Timer? _timer;
+  int _countdown = 60;
+  bool _isResendEnabled = false;
+  
+  @override
+  void initState() {
+    super.initState();
+    _startCountdown();
+  }
+
+  void _startCountdown() {
+    setState(() {
+      _countdown = 60;
+      _isResendEnabled = false;
+    });
+    
+    _timer?.cancel();
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+      if (_countdown > 0) {
+        setState(() {
+          _countdown--;
+        });
+      } else {
+        setState(() {
+          _isResendEnabled = true;
+        });
+        timer.cancel();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    for (var controller in _otpControllers) {
+      controller.dispose();
+    }
+    for (var focusNode in _focusNodes) {
+      focusNode.dispose();
+    }
+    super.dispose();
+  }
+
+  void _onOTPChanged(String value, int index) {
+    if (value.length == 1) {
+      if (index < 5) {
+        _focusNodes[index + 1].requestFocus();
+      }
+    } else if (value.isEmpty && index > 0) {
+      _focusNodes[index - 1].requestFocus();
+    }
+
+    // Check if all fields are filled
+    String otp = _otpControllers.map((controller) => controller.text).join();
+    if (otp.length == 6) {
+      _verifyOTP(otp);
+    }
+  }
+
+  void _verifyOTP(String otp) {
+    // Simulasi verifikasi OTP (dalam implementasi nyata, kirim ke server)
+    if (otp == "123456") { // OTP dummy untuk testing
+      Navigator.pop(context);
+      widget.onOTPVerified();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Kode OTP tidak valid. Silakan coba lagi.'),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      // Clear OTP fields
+      for (var controller in _otpControllers) {
+        controller.clear();
+      }
+      _focusNodes[0].requestFocus();
+    }
+  }
+
+  void _resendOTP() {
+    if (_isResendEnabled) {
+      // Simulasi kirim ulang OTP
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Kode OTP telah dikirim ulang ke WhatsApp Anda.'),
+          backgroundColor: Colors.green,
+          duration: Duration(seconds: 2),
+        ),
+      );
+      _startCountdown();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      backgroundColor: Colors.transparent,
+      child: Container(
+        padding: EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: Offset(0, 5),
+            ),
+          ],
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Header
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Verifikasi OTP',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () => Navigator.pop(context),
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.close,
+                      size: 20,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            
+            SizedBox(height: 20),
+            
+            // WhatsApp Icon
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Color(0xFF25D366).withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.phone,
+                size: 40,
+                color: Color(0xFF25D366),
+              ),
+            ),
+            
+            SizedBox(height: 16),
+            
+            // Description
+            Text(
+              'Kode verifikasi telah dikirim melalui WhatsApp ke nomor terdaftar Anda.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+                height: 1.4,
+              ),
+            ),
+            
+            SizedBox(height: 24),
+            
+            // OTP Input Fields
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: List.generate(6, (index) {
+                return Container(
+                  width: 45,
+                  height: 45,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: _otpControllers[index].text.isEmpty 
+                          ? Colors.grey[300]! 
+                          : Color(0xFFFF8C00),
+                      width: 2,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: TextField(
+                    controller: _otpControllers[index],
+                    focusNode: _focusNodes[index],
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(1),
+                    ],
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      counterText: '',
+                    ),
+                    onChanged: (value) => _onOTPChanged(value, index),
+                  ),
+                );
+              }),
+            ),
+            
+            SizedBox(height: 24),
+            
+            // Countdown and Resend
+            if (!_isResendEnabled)
+              Text(
+                'Kirim ulang kode dalam $_countdown detik',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                ),
+              )
+            else
+              GestureDetector(
+                onTap: _resendOTP,
+                child: Text(
+                  'Kirim Ulang Kode OTP',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Color(0xFFFF8C00),
+                    fontWeight: FontWeight.w600,
+                    decoration: TextDecoration.underline,
+                  ),
+                ),
+              ),
+            
+            SizedBox(height: 24),
+            
+            // Verify Button
+            Container(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: () {
+                  String otp = _otpControllers.map((controller) => controller.text).join();
+                  if (otp.length == 6) {
+                    _verifyOTP(otp);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Silakan masukkan kode OTP lengkap.'),
+                        backgroundColor: Colors.orange,
+                        duration: Duration(seconds: 2),
+                      ),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFFF8C00),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                ),
+                child: Text(
+                  'Verifikasi',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+            
+            SizedBox(height: 12),
+            
+            // Help Text
+            Text(
+              'Gunakan kode "123456" untuk testing',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[500],
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -610,7 +938,6 @@ class _ActivationPageState extends State<ActivationPage> {
     );
   }
 
-  // Di login.dart, perbaiki bagian activation button
   Widget _buildActivationButton() {
     return Container(
       width: double.infinity,
