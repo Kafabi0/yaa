@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:inocare/screens/home_screen.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+import 'screens/home_screen.dart';
 import 'screens/health_records_screen.dart';
 import 'screens/notifications_screen.dart';
 import 'screens/settings_screen.dart';
 import 'widgets/bottom_navigation_bar.dart';
 import 'screens/doctor_list.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'services/user_prefs.dart';
+import 'screens/splashscreen.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -96,9 +98,19 @@ class _InoCareAppState extends State<InoCareApp> {
         ),
         textTheme: GoogleFonts.openSansTextTheme(),
       ),
-      home: MainPage(
-        onNotificationChanged: _toggleNotifications,
-        notificationsEnabled: _notificationsEnabled,
+      home: Builder(
+        builder: (context) => SplashOnboarding(
+          onCompleted: () {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(
+                builder: (_) => MainPage(
+                  onNotificationChanged: _toggleNotifications,
+                  notificationsEnabled: _notificationsEnabled,
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -182,7 +194,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _getBody(), // ✅ langsung tampilkan halaman sesuai index
+      body: _getBody(),
       bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onTabTapped,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:inocare/screens/login.dart'; 
+import 'package:inocare/screens/login.dart';
 import 'rumahsakitpublic.dart';
+import 'webview_page.dart';
 class HealthAppHomePage extends StatefulWidget {
   final VoidCallback? onLoginSuccess; // Tambahkan properti ini
 
@@ -23,6 +24,14 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
     super.initState();
     _startPromoAutoSlide();
   }
+  void _openArticle(String url, String title) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => HybridWebView(url: url,),
+    ),
+  );
+}
 
   void _startPromoAutoSlide() {
     Future.delayed(Duration(seconds: 5), () {
@@ -51,9 +60,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
   void _navigateToLogin() async {
     await Navigator.push(
       context,
-      MaterialPageRoute(
-        builder: (context) => const LoginPage(),
-      ),
+      MaterialPageRoute(builder: (context) => const LoginPage()),
     );
   }
 
@@ -62,16 +69,11 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Login diperlukan untuk mengakses $feature'),
-        action: SnackBarAction(
-          label: 'Login',
-          onPressed: _navigateToLogin,
-        ),
+        action: SnackBarAction(label: 'Login', onPressed: _navigateToLogin),
         duration: const Duration(seconds: 3),
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }
@@ -131,7 +133,8 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () => _navigateToLogin(), // Menggunakan GestureDetector
+                    onTap:
+                        () => _navigateToLogin(), // Menggunakan GestureDetector
                     child: Text(
                       'Login / Register',
                       style: TextStyle(
@@ -147,7 +150,11 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
                 children: [
                   GestureDetector(
                     onTap: () => _showLoginRequired('Notifikasi'),
-                    child: const Icon(Icons.notifications, color: Colors.white, size: 24),
+                    child: const Icon(
+                      Icons.notifications,
+                      color: Colors.white,
+                      size: 24,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   const Icon(Icons.location_on, color: Colors.white, size: 24),
@@ -383,11 +390,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
                 ),
               ],
             ),
-            child: Icon(
-              icon,
-              color: Colors.white,
-              size: 24,
-            ),
+            child: Icon(icon, color: Colors.white, size: 24),
           ),
           const SizedBox(height: 8),
           Text(
@@ -468,7 +471,10 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
                   ],
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(20),
@@ -584,15 +590,9 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
                 });
               },
               children: [
-                _buildPromoCard(
-                  imagePath: 'assets/images/promo1.png',
-                ),
-                _buildPromoCard(
-                  imagePath: 'assets/images/promo3.jpg',
-                ),
-                _buildPromoCard(
-                  imagePath: 'assets/images/promo4.jpg',
-                ),
+                _buildPromoCard(imagePath: 'assets/images/promo1.png'),
+                _buildPromoCard(imagePath: 'assets/images/promo3.jpg'),
+                _buildPromoCard(imagePath: 'assets/images/promo4.jpg'),
               ],
             ),
           ),
@@ -606,9 +606,10 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
                 width: _currentPromoIndex == index ? 20 : 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: _currentPromoIndex == index
-                      ? Color(0xFFFF6B35)
-                      : Colors.grey[300],
+                  color:
+                      _currentPromoIndex == index
+                          ? Color(0xFFFF6B35)
+                          : Colors.grey[300],
                   borderRadius: BorderRadius.circular(4),
                 ),
               );
@@ -648,11 +649,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
                 ),
               ),
               child: Center(
-                child: Icon(
-                  Icons.local_offer,
-                  color: Colors.white,
-                  size: 60,
-                ),
+                child: Icon(Icons.local_offer, color: Colors.white, size: 60),
               ),
             );
           },
@@ -678,7 +675,10 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: Color(0xFFFF6B35),
                   borderRadius: BorderRadius.circular(20),
@@ -700,6 +700,9 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
             title: '5 Cara Merawat Ginjal agar Sehat & Cegah Penyakit Ginjal',
             date: 'Rabu, 3 September 2025',
             imagePath: 'assets/images/ginjal.jpg',
+            url:
+                'https://www.biofarma.co.id/id/announcement/detail/5-cara-merawat-ginjal-agar-sehat-cegah-penyakit-ginjal', // 🔥 link artikel
+
             gradient: [Color(0xFF87CEEB), Color(0xFFB0E0E6)],
           ),
           const SizedBox(height: 12),
@@ -709,6 +712,8 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
             date: 'Senin, 30 Juni 2025',
             imagePath: 'assets/images/olang.jpg',
             gradient: [Color(0xFF98FB98), Color(0xFF90EE90)],
+            url:
+                'https://www.biofarma.co.id/id/announcement/detail/9-manfaat-kolang-kaling-yang-perlu-kamu-ketahui', // 🔥 link artikel
           ),
           const SizedBox(height: 12),
           _buildArticleCard(
@@ -717,6 +722,8 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
             date: 'Jumat, 12 Juni 2025',
             imagePath: 'assets/images/gerd.png',
             gradient: [Color(0xFFFFA07A), Color(0xFFFF7F50)],
+            url:
+                'https://www.biofarma.co.id/id/announcement/detail/kenali-jenis-makanan-penyebab-gerd', // 🔥 link artikel
           ),
         ],
       ),
@@ -729,135 +736,136 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
     required String date,
     required String imagePath,
     required List<Color> gradient,
+    required String url,
   }) {
-    return Container(
-      height: 180,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: gradient,
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.black.withOpacity(0.6),
-                      Colors.black.withOpacity(0.3),
-                      Colors.transparent,
-                    ],
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              top: 12,
-              left: 12,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  category,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 30,
-              left: 12,
-              right: 80,
-              child: Text(
-                title,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(1, 1),
-                      blurRadius: 3,
-                      color: Colors.black.withOpacity(0.5),
-                    ),
-                  ],
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            Positioned(
-              bottom: 12,
-              left: 12,
-              child: Text(
-                date,
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.9),
-                  fontSize: 10,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(1, 1),
-                      blurRadius: 3,
-                      color: Colors.black.withOpacity(0.5),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 12,
-              right: 12,
-              child: Text(
-                'Baca Selengkapnya →',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(1, 1),
-                      blurRadius: 3,
-                      color: Colors.black.withOpacity(0.5),
-                    ),
-                  ],
-                ),
-              ),
+    return GestureDetector(
+      onTap: () => _openArticle(url, title), // buka link artikel
+      child: Container(
+        height: 180,
+        margin: const EdgeInsets.only(bottom: 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: gradient,
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.black.withOpacity(0.6),
+                        Colors.black.withOpacity(0.3),
+                        Colors.transparent,
+                      ],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 12,
+                left: 12,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    category,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 30,
+                left: 12,
+                right: 80,
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        offset: Offset(1, 1),
+                        blurRadius: 3,
+                        color: Colors.black54,
+                      ),
+                    ],
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Positioned(
+                bottom: 12,
+                left: 12,
+                child: Text(
+                  date,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.9),
+                    fontSize: 10,
+                    shadows: [
+                      Shadow(
+                        offset: Offset(1, 1),
+                        blurRadius: 3,
+                        color: Colors.black.withOpacity(0.5),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const Positioned(
+                bottom: 12,
+                right: 12,
+                child: Text(
+                  'Baca Selengkapnya →',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -946,9 +954,10 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                         width: _currentPage == index ? 20 : 8,
                         height: 8,
                         decoration: BoxDecoration(
-                          color: _currentPage == index
-                              ? Color(0xFFFF6B35)
-                              : Colors.grey[300],
+                          color:
+                              _currentPage == index
+                                  ? Color(0xFFFF6B35)
+                                  : Colors.grey[300],
                           borderRadius: BorderRadius.circular(4),
                         ),
                       );
@@ -980,7 +989,10 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
 
                         Text(
                           '${_currentPage + 1} dari 5',
-                          style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 14,
+                          ),
                         ),
 
                         ElevatedButton(
@@ -1007,8 +1019,12 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            Navigator.pop(context);
-                            // TODO: Navigate to login
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => LoginPage(),
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color(0xFFFF6B35),
@@ -1028,8 +1044,12 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                             Expanded(
                               child: OutlinedButton(
                                 onPressed: () {
-                                  Navigator.pop(context);
-                                  // TODO: Navigate to login
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => LoginPage(),
+                                    ),
+                                  );
                                 },
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: Color(0xFFFF6B35),
@@ -1045,8 +1065,12 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                             Expanded(
                               child: ElevatedButton(
                                 onPressed: () {
-                                  Navigator.pop(context);
-                                  // TODO: Navigate to registration
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => LoginPage(),
+                                    ),
+                                  );
                                 },
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: Color(0xFFFF6B35),
@@ -1198,11 +1222,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
-                              Icons.map,
-                              size: 60,
-                              color: Color(0xFFFF6B35),
-                            ),
+                            Icon(Icons.map, size: 60, color: Color(0xFFFF6B35)),
                             SizedBox(height: 10),
                             Text(
                               'Gambar tidak tersedia',
@@ -1466,11 +1486,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.check_circle,
-                    size: 100,
-                    color: Color(0xFFFF6B35),
-                  ),
+                  Icon(Icons.check_circle, size: 100, color: Color(0xFFFF6B35)),
                   SizedBox(height: 20),
                   Text(
                     'Siap Digunakan!',
@@ -1550,7 +1566,10 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
                 children: [
                   GestureDetector(
                     onTap: () => Navigator.pop(context),
-                    child: Icon(Icons.arrow_back, color: _pageColors[_currentPage]),
+                    child: Icon(
+                      Icons.arrow_back,
+                      color: _pageColors[_currentPage],
+                    ),
                   ),
                   Text(
                     'Cara Mendaftar',
@@ -1602,7 +1621,10 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
                         width: _currentPage == index ? 20 : 8,
                         height: 8,
                         decoration: BoxDecoration(
-                          color: _currentPage == index ? _pageColors[_currentPage] : Colors.grey[300],
+                          color:
+                              _currentPage == index
+                                  ? _pageColors[_currentPage]
+                                  : Colors.grey[300],
                           borderRadius: BorderRadius.circular(4),
                         ),
                       );
@@ -1624,7 +1646,9 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
                             },
                             child: Text(
                               'Sebelumnya',
-                              style: TextStyle(color: _pageColors[_currentPage]),
+                              style: TextStyle(
+                                color: _pageColors[_currentPage],
+                              ),
                             ),
                           )
                         else
@@ -1632,7 +1656,10 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
 
                         Text(
                           '${_currentPage + 1} dari 5',
-                          style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 14,
+                          ),
                         ),
 
                         ElevatedButton(
