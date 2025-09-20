@@ -66,6 +66,7 @@ dependencies:
   open_filex: ^4.7.0
   image_picker: ^1.2.0
   curved_navigation_bar: ^1.0.6
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:

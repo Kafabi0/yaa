@@ -1,103 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:inocare/screens/login.dart'; 
-import 'rumahsakitpublic.dart';
-class HealthAppHomePage extends StatefulWidget {
-  final VoidCallback? onLoginSuccess; // Tambahkan properti ini
+import 'package:inocare/screens/rumahsakitmember.dart';
 
-  const HealthAppHomePage({
-    Key? key,
-    this.onLoginSuccess, // Tambahkan ini ke constructor
-  }) : super(key: key);
+class HomePageMember extends StatefulWidget {
+  final String? userName;
+  final VoidCallback? onHospitalSelected; // ✅ tambahan
+
+  const HomePageMember({Key? key, this.userName, this.onHospitalSelected})
+      : super(key: key);
 
   @override
-  State<HealthAppHomePage> createState() => _HealthAppHomePageState();
+  State<HomePageMember> createState() => _HomePageMemberState();
 }
 
-class _HealthAppHomePageState extends State<HealthAppHomePage> {
+
+class _HomePageMemberState extends State<HomePageMember> {
   final TextEditingController _searchController = TextEditingController();
-  final PageController _promoPageController = PageController();
+    final PageController _promoPageController = PageController();
   int _currentPromoIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _startPromoAutoSlide();
-  }
-
-  void _startPromoAutoSlide() {
-    Future.delayed(Duration(seconds: 5), () {
-      if (mounted) {
-        setState(() {
-          _currentPromoIndex = (_currentPromoIndex + 1) % 3;
-        });
-        _promoPageController.animateToPage(
-          _currentPromoIndex,
-          duration: Duration(milliseconds: 300),
-          curve: Curves.easeInOut,
-        );
-        _startPromoAutoSlide();
-      }
-    });
-  }
 
   @override
   void dispose() {
     _searchController.dispose();
-    _promoPageController.dispose();
     super.dispose();
   }
 
-  // Method baru untuk navigate ke login
-  void _navigateToLogin() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const LoginPage(),
-      ),
-    );
-  }
-
-  // Method baru untuk menampilkan prompt login diperlukan
-  void _showLoginRequired(String feature) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Login diperlukan untuk mengakses $feature'),
-        action: SnackBarAction(
-          label: 'Login',
-          onPressed: _navigateToLogin,
-        ),
-        duration: const Duration(seconds: 3),
-        behavior: SnackBarBehavior.floating,
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
+ @override
+Widget build(BuildContext context) {
+  return Material(
+    color: Colors.white, // biar background putih
+    child: SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildHeader(),
+            _buildSearchSection(),   // ada TextField, sekarang sudah ada Material ancestor
+            _buildNearestHospitalSection(),
+            _buildQuickAccessSection(),
+            _buildTodaySection(),
+            _buildPromoSection(),
+            _buildHealthArticlesSection(),
+          ],
         ),
       ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              _buildSearchSection(),
-              _buildNearestHospitalSection(),
-              _buildQuickAccessSection(),
-              _buildTodaySection(),
-              _buildPromoSection(),
-              _buildHealthArticlesSection(),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildHeader() {
     return Container(
@@ -113,46 +61,31 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
           bottomRight: Radius.circular(25),
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Selamat Datang',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => _navigateToLogin(), // Menggunakan GestureDetector
-                    child: Text(
-                      'Login / Register',
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: 14,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                ],
+              Text(
+                'Halo, ${widget.userName ?? "Member"} 👋',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () => _showLoginRequired('Notifikasi'),
-                    child: const Icon(Icons.notifications, color: Colors.white, size: 24),
-                  ),
-                  const SizedBox(width: 12),
-                  const Icon(Icons.location_on, color: Colors.white, size: 24),
-                ],
+              const Text(
+                'Semoga sehat selalu!',
+                style: TextStyle(color: Colors.white70, fontSize: 14),
               ),
+            ],
+          ),
+          Row(
+            children: const [
+              Icon(Icons.notifications, color: Colors.white, size: 24),
+              SizedBox(width: 12),
+              Icon(Icons.account_circle, color: Colors.white, size: 28),
             ],
           ),
         ],
@@ -160,7 +93,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
     );
   }
 
-  Widget _buildSearchSection() {
+ Widget _buildSearchSection() {
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Container(
@@ -188,7 +121,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
             ),
           ),
           readOnly: true,
-          onTap: () => _showLoginRequired('Pencarian'),
+          onTap: () => ('Pencarian'),
         ),
       ),
     );
@@ -215,7 +148,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => RumahSakitPublicPage(),
+                      builder: (context) => RumahSakitMemberPage(),
                     ),
                   );
                 },
@@ -344,11 +277,11 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
             label: 'Panduan\nSingkat',
             onTap: () => _showPanduanSingkat(),
           ),
-          _buildQuickAccessItem(
-            icon: Icons.how_to_reg,
-            label: 'Cara\nMendaftar',
-            onTap: () => _showCaraMendaftar(),
-          ),
+          // _buildQuickAccessItem(
+          //   icon: Icons.how_to_reg,
+          //   label: 'Cara\nMendaftar',
+          //   onTap: () => _showCaraMendaftar(),
+          // ),
           _buildQuickAccessItem(
             icon: Icons.headset_mic,
             label: 'FAQ\n',
@@ -497,14 +430,14 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
               icon: Icons.bloodtype,
               iconColor: Colors.red,
               title: 'Cek Ketersediaan Labu Darah',
-              onTap: () => _showLoginRequired('Cek Labu Darah'),
+              onTap: () => ('Cek Labu Darah'),
             ),
             const SizedBox(height: 12),
             _buildTodayItem(
               icon: Icons.hotel,
               iconColor: Colors.blue,
               title: 'Cek Ketersediaan Bed',
-              onTap: () => _showLoginRequired('Cek Bed'),
+              onTap: () => ('Cek Bed'),
             ),
           ],
         ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'screens/home_screen.dart';
+import 'package:inocare/screens/home_page_member.dart';
+import 'package:inocare/screens/home_screen.dart';
+import 'screens/home_screen_public.dart';
 import 'screens/health_records_screen.dart';
 import 'screens/notifications_screen.dart';
 import 'screens/settings_screen.dart';
@@ -8,6 +10,7 @@ import 'widgets/bottom_navigation_bar.dart';
 import 'screens/doctor_list.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'services/user_prefs.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -19,13 +22,9 @@ Future<void> initializeNotifications() async {
   final DarwinInitializationSettings iosSettings =
       DarwinInitializationSettings();
 
-  // final WindowsInitializationSettings windowsSettings =
-  //     WindowsInitializationSettings();
-
   final InitializationSettings settings = InitializationSettings(
     android: androidSettings,
     iOS: iosSettings,
-    // windows: windowsSettings,
   );
 
   await flutterLocalNotificationsPlugin.initialize(
@@ -33,6 +32,8 @@ Future<void> initializeNotifications() async {
     onDidReceiveNotificationResponse: (NotificationResponse response) async {},
   );
 }
+
+enum HomeState { public, member, hospital }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,14 +49,8 @@ class InoCareApp extends StatefulWidget {
 }
 
 class _InoCareAppState extends State<InoCareApp> {
-  ThemeMode _themeMode = ThemeMode.system;
   bool _notificationsEnabled = false;
-
-  void _changeTheme(ThemeMode theme) {
-    setState(() {
-      _themeMode = theme;
-    });
-  }
+  bool _loading = true;
 
   void _toggleNotifications(bool isEnabled) {
     setState(() {
@@ -64,20 +59,35 @@ class _InoCareAppState extends State<InoCareApp> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    await UserPrefs.getUser();
+    setState(() {
+      _loading = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (_loading) {
+      return const MaterialApp(
+        home: Scaffold(body: Center(child: CircularProgressIndicator())),
+      );
+    }
+
     return MaterialApp(
       title: 'InoCare',
       debugShowCheckedModeBanner: false,
-      themeMode: _themeMode,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('en'), // English
-        Locale('id'), // Indonesian
-      ],
+      supportedLocales: const [Locale('en'), Locale('id')],
       locale: const Locale('id'),
       theme: ThemeData(
         brightness: Brightness.light,
@@ -90,22 +100,7 @@ class _InoCareAppState extends State<InoCareApp> {
         ),
         textTheme: GoogleFonts.openSansTextTheme(),
       ),
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-        primaryColor: const Color(0xFF2563EB),
-        scaffoldBackgroundColor: const Color(0xFF1E1E2C),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF2563EB),
-          foregroundColor: Colors.white,
-          elevation: 2,
-        ),
-        textTheme: GoogleFonts.openSansTextTheme(
-          ThemeData(brightness: Brightness.dark).textTheme,
-        ),
-      ),
       home: MainPage(
-        onThemeChanged: _changeTheme,
-        themeMode: _themeMode,
         onNotificationChanged: _toggleNotifications,
         notificationsEnabled: _notificationsEnabled,
       ),
@@ -114,15 +109,11 @@ class _InoCareAppState extends State<InoCareApp> {
 }
 
 class MainPage extends StatefulWidget {
-  final Function(ThemeMode)? onThemeChanged;
-  final ThemeMode themeMode;
   final Function(bool)? onNotificationChanged;
   final bool notificationsEnabled;
 
   const MainPage({
     super.key,
-    this.onThemeChanged,
-    this.themeMode = ThemeMode.system,
     this.onNotificationChanged,
     this.notificationsEnabled = false,
   });
@@ -133,34 +124,78 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
-  late List<Widget> _pages;
+  HomeState _homeState = HomeState.public;
+  bool _loading = true;
+  String? _userName;
+
+  Key _bottomNavKey = UniqueKey();
 
   @override
   void initState() {
     super.initState();
-    _pages = [
-      const HealthAppHomePage(),
-      const HealthRecordsScreen(),
-      const NotificationsScreen(),
-      SettingsScreen(
-        themeMode: widget.themeMode,
-        onThemeChanged: widget.onThemeChanged,
-        onNotificationChanged: widget.onNotificationChanged,
-        notificationsEnabled: widget.notificationsEnabled,
-      ),
-      const DoctorListScreen(),
-    ];
+    _checkUserStatus();
   }
 
-  @override
-  void didUpdateWidget(covariant MainPage oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    _pages[3] = SettingsScreen(
-      themeMode: widget.themeMode,
-      onThemeChanged: widget.onThemeChanged,
-      onNotificationChanged: widget.onNotificationChanged,
-      notificationsEnabled: widget.notificationsEnabled,
-    );
+  Future<void> _checkUserStatus() async {
+    final user = await UserPrefs.getUser();
+    if (user == null) {
+      setState(() {
+        _homeState = HomeState.public;
+        _loading = false;
+        _userName = null;
+      });
+    } else {
+      if (await UserPrefs.getHospital() == null) {
+        setState(() {
+          _homeState = HomeState.member;
+          _userName = user['name']; // Perbaikan ada di sini
+          _loading = false;
+        });
+      } else {
+        setState(() {
+          _homeState = HomeState.hospital;
+          _loading = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _handleLogout() async {
+    await UserPrefs.clearUser();
+    setState(() {
+      _homeState = HomeState.public;
+      _currentIndex = 0;
+      _bottomNavKey = UniqueKey();
+    });
+
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Logout berhasil')));
+    }
+  }
+
+  Future<void> _handleLoginSuccess() async {
+    await _checkUserStatus();
+    setState(() {
+      _currentIndex = 0;
+      _bottomNavKey = UniqueKey();
+    });
+
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Login berhasil')));
+    }
+  }
+
+  Future<void> _handleHospitalSelected() async {
+    await UserPrefs.setHospital("RS Contoh");
+    await _checkUserStatus();
+    setState(() {
+      _currentIndex = 0;
+      _bottomNavKey = UniqueKey();
+    });
   }
 
   void _onTabTapped(int index) {
@@ -169,13 +204,60 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
+  Widget _buildHomeRoot() {
+    switch (_homeState) {
+      case HomeState.public:
+        return HealthAppHomePage(onLoginSuccess: _handleLoginSuccess);
+      case HomeState.member:
+        return HomePageMember(
+          onHospitalSelected: _handleHospitalSelected,
+          userName: _userName,
+        );
+      case HomeState.hospital:
+        return const HomePageHospital();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_loading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    final pages = [
+      _buildHomeRoot(),
+      const HealthRecordsScreen(),
+      const NotificationsScreen(),
+      SettingsScreen(onLogout: _handleLogout),
+      const DoctorListScreen(),
+    ];
+
     return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _pages),
-      bottomNavigationBar: CustomBottomNavigationBar(
+      body: IndexedStack(
+        index: _currentIndex.clamp(0, pages.length - 1),
+        children: pages,
+      ),
+      bottomNavigationBar: CustomBottomNavigationBar( // <-- Gunakan widget yang sudah ada
+        key: _bottomNavKey,
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
+        isLoggedIn: _homeState != HomeState.public, // <-- Perbaiki logika di sini
+      ),
+    );
+  }
+}
+
+class HomePageHospital extends StatelessWidget {
+  const HomePageHospital({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(
+        child: Text(
+          "Welcome to Hospital Home",
+          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
