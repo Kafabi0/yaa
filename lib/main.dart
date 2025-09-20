@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-
 import 'screens/home_screen.dart';
 import 'screens/health_records_screen.dart';
 import 'screens/notifications_screen.dart';
@@ -103,9 +102,7 @@ class _InoCareAppState extends State<InoCareApp> {
           onCompleted: () {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (_) => MainPage(
-                  onNotificationChanged: _toggleNotifications,
-                  notificationsEnabled: _notificationsEnabled,
+                builder: (_) => HealthAppHomePage(
                 ),
               ),
             );

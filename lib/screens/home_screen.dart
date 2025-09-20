@@ -2,12 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:inocare/screens/login.dart';
 import 'rumahsakitpublic.dart';
 import 'webview_page.dart';
+
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+
 class HealthAppHomePage extends StatefulWidget {
   final VoidCallback? onLoginSuccess; // Tambahkan properti ini
+  final bool isLoggedIn; // Add this parameter
 
   const HealthAppHomePage({
     Key? key,
     this.onLoginSuccess, // Tambahkan ini ke constructor
+    this.isLoggedIn = false, // Default to false (public user)
   }) : super(key: key);
 
   @override
@@ -18,20 +24,21 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
   final TextEditingController _searchController = TextEditingController();
   final PageController _promoPageController = PageController();
   int _currentPromoIndex = 0;
+    int _currentNavIndex = 0; // Add navigation index
+
 
   @override
   void initState() {
     super.initState();
     _startPromoAutoSlide();
   }
+
   void _openArticle(String url, String title) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => HybridWebView(url: url,),
-    ),
-  );
-}
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => HybridWebView(url: url)),
+    );
+  }
 
   void _startPromoAutoSlide() {
     Future.delayed(Duration(seconds: 5), () {
@@ -56,6 +63,54 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
     super.dispose();
   }
 
+  void _onNavTap(int index) {
+    if (!widget.isLoggedIn && index > 1) {
+      _showLoginRequired(_getFeatureName(index));
+      return;
+    }
+
+    setState(() {
+      _currentNavIndex = index;
+    });
+
+    // Handle navigation based on index
+    switch (index) {
+      case 0:
+        // Already on Home
+        break;
+      case 1:
+        if (!widget.isLoggedIn) {
+          _navigateToLogin();
+        } else {
+          // Navigate to search page
+          _showLoginRequired('Pencarian');
+        }
+        break;
+      case 2:
+        _showLoginRequired('Rekam Medis');
+        break;
+      case 3:
+        _showLoginRequired('Notifikasi');
+        break;
+      case 4:
+        _showLoginRequired('Profil');
+        break;
+    }
+  }
+
+  String _getFeatureName(int index) {
+    switch (index) {
+      case 2:
+        return 'Rekam Medis';
+      case 3:
+        return 'Notifikasi';
+      case 4:
+        return 'Profil';
+      default:
+        return 'fitur ini';
+    }
+  }
+
   // Method baru untuk navigate ke login
   void _navigateToLogin() async {
     await Navigator.push(
@@ -66,137 +121,178 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
 
   // Method baru untuk menampilkan prompt login diperlukan
   void _showLoginRequired(String feature) {
-  showDialog(
-    context: context,
-    barrierDismissible: true,
-    builder: (BuildContext context) {
-      return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        elevation: 16,
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
-            gradient: LinearGradient(
-              colors: [Colors.white, Color(0xFFFFF5F5)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+          ),
+          elevation: 16,
+          child: Container(
+            padding: const EdgeInsets.all(24),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              gradient: LinearGradient(
+                colors: [Colors.white, Color(0xFFFFF5F5)],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Icon
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: LinearGradient(
+                      colors: [Color(0xFFFF6B35), Color(0xFFFF8A50)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.lock_outline,
+                    color: Colors.white,
+                    size: 40,
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // Title
+                Text(
+                  'Login Diperlukan',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                const SizedBox(height: 12),
+
+                // Description
+                Text(
+                  'Untuk mengakses $feature, Anda perlu masuk ke akun terlebih dahulu.',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[600],
+                    height: 1.4,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+
+                const SizedBox(height: 24),
+
+                // Buttons
+                Row(
+                  children: [
+                    // Batal button
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Color(0xFFFF6B35),
+                          side: BorderSide(color: Color(0xFFFF6B35)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: Text(
+                          'Batal',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    // Login button
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context); // Close modal
+                          _navigateToLogin(); // Navigate to login
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFFFF6B35),
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        child: Text(
+                          'Login',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Icon
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: LinearGradient(
-                    colors: [Color(0xFFFF6B35), Color(0xFFFF8A50)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
-                child: Icon(
-                  Icons.lock_outline,
-                  color: Colors.white,
-                  size: 40,
-                ),
-              ),
-              
-              const SizedBox(height: 20),
-              
-              // Title
-              Text(
-                'Login Diperlukan',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: 12),
-              
-              // Description
-              Text(
-                'Untuk mengakses $feature, Anda perlu masuk ke akun terlebih dahulu.',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                  height: 1.4,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: 24),
-              
-              // Buttons
-              Row(
-                children: [
-                  // Batal button
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Color(0xFFFF6B35),
-                        side: BorderSide(color: Color(0xFFFF6B35)),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: Text(
-                        'Batal',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                  
-                  const SizedBox(width: 12),
-                  
-                  // Login button
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pop(context); // Close modal
-                        _navigateToLogin(); // Navigate to login
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFFFF6B35),
-                        foregroundColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                      ),
-                      child: Text(
-                        'Login',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
 
+  Widget _buildBottomNavigationBar() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return CurvedNavigationBar(
+      index: _currentNavIndex,
+      onTap: _onNavTap,
+      color: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
+      backgroundColor: Colors.transparent,
+      buttonBackgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
+      height: 60,
+      animationCurve: Curves.easeInOut,
+      animationDuration: const Duration(milliseconds: 300),
+      items: _getNavigationItems(isDark),
+    );
+  }
+
+  List<Widget> _getNavigationItems(bool isDark) {
+    if (!widget.isLoggedIn) {
+      return [
+        Icon(FontAwesomeIcons.house, color: Colors.white), // 0 = Home
+        Icon(FontAwesomeIcons.rightToBracket, color: Colors.white), // 1 = Login
+        Icon(
+          FontAwesomeIcons.solidHeart,
+          color: Colors.white.withOpacity(0.5),
+        ), // 2
+        Icon(
+          FontAwesomeIcons.solidBell,
+          color: Colors.white.withOpacity(0.5),
+        ), // 3
+        Icon(FontAwesomeIcons.user, color: Colors.white.withOpacity(0.5)), // 4
+      ];
+    }
+
+    return [
+      Icon(FontAwesomeIcons.house, color: Colors.white), // 0 = Home
+      Icon(FontAwesomeIcons.magnifyingGlass, color: Colors.white), // 1 = Search
+      Icon(FontAwesomeIcons.solidHeart, color: Colors.white), // 2 = Rekam Medis
+      Icon(FontAwesomeIcons.solidBell, color: Colors.white), // 3 = Notifikasi
+      Icon(FontAwesomeIcons.user, color: Colors.white), // 4 = Profil
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -218,6 +314,8 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
           ),
         ),
       ),
+      bottomNavigationBar:
+          _buildBottomNavigationBar(), // Add bottom navigation here
     );
   }
 
@@ -674,7 +772,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
               ),
             ),
             IconButton(
-              onPressed: onTap, 
+              onPressed: onTap,
               icon: Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
@@ -686,7 +784,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
                   size: 24,
                   color: Colors.white,
                 ),
-              )
+              ),
             ),
           ],
         ),
