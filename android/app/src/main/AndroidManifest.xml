@@ -23,7 +23,7 @@
     <!-- <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/> -->
 
     <application
-        android:label="inocare"
+        android:label="Digital Hospital"
         android:name="${applicationName}"
         android:icon="@mipmap/inotal"
         android:allowBackup="true"
