@@ -225,7 +225,7 @@ void _openArticle(String url, String title) {
         child: TextField(
           controller: _searchController,
           decoration: InputDecoration(
-            hintText: 'Login untuk mencari layanan...',
+            hintText: 'Cari layanan kesehatan...',
             prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
             border: InputBorder.none,
             contentPadding: const EdgeInsets.symmetric(
@@ -233,8 +233,6 @@ void _openArticle(String url, String title) {
               vertical: 16,
             ),
           ),
-          readOnly: true,
-          onTap: () => ('Pencarian'),
         ),
       ),
     );
@@ -390,11 +388,6 @@ void _openArticle(String url, String title) {
             label: 'Panduan\nSingkat',
             onTap: () => _showPanduanSingkat(),
           ),
-          // _buildQuickAccessItem(
-          //   icon: Icons.how_to_reg,
-          //   label: 'Cara\nMendaftar',
-          //   onTap: () => _showCaraMendaftar(),
-          // ),
           _buildQuickAccessItem(
             icon: Icons.headset_mic,
             label: 'FAQ\n',
@@ -445,12 +438,6 @@ void _openArticle(String url, String title) {
       ),
     );
   }
-
-  void _showPanduanSingkat() {}
-
-  void _showCaraMendaftar() {}
-
-  void _showFAQ() {}
 
   Widget _buildTodaySection() {
     return Padding(
@@ -504,7 +491,7 @@ void _openArticle(String url, String title) {
                       Icon(Icons.location_on, color: Colors.red, size: 16),
                       const SizedBox(width: 4),
                       Text(
-                        'Bandar Lampung',
+                        '                   ',
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 12,
@@ -521,6 +508,7 @@ void _openArticle(String url, String title) {
               icon: Icons.bloodtype,
               iconColor: Colors.red,
               title: 'Cek Ketersediaan Labu Darah',
+<<<<<<< Updated upstream
               onTap: () {
                 Navigator.push(
                   context,
@@ -529,12 +517,16 @@ void _openArticle(String url, String title) {
                   ),
                 );
               },
+=======
+              onTap: () {},
+>>>>>>> Stashed changes
             ),
             const SizedBox(height: 12),
             _buildTodayItem(
               icon: Icons.hotel,
               iconColor: Colors.blue,
               title: 'Cek Ketersediaan Bed',
+<<<<<<< Updated upstream
               onTap: () {
                 Navigator.push(
                   context,
@@ -543,6 +535,9 @@ void _openArticle(String url, String title) {
                   ),
                 );
               },
+=======
+              onTap: () {},
+>>>>>>> Stashed changes
             ),
           ],
         ),
@@ -586,6 +581,7 @@ void _openArticle(String url, String title) {
               ),
             ),
             IconButton(
+<<<<<<< Updated upstream
               onPressed: onTap,
               icon: Container(
                 padding: const EdgeInsets.all(6), // jarak biar icon ada ruang
@@ -599,6 +595,21 @@ void _openArticle(String url, String title) {
                   color: Colors.white, // icon putih biar kontras
                 ),
               ),
+=======
+              onPressed: onTap, 
+              icon: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.arrow_forward_ios,
+                  size: 24,
+                  color: Colors.white,
+                ),
+              )
+>>>>>>> Stashed changes
             ),
           ],
         ),
@@ -909,6 +920,7 @@ void _openArticle(String url, String title) {
           ],
         ),
       ),
+<<<<<<< Updated upstream
     ),
   );
 }
@@ -976,4 +988,1079 @@ void _openArticle(String url, String title) {
   //       ),
   //     );
   //   }
+=======
+    );
+  }
+
+  // Metode untuk menampilkan FAQ
+  void _showFAQ() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const FAQWidget(),
+        fullscreenDialog: true,
+      ),
+    );
+  }
+
+  // Metode untuk menampilkan Panduan Singkat
+  void _showPanduanSingkat() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const PanduanSingkatWidget(),
+        fullscreenDialog: true,
+      ),
+    );
+  }
+>>>>>>> Stashed changes
+}
+
+// Widget Panduan Singkat
+class PanduanSingkatWidget extends StatefulWidget {
+  const PanduanSingkatWidget({Key? key}) : super(key: key);
+
+  @override
+  _PanduanSingkatWidgetState createState() => _PanduanSingkatWidgetState();
+}
+
+class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
+
+  // Define colors for each page
+  final List<Color> _pageColors = [
+    Color(0xFF2196F3), // Blue for page 1
+    Color(0xFF03A9F4), // Light blue for page 2
+    Color(0xFF00BCD4), // Cyan for page 3
+    Color(0xFF009688), // Teal for page 4
+    Color(0xFF4CAF50), // Green for page 5
+  ];
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header
+            Container(
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFF2196F3), Color(0xFF03A9F4)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Icon(Icons.arrow_back, color: Colors.white),
+                  ),
+                  Text(
+                    'Panduan Singkat',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () => Navigator.pop(context),
+                    child: Icon(Icons.close, color: Colors.white),
+                  ),
+                ],
+              ),
+            ),
+
+            // Page content
+            Expanded(
+              child: PageView(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+                children: [
+                  _buildPage1(),
+                  _buildPage2(),
+                  _buildPage3(),
+                  _buildPage4(),
+                  _buildPage5(),
+                ],
+              ),
+            ),
+
+            // Bottom navigation
+            Container(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  // Page indicator
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(5, (index) {
+                      return AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        width: _currentPage == index ? 20 : 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: _currentPage == index ? _pageColors[_currentPage] : Colors.grey[300],
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      );
+                    }),
+                  ),
+
+                  const SizedBox(height: 20),
+
+                  // Navigation buttons
+                  if (_currentPage < 4)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (_currentPage > 0)
+                          TextButton(
+                            onPressed: () {
+                              _pageController.previousPage(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                              );
+                            },
+                            child: Text(
+                              'Sebelumnya',
+                              style: TextStyle(color: _pageColors[_currentPage]),
+                            ),
+                          )
+                        else
+                          const SizedBox(width: 80),
+
+                        Text(
+                          '${_currentPage + 1} dari 5',
+                          style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                        ),
+
+                        ElevatedButton(
+                          onPressed: () {
+                            _pageController.nextPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: _pageColors[_currentPage],
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                          child: const Text('Selanjutnya'),
+                        ),
+                      ],
+                    )
+                  else
+                    // Last page buttons
+                    Column(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (context) => RumahSakitMemberPage()),
+                            );
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF4CAF50),
+                            foregroundColor: Colors.white,
+                            minimumSize: const Size(double.infinity, 50),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                          ),
+                          child: const Text('Temukan Rumah Sakit Terdekat'),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPage1() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            // Illustration - reduced size
+            Container(
+              height: 220, // Reduced from 300 to 220
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12), // Reduced padding
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(
+                    'assets/images/memberpanduan1.png',
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xFFE3F2FD),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.phone_android,
+                                size: 50, // Reduced size
+                                color: Color(0xFF2196F3),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Gambar tidak tersedia',
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12, // Reduced font size
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16), // Reduced spacing
+            // Title
+            Text(
+              'Panduan Siagat',
+              style: TextStyle(
+                fontSize: 20, // Reduced font size
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF2196F3),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16), // Reduced spacing
+            // Description
+            Text(
+              'Selamat Datang! Ikuti langkah ini agar pengalaman kamu lebih mudah.',
+              style: TextStyle(
+                fontSize: 14, // Reduced font size
+                color: Colors.grey[600],
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16), // Reduced spacing
+            // Steps
+            Container(
+              padding: const EdgeInsets.all(12), // Reduced padding
+              decoration: BoxDecoration(
+                color: Color(0xFFE3F2FD),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Langkah-langkah:',
+                    style: TextStyle(
+                      fontSize: 14, // Reduced font size
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2196F3),
+                    ),
+                  ),
+                  const SizedBox(height: 8), // Reduced spacing
+                  _buildStepItem('1. Pilih Rumah Sakit Terdekat'),
+                  _buildStepItem('2. Aktifkan lokasi pada ponsel Anda'),
+                  _buildStepItem('3. Klik tombol pilih rumah sakit'),
+                  _buildStepItem('4. Pilih rumah sakit yang diinginkan'),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPage2() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            // Illustration - reduced size
+            Container(
+              height: 220, // Reduced from 300 to 220
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12), // Reduced padding
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(
+                    'assets/images/memberpanduan2.png',
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xFFE1F5FE),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.map,
+                                size: 50, // Reduced size
+                                color: Color(0xFF03A9F4),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Gambar tidak tersedia',
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12, // Reduced font size
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16), // Reduced spacing
+            // Title
+            Text(
+              'Lihat Status & Informasi',
+              style: TextStyle(
+                fontSize: 20, // Reduced font size
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF03A9F4),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16), // Reduced spacing
+            // Description
+            Text(
+              'Dapatkan informasi terkini tentang status layanan rumah sakit.',
+              style: TextStyle(
+                fontSize: 14, // Reduced font size
+                color: Colors.grey[600],
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16), // Reduced spacing
+            // Features
+            Container(
+              padding: const EdgeInsets.all(12), // Reduced padding
+              decoration: BoxDecoration(
+                color: Color(0xFFE1F5FE),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Fitur yang tersedia:',
+                    style: TextStyle(
+                      fontSize: 14, // Reduced font size
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF03A9F4),
+                    ),
+                  ),
+                  const SizedBox(height: 8), // Reduced spacing
+                  _buildFeatureItem(Icons.access_time, 'Status Real-time'),
+                  _buildFeatureItem(Icons.local_hospital, 'Informasi Layanan'),
+                  _buildFeatureItem(Icons.event_available, 'Jadwal Dokter'),
+                  _buildFeatureItem(Icons.phone, 'Kontak Rumah Sakit'),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPage3() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            // Illustration - reduced size
+            Container(
+              height: 220, // Reduced from 300 to 220
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12), // Reduced padding
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(
+                    'assets/images/memberpanduan3.png',
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xFFE0F7FA),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.medical_services,
+                                size: 50, // Reduced size
+                                color: Color(0xFF00BCD4),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Gambar tidak tersedia',
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12, // Reduced font size
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16), // Reduced spacing
+            // Title
+            Text(
+              'Daftar Periksa',
+              style: TextStyle(
+                fontSize: 20, // Reduced font size
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF00BCD4),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16), // Reduced spacing
+            // Description
+            Text(
+              'Daftar untuk pemeriksaan medis dengan mudah melalui aplikasi.',
+              style: TextStyle(
+                fontSize: 14, // Reduced font size
+                color: Colors.grey[600],
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16), // Reduced spacing
+            // Services
+            Container(
+              padding: const EdgeInsets.all(12), // Reduced padding
+              decoration: BoxDecoration(
+                color: Color(0xFFE0F7FA),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Layanan yang tersedia:',
+                    style: TextStyle(
+                      fontSize: 14, // Reduced font size
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF00BCD4),
+                    ),
+                  ),
+                  const SizedBox(height: 8), // Reduced spacing
+                  _buildServiceItem('Daftar Rawat Jalan langsung dari aplikasi'),
+                  _buildServiceItem('Antri IGD jika darurat'),
+                  _buildServiceItem('MCU sesuai jadwal'),
+                  _buildServiceItem('Rujukan bila perlu pemeriksaan lanjutan'),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPage4() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            // Illustration - reduced size
+            Container(
+              height: 220, // Reduced from 300 to 220
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12), // Reduced padding
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(
+                    'assets/images/memberpanduan4.png',
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xFFE0F2F1),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.apps,
+                                size: 50, // Reduced size
+                                color: Color(0xFF009688),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Gambar tidak tersedia',
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12, // Reduced font size
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16), // Reduced spacing
+            // Title
+            Text(
+              'Fitur Tambahan',
+              style: TextStyle(
+                fontSize: 20, // Reduced font size
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF009688),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16), // Reduced spacing
+            // Description
+            Text(
+              'Nikmati fitur tambahan untuk memudahkan pengalaman Anda.',
+              style: TextStyle(
+                fontSize: 14, // Reduced font size
+                color: Colors.grey[600],
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16), // Reduced spacing
+            // Additional Features
+            Container(
+              padding: const EdgeInsets.all(12), // Reduced padding
+              decoration: BoxDecoration(
+                color: Color(0xFFE0F2F1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Fitur Tambahan:',
+                    style: TextStyle(
+                      fontSize: 14, // Reduced font size
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF009688),
+                    ),
+                  ),
+                  const SizedBox(height: 8), // Reduced spacing
+                  _buildAdditionalFeatureItem(
+                    Icons.bloodtype,
+                    'Cek Stok Darah',
+                    'Sebelum donor atau cari golongan tertentu.',
+                  ),
+                  _buildAdditionalFeatureItem(
+                    Icons.bed,
+                    'Cek Ketersediaan Bed',
+                    'Tahu kamar kosong.',
+                  ),
+                  _buildAdditionalFeatureItem(
+                    Icons.local_offer,
+                    'Promo & Edukasi',
+                    'Artikel kesehatan & promo rumah sakit.',
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPage5() {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: [
+            // Illustration - reduced size
+            Container(
+              height: 220, // Reduced from 300 to 220
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(12), // Reduced padding
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(16),
+                  child: Image.asset(
+                    'assets/images/memberpanduan5.png',
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: Color(0xFFE8F5E9),
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.lightbulb,
+                                size: 50, // Reduced size
+                                color: Color(0xFF4CAF50),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Gambar tidak tersedia',
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12, // Reduced font size
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16), // Reduced spacing
+            // Title
+            Text(
+              'Tips Penting',
+              style: TextStyle(
+                fontSize: 20, // Reduced font size
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF4CAF50),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16), // Reduced spacing
+            // Description
+            Text(
+              'Tips penting untuk pengalaman terbaik menggunakan aplikasi.',
+              style: TextStyle(
+                fontSize: 14, // Reduced font size
+                color: Colors.grey[600],
+                height: 1.4,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16), // Reduced spacing
+            // Tips
+            Container(
+              padding: const EdgeInsets.all(12), // Reduced padding
+              decoration: BoxDecoration(
+                color: Color(0xFFE8F5E9),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Tips Penting:',
+                    style: TextStyle(
+                      fontSize: 14, // Reduced font size
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4CAF50),
+                    ),
+                  ),
+                  const SizedBox(height: 8), // Reduced spacing
+                  _buildTipItem('Aktifkan lokasi untuk mendapatkan data yang akurat'),
+                  _buildTipItem('Ubah kota jika Anda pindah kota'),
+                  _buildTipItem('Lihat FAQ jika ada kendala'),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Kesehatan adalah investasi jangka panjang',
+                    style: TextStyle(
+                      fontSize: 12, // Reduced font size
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4CAF50),
+                      fontStyle: FontStyle.italic,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16), // Reduced spacing
+            // Progress indicator
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  '5 dari 5',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Helper widgets
+  Widget _buildStepItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3), // Reduced padding
+      child: Row(
+        children: [
+          Icon(
+            Icons.check_circle,
+            color: Color(0xFF2196F3),
+            size: 14, // Reduced size
+          ),
+          const SizedBox(width: 6), // Reduced spacing
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 12, // Reduced font size
+                color: Colors.grey[700],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFeatureItem(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3), // Reduced padding
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            color: Color(0xFF03A9F4),
+            size: 14, // Reduced size
+          ),
+          const SizedBox(width: 6), // Reduced spacing
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 12, // Reduced font size
+                color: Colors.grey[700],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildServiceItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3), // Reduced padding
+      child: Row(
+        children: [
+          Icon(
+            Icons.medical_services,
+            color: Color(0xFF00BCD4),
+            size: 14, // Reduced size
+          ),
+          const SizedBox(width: 6), // Reduced spacing
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 12, // Reduced font size
+                color: Colors.grey[700],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAdditionalFeatureItem(IconData icon, String title, String description) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4), // Reduced padding
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                icon,
+                color: Color(0xFF009688),
+                size: 14, // Reduced size
+              ),
+              const SizedBox(width: 6), // Reduced spacing
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 12, // Reduced font size
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[800],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 3), // Reduced spacing
+          Padding(
+            padding: const EdgeInsets.only(left: 20), // Reduced padding
+            child: Text(
+              description,
+              style: TextStyle(
+                fontSize: 11, // Reduced font size
+                color: Colors.grey[600],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTipItem(String text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 3), // Reduced padding
+      child: Row(
+        children: [
+          Icon(
+            Icons.lightbulb,
+            color: Color(0xFF4CAF50),
+            size: 14, // Reduced size
+          ),
+          const SizedBox(width: 6), // Reduced spacing
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(
+                fontSize: 12, // Reduced font size
+                color: Colors.grey[700],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Widget FAQ
+class FAQWidget extends StatelessWidget {
+  const FAQWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Header
+              Container(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: const Icon(Icons.arrow_back, color: Color(0xFFFF6B35)),
+                    ),
+                    const Text(
+                      'FAQ',
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(width: 40),
+                  ],
+                ),
+              ),
+              // FAQ Items
+              _buildFAQItem(
+                question: 'Apa itu aplikasi Digital Hospital?',
+                answer:
+                    'Aplikasi Digital Hospital adalah platform yang memudahkan Anda mencari rumah sakit, mendaftar berobat secara online, melihat layanan, dan memantau antrian dari mana saja.',
+              ),
+              _buildFAQItem(
+                question: 'Bagaimana cara mendaftar akun?',
+                answer:
+                    'Anda dapat mendaftar dengan mengisi formulir registrasi di aplikasi dan memverifikasi email/nomor telepon Anda. Ikuti panduan "Cara Mendaftar" di beranda aplikasi.',
+              ),
+              _buildFAQItem(
+                question: 'Apakah layanan ini gratis?',
+                answer:
+                    'Menggunakan aplikasi untuk mencari rumah sakit dan informasi kesehatan adalah gratis. Namun, biaya konsultasi dan layanan medis akan sesuai dengan tarif yang berlaku di rumah sakit.',
+              ),
+              _buildFAQItem(
+                question: 'Apakah saya bisa mendaftar untuk orang lain?',
+                answer:
+                    'Ya, Anda dapat mendaftarkan anggota keluarga atau orang lain dengan menggunakan data diri mereka saat membuat janji temu.',
+              ),
+              _buildFAQItem(
+                question: 'Bagaimana cara melihat nomor antrian?',
+                answer:
+                    'Setelah membuat janji temu, nomor antrian digital Anda akan muncul di bagian "Jadwal Saya" di aplikasi. Status antrian akan diperbarui secara real-time.',
+              ),
+              _buildFAQItem(
+                question: 'Bagaimana jika saya terlambat?',
+                answer:
+                    'Jika Anda terlambat, harap hubungi customer service atau pihak rumah sakit terkait. Terkadang, janji temu mungkin perlu dijadwal ulang.',
+              ),
+              _buildFAQItem(
+                question: 'Bagaimana cara menghubungi CS?',
+                answer:
+                    'Anda dapat menghubungi customer service kami melalui fitur chat di aplikasi, email di support@inocare.id, atau telepon di 1500-123.',
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFAQItem({required String question, required String answer}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            question,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFFF6B35),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            answer,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[600],
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
