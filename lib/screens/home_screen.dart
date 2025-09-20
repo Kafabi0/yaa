@@ -1377,7 +1377,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                   ),
                   child: ClipOval(
                     child: Image.asset(
-                      'assets/images/panduan4.png',
+                      'assets/images/panduan44.png',
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
@@ -1446,7 +1446,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Illustration - Using asset image like other pages
+          // Icon Container
           Container(
             height: 300,
             width: double.infinity,
@@ -1462,42 +1462,25 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                 ),
               ],
             ),
-            child: Padding(
-              padding: EdgeInsets.all(20),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.asset(
-                  'assets/images/panduan5.png',
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Container(
-                      decoration: BoxDecoration(
-                        color: Color(0xFFF5F5F5),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.check,
-                              size: 60,
-                              color: Color(0xFFFF6B35),
-                            ),
-                            SizedBox(height: 10),
-                            Text(
-                              'Gambar tidak tersedia',
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 14,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.check_circle,
+                    size: 100,
+                    color: Color(0xFFFF6B35),
+                  ),
+                  SizedBox(height: 20),
+                  Text(
+                    'Siap Digunakan!',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
