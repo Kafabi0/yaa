@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:inocare/screens/rumahsakitmember.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:inocare/screens/rumahsakitmember.dart';
+import 'package:inocare/services/user_prefs.dart';
+import 'settings_screen.dart';
 
 class HomePageMember extends StatefulWidget {
-  final String? userName;
-  final VoidCallback? onHospitalSelected; // ✅ tambahan
+  final VoidCallback? onHospitalSelected;
 
-  const HomePageMember({Key? key, this.userName, this.onHospitalSelected})
-    : super(key: key);
+  const HomePageMember({Key? key, this.onHospitalSelected}) : super(key: key);
 
   @override
   State<HomePageMember> createState() => _HomePageMemberState();
@@ -20,36 +19,78 @@ class _HomePageMemberState extends State<HomePageMember> {
   final PageController _promoPageController = PageController();
   int _currentPromoIndex = 0;
   int _currentIndex = 0;
+  String? _userName;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData(); // ✅ ambil nama user dari prefs
+  }
+
+  Future<void> _loadUserData() async {
+    final user = await UserPrefs.getUser();
+    if (mounted && user != null) {
+      setState(() {
+        _userName = user['name'];
+      });
+    }
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
-    _promoPageController.dispose(); // ✅ Tambahan, penting untuk PageController
+    _promoPageController.dispose();
     super.dispose();
+  }
+
+  Future<void> _handleLogout() async {
+    await UserPrefs.clearUser();
+    setState(() {
+      _currentIndex = 0;
+      _userName = null;
+    });
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Logout berhasil')),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      _buildHomePage(), // index 0: home
+      _buildOtherPages(), // index 1: jadwal
+      _buildOtherPages(), // index 2: heart/favorite
+      _buildOtherPages(), // index 3: chat
+    ];
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              _buildSearchSection(),
-              _buildNearestHospitalSection(),
-              _buildQuickAccessSection(),
-              _buildTodaySection(),
-              _buildPromoSection(),
-              _buildHealthArticlesSection(),
-              SizedBox(height: 100), // Memberi ruang untuk navbar
-            ],
-          ),
-        ),
+        child: _currentIndex == 0 ? pages[0] : pages[_currentIndex],
       ),
       bottomNavigationBar: _buildBottomNavigation(),
+    );
+  }
+
+  // ================= HALAMAN HOME =================
+  Widget _buildHomePage() {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(),
+          _buildSearchSection(),
+          _buildNearestHospitalSection(),
+          _buildQuickAccessSection(),
+          _buildTodaySection(),
+          _buildPromoSection(),
+          _buildHealthArticlesSection(),
+          const SizedBox(height: 100),
+        ],
+      ),
     );
   }
 
@@ -74,7 +115,7 @@ class _HomePageMemberState extends State<HomePageMember> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Halo, ${widget.userName ?? "Member"} 👋',
+                'Halo, ${_userName ?? "Member"} 👋',
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 22,
@@ -99,6 +140,61 @@ class _HomePageMemberState extends State<HomePageMember> {
     );
   }
 
+  // ================= NAVBAR =================
+  Widget _buildBottomNavigation() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return CurvedNavigationBar(
+      index: _currentIndex,
+      onTap: (index) {
+        if (index == 4) {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => SettingsScreen(onLogout: _handleLogout),
+            ),
+          );
+        } else {
+          setState(() {
+            _currentIndex = index;
+          });
+        }
+      },
+      color: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
+      backgroundColor: Colors.transparent,
+      buttonBackgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
+      height: 60,
+      animationCurve: Curves.easeInOut,
+      animationDuration: const Duration(milliseconds: 300),
+      items: const [
+        Icon(FontAwesomeIcons.house, color: Colors.white, size: 24),
+        Icon(FontAwesomeIcons.calendarDay, color: Colors.white, size: 24),
+        Icon(FontAwesomeIcons.solidHeart, color: Colors.white, size: 24),
+        Icon(FontAwesomeIcons.solidCommentDots, color: Colors.white, size: 24),
+        Icon(FontAwesomeIcons.user, color: Colors.white, size: 24),
+      ],
+    );
+  }
+
+  // ================= PLACEHOLDER HALAMAN LAIN =================
+  Widget _buildOtherPages() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.construction, size: 80, color: Colors.grey[400]),
+          const SizedBox(height: 16),
+          Text(
+            'Halaman dalam pengembangan',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
   Widget _buildSearchSection() {
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -773,50 +869,67 @@ class _HomePageMemberState extends State<HomePageMember> {
       ),
     );
   }
+// Future<void> _handleLogout() async {
+//     await UserPrefs.clearUser();
+//     setState(() {
+//       _currentIndex = 0;
+//     });
 
-  Widget _buildBottomNavigation() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+//     if (mounted) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         const SnackBar(content: Text('Logout berhasil')),
+//       );
+//     }
+//   }
+//   Widget _buildBottomNavigation() {
+//     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return CurvedNavigationBar(
-      index: _currentIndex,
-      onTap: (index) {
-        setState(() {
-          _currentIndex = index;
-        });
-      },
-      color: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
-      backgroundColor: Colors.transparent,
-      buttonBackgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
-      height: 60,
-      animationCurve: Curves.easeInOut,
-      animationDuration: const Duration(milliseconds: 300),
-      items: [
-        Icon(FontAwesomeIcons.house, color: Colors.white, size: 24),
-        Icon(FontAwesomeIcons.calendarDay, color: Colors.white, size: 24),
-        Icon(FontAwesomeIcons.solidHeart, color: Colors.white, size: 24),
-        Icon(FontAwesomeIcons.solidCommentDots, color: Colors.white, size: 24),
-        Icon(FontAwesomeIcons.user, color: Colors.white, size: 24),
-      ],
-    );
-  }
+//     return CurvedNavigationBar(
+//       index: _currentIndex,
+//       onTap: (index) {
+//         setState(() {
+//           _currentIndex = index;
+//         });
+//         if (index == 4) {
+//           // Index ke-4 adalah ikon user
+//           Navigator.of(
+//             context,
+//           ).push(MaterialPageRoute(builder: (context) => SettingsScreen(onLogout: _handleLogout),));
+//         }
+//       },
+//       color: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
+//       backgroundColor: Colors.transparent,
+//       buttonBackgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
+//       height: 60,
+//       animationCurve: Curves.easeInOut,
+//       animationDuration: const Duration(milliseconds: 300),
+//       items: [
+//         Icon(FontAwesomeIcons.house, color: Colors.white, size: 24),
+//         Icon(FontAwesomeIcons.calendarDay, color: Colors.white, size: 24),
+//         Icon(FontAwesomeIcons.solidHeart, color: Colors.white, size: 24),
+//         Icon(FontAwesomeIcons.solidCommentDots, color: Colors.white, size: 24),
+//         Icon(FontAwesomeIcons.user, color: Colors.white, size: 24),
+//       ],
+//     );
+//   }
 
-  Widget _buildOtherPages() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.construction, size: 80, color: Colors.grey[400]),
-          SizedBox(height: 16),
-          Text(
-            'Halaman dalam pengembangan',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+//   Widget _buildOtherPages() {
+//     return Center(
+//       child: Column(
+//         mainAxisAlignment: MainAxisAlignment.center,
+//         children: [
+//           Icon(Icons.construction, size: 80, color: Colors.grey[400]),
+//           SizedBox(height: 16),
+//           Text(
+//             'Halaman dalam pengembangan',
+//             style: TextStyle(
+//               fontSize: 16,
+//               color: Colors.grey[600],
+//               fontWeight: FontWeight.w500,
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
 }

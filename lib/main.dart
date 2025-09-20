@@ -155,26 +155,34 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
+  Widget _getBody() {
+    switch (_currentIndex) {
+      case 0:
+        return HealthAppHomePage(
+          onLoginSuccess: () {
+            _checkLoginStatus();
+            setState(() {
+              _currentIndex = 0;
+            });
+          },
+        );
+      case 1:
+        return const HealthRecordsScreen();
+      case 2:
+        return const NotificationsScreen();
+      case 3:
+        return SettingsScreen(onLogout: _handleLogout);
+      case 4:
+        return const DoctorListScreen();
+      default:
+        return const Center(child: Text("Halaman tidak ditemukan"));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final pages = [
-      HealthAppHomePage(onLoginSuccess: () {
-        _checkLoginStatus();
-        setState(() {
-          _currentIndex = 0;
-        });
-      }),
-      const HealthRecordsScreen(),
-      const NotificationsScreen(),
-      SettingsScreen(onLogout: _handleLogout),
-      const DoctorListScreen(),
-    ];
-
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex.clamp(0, pages.length - 1),
-        children: pages,
-      ),
+      body: _getBody(), // ✅ langsung tampilkan halaman sesuai index
       bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onTabTapped,

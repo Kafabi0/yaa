@@ -14,16 +14,13 @@ class SettingsScreen extends StatelessWidget {
   });
 
   Future<void> _logout(BuildContext context) async {
-    await UserPrefs.clearUser();
-    onLogout(); // Panggil fungsi yang disuntikkan dari MainPage
-    
-    // Navigasi ke halaman login dan hapus semua rute sebelumnya
-    Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const HealthAppHomePage()),
-      (route) => false,
-    );
-  }
+  await UserPrefs.clearUser();
+  onLogout(); // update state di MainPage
+
+  // Balik ke MainPage (root Scaffold), otomatis index = 0 → HomeScreen
+  Navigator.popUntil(context, (route) => route.isFirst);
+}
+
 
   @override
   Widget build(BuildContext context) {
