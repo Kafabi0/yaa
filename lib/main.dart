@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:inocare/screens/home_page_member.dart';
 import 'package:inocare/screens/home_screen.dart';
-import 'screens/home_screen_public.dart';
 import 'screens/health_records_screen.dart';
 import 'screens/notifications_screen.dart';
 import 'screens/settings_screen.dart';
@@ -32,8 +30,6 @@ Future<void> initializeNotifications() async {
     onDidReceiveNotificationResponse: (NotificationResponse response) async {},
   );
 }
-
-enum HomeState { public, member, hospital }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -124,78 +120,33 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _currentIndex = 0;
-  HomeState _homeState = HomeState.public;
-  bool _loading = true;
-  String? _userName;
-
-  Key _bottomNavKey = UniqueKey();
+  bool _isLoggedIn = false;
 
   @override
   void initState() {
     super.initState();
-    _checkUserStatus();
+    _checkLoginStatus();
   }
 
-  Future<void> _checkUserStatus() async {
-    final user = await UserPrefs.getUser();
-    if (user == null) {
-      setState(() {
-        _homeState = HomeState.public;
-        _loading = false;
-        _userName = null;
-      });
-    } else {
-      if (await UserPrefs.getHospital() == null) {
-        setState(() {
-          _homeState = HomeState.member;
-          _userName = user['name']; // Perbaikan ada di sini
-          _loading = false;
-        });
-      } else {
-        setState(() {
-          _homeState = HomeState.hospital;
-          _loading = false;
-        });
-      }
-    }
+  Future<void> _checkLoginStatus() async {
+    final isLoggedIn = await UserPrefs.isLoggedIn();
+    setState(() {
+      _isLoggedIn = isLoggedIn;
+    });
   }
 
   Future<void> _handleLogout() async {
     await UserPrefs.clearUser();
     setState(() {
-      _homeState = HomeState.public;
+      _isLoggedIn = false;
       _currentIndex = 0;
-      _bottomNavKey = UniqueKey();
     });
 
     if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Logout berhasil')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Logout berhasil')),
+      );
     }
-  }
-
-  Future<void> _handleLoginSuccess() async {
-    await _checkUserStatus();
-    setState(() {
-      _currentIndex = 0;
-      _bottomNavKey = UniqueKey();
-    });
-
-    if (mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Login berhasil')));
-    }
-  }
-
-  Future<void> _handleHospitalSelected() async {
-    await UserPrefs.setHospital("RS Contoh");
-    await _checkUserStatus();
-    setState(() {
-      _currentIndex = 0;
-      _bottomNavKey = UniqueKey();
-    });
   }
 
   void _onTabTapped(int index) {
@@ -204,28 +155,15 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
-  Widget _buildHomeRoot() {
-    switch (_homeState) {
-      case HomeState.public:
-        return HealthAppHomePage(onLoginSuccess: _handleLoginSuccess);
-      case HomeState.member:
-        return HomePageMember(
-          onHospitalSelected: _handleHospitalSelected,
-          userName: _userName,
-        );
-      case HomeState.hospital:
-        return const HomePageHospital();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (_loading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
     final pages = [
-      _buildHomeRoot(),
+      HealthAppHomePage(onLoginSuccess: () {
+        _checkLoginStatus();
+        setState(() {
+          _currentIndex = 0;
+        });
+      }),
       const HealthRecordsScreen(),
       const NotificationsScreen(),
       SettingsScreen(onLogout: _handleLogout),
@@ -237,27 +175,10 @@ class _MainPageState extends State<MainPage> {
         index: _currentIndex.clamp(0, pages.length - 1),
         children: pages,
       ),
-      bottomNavigationBar: CustomBottomNavigationBar( // <-- Gunakan widget yang sudah ada
-        key: _bottomNavKey,
+      bottomNavigationBar: CustomBottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
-        isLoggedIn: _homeState != HomeState.public, // <-- Perbaiki logika di sini
-      ),
-    );
-  }
-}
-
-class HomePageHospital extends StatelessWidget {
-  const HomePageHospital({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(
-        child: Text(
-          "Welcome to Hospital Home",
-          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-        ),
+        isLoggedIn: _isLoggedIn,
       ),
     );
   }
