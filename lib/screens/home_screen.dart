@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inocare/screens/rumahsakitpublic.dart';
 
 class HealthAppHomePage extends StatefulWidget {
   const HealthAppHomePage({Key? key}) : super(key: key);
@@ -69,7 +70,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
       padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFFFF6B35), Color(0xFFFF8A50)],
+          colors: [Color.fromARGB(255, 249, 71, 6), Color.fromARGB(255, 253, 89, 7)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -167,14 +168,15 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
                 ),
               ),
               TextButton(
-                onPressed: () {},
-                child: Text(
-                  'Lihat Semua',
-                  style: TextStyle(
-                    color: Color(0xFFFF6B35),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RumahSakitPublicPage(),
+                    ),
+                  );
+                },
+                child: Text('Lihat Semua'),
               ),
             ],
           ),
@@ -429,7 +431,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
                       Icon(Icons.location_on, color: Colors.red, size: 16),
                       const SizedBox(width: 4),
                       Text(
-                        'Bandar Lampung',
+                        '                    ',
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 12,
@@ -680,7 +682,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
     required List<Color> gradient,
   }) {
     return Container(
-      height: 180,
+      height: 200,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
