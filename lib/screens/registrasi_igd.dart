@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'jadwaloperasi.dart';
 
 class RegistrasiIGDPage extends StatefulWidget {
   const RegistrasiIGDPage({Key? key}) : super(key: key);
@@ -17,11 +18,14 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
   final TextEditingController _alamatController = TextEditingController();
   final TextEditingController _nohpController = TextEditingController();
   final TextEditingController _keluhanController = TextEditingController();
-  final TextEditingController _riwayatPenyakitController = TextEditingController();
-  final TextEditingController _obatDikonsumsiController = TextEditingController();
+  final TextEditingController _riwayatPenyakitController =
+      TextEditingController();
+  final TextEditingController _obatDikonsumsiController =
+      TextEditingController();
   final TextEditingController _namaKeluargaController = TextEditingController();
   final TextEditingController _nohpKeluargaController = TextEditingController();
-  final TextEditingController _hubunganKeluargaController = TextEditingController();
+  final TextEditingController _hubunganKeluargaController =
+      TextEditingController();
 
   String? _selectedGender;
   String? _selectedTriase;
@@ -36,7 +40,7 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
     'Merah (Emergensi) - Butuh penanganan segera',
     'Kuning (Urgensi) - Dapat ditunda 30 menit',
     'Hijau (Semi Urgensi) - Dapat ditunda 2 jam',
-    'Biru (Non Urgensi) - Tidak darurat'
+    'Biru (Non Urgensi) - Tidak darurat',
   ];
   final List<String> _caraDatangOptions = [
     'Jalan Kaki',
@@ -44,20 +48,20 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
     'Ambulans',
     'Diantar Keluarga',
     'Dirujuk dari Puskesmas',
-    'Dirujuk dari RS Lain'
+    'Dirujuk dari RS Lain',
   ];
   final List<String> _jenisAsuransiOptions = [
     'BPJS Kesehatan',
     'Asuransi Swasta',
     'Umum/Tunai',
     'Jamkesmas',
-    'Perusahaan'
+    'Perusahaan',
   ];
   final List<String> _kesadaranOptions = [
     'Sadar Penuh',
     'Mengantuk',
     'Bingung',
-    'Tidak Sadar'
+    'Tidak Sadar',
   ];
 
   bool _isLoading = false;
@@ -65,7 +69,7 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
   Future<void> _simpanData() async {
     final prefs = await SharedPreferences.getInstance();
     String nomor = "IGD${DateTime.now().millisecondsSinceEpoch % 10000}";
-    
+
     await prefs.setString('igdName', _namaController.text.trim());
     await prefs.setString('igdNIK', _nikController.text.trim());
     await prefs.setString('igdUmur', _umurController.text.trim());
@@ -77,15 +81,33 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
     await prefs.setString('igdCaraDatang', _selectedCaraDatang ?? '');
     await prefs.setString('igdAsuransi', _selectedJenisAsuransi ?? '');
     await prefs.setString('igdKesadaran', _selectedKesadaran ?? '');
-    await prefs.setString('igdRiwayatPenyakit', _riwayatPenyakitController.text.trim());
-    await prefs.setString('igdObatDikonsumsi', _obatDikonsumsiController.text.trim());
+    await prefs.setString(
+      'igdRiwayatPenyakit',
+      _riwayatPenyakitController.text.trim(),
+    );
+    await prefs.setString(
+      'igdObatDikonsumsi',
+      _obatDikonsumsiController.text.trim(),
+    );
     await prefs.setBool('igdRiwayatAlergi', _riwayatAlergi);
     await prefs.setString('igdJenisAlergi', _jenisAlergi ?? '');
-    await prefs.setString('igdNamaKeluarga', _namaKeluargaController.text.trim());
-    await prefs.setString('igdNoHPKeluarga', _nohpKeluargaController.text.trim());
-    await prefs.setString('igdHubunganKeluarga', _hubunganKeluargaController.text.trim());
+    await prefs.setString(
+      'igdNamaKeluarga',
+      _namaKeluargaController.text.trim(),
+    );
+    await prefs.setString(
+      'igdNoHPKeluarga',
+      _nohpKeluargaController.text.trim(),
+    );
+    await prefs.setString(
+      'igdHubunganKeluarga',
+      _hubunganKeluargaController.text.trim(),
+    );
     await prefs.setString('nomorAntrian_IGD', nomor);
-    await prefs.setString('igdWaktuRegistrasi', DateTime.now().toIso8601String());
+    await prefs.setString(
+      'igdWaktuRegistrasi',
+      DateTime.now().toIso8601String(),
+    );
   }
 
   void _submit() async {
@@ -99,9 +121,16 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
 
     try {
       await _simpanData();
-      
+
       if (mounted) {
         String triaseLevel = _getTriaseLevel(_selectedTriase);
+        String nomorAntrian =
+            "IGD${DateTime.now().millisecondsSinceEpoch % 10000}";
+
+        // Generate nomor RM (Rekam Medis) dummy
+        String noRM = "RM${DateTime.now().millisecondsSinceEpoch % 100000}";
+
+        // Tampilkan snackbar sukses
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
@@ -109,15 +138,38 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
                 const Icon(Icons.local_hospital, color: Colors.white),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text("Registrasi IGD berhasil!\nNomor: IGD${DateTime.now().millisecondsSinceEpoch % 10000}\nTriase: $triaseLevel"),
+                  child: Text(
+                    "Registrasi IGD berhasil!\nNomor: $nomorAntrian\nTriase: $triaseLevel",
+                  ),
                 ),
               ],
             ),
             backgroundColor: _getTriaseColor(_selectedTriase),
-            duration: const Duration(seconds: 4),
+            duration: const Duration(seconds: 3),
           ),
         );
-        Navigator.pop(context);
+
+        // Tunda sebentar sebelum navigasi untuk memberikan waktu user melihat notifikasi
+        await Future.delayed(const Duration(seconds: 1));
+
+        // Navigasi ke halaman jadwal operasi
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder:
+                  (context) => JadwalOperasiPage(
+                    namaPasien: _namaController.text.trim(),
+                    nik: _nikController.text.trim(),
+                    umur: _umurController.text.trim(),
+                    noRM: noRM,
+                    unitPoli: "IGD (Instalasi Gawat Darurat)",
+                    dokter: _getDokterByTriase(_selectedTriase),
+                    nomorAntrian: nomorAntrian,
+                  ),
+            ),
+          );
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -135,6 +187,21 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
         });
       }
     }
+  }
+
+  String _getDokterByTriase(String? triase) {
+    if (triase == null) return "Dr. Umum, Sp.PD";
+
+    if (triase.contains('Merah')) {
+      return "Dr. Emergency, Sp.EM"; // Spesialis Emergency
+    } else if (triase.contains('Kuning')) {
+      return "Dr. Bedah, Sp.B"; // Spesialis Bedah
+    } else if (triase.contains('Hijau')) {
+      return "Dr. Penyakit Dalam, Sp.PD"; // Spesialis Penyakit Dalam
+    } else if (triase.contains('Biru')) {
+      return "Dr. Umum, Sp.PD"; // Dokter Umum
+    }
+    return "Dr. Umum, Sp.PD";
   }
 
   String _getTriaseLevel(String? triase) {
@@ -178,10 +245,7 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
             ),
             children: [
               if (isRequired)
-                const TextSpan(
-                  text: ' *',
-                  style: TextStyle(color: Colors.red),
-                ),
+                const TextSpan(text: ' *', style: TextStyle(color: Colors.red)),
             ],
           ),
         ),
@@ -191,12 +255,16 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
           maxLines: maxLines,
-          validator: validator ?? (isRequired ? (value) {
-            if (value == null || value.trim().isEmpty) {
-              return "$label harus diisi";
-            }
-            return null;
-          } : null),
+          validator:
+              validator ??
+              (isRequired
+                  ? (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return "$label harus diisi";
+                    }
+                    return null;
+                  }
+                  : null),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(color: Colors.grey[400]),
@@ -218,7 +286,10 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
             ),
             filled: true,
             fillColor: Colors.grey[50],
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -248,10 +319,7 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
             ),
             children: [
               if (isRequired)
-                const TextSpan(
-                  text: ' *',
-                  style: TextStyle(color: Colors.red),
-                ),
+                const TextSpan(text: ' *', style: TextStyle(color: Colors.red)),
             ],
           ),
         ),
@@ -259,12 +327,16 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
         DropdownButtonFormField<String>(
           value: value,
           onChanged: onChanged,
-          validator: validator ?? (isRequired ? (value) {
-            if (value == null || value.isEmpty) {
-              return "$label harus dipilih";
-            }
-            return null;
-          } : null),
+          validator:
+              validator ??
+              (isRequired
+                  ? (value) {
+                    if (value == null || value.isEmpty) {
+                      return "$label harus dipilih";
+                    }
+                    return null;
+                  }
+                  : null),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(color: Colors.grey[400]),
@@ -286,23 +358,33 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
             ),
             filled: true,
             fillColor: Colors.grey[50],
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
           ),
-          items: items.map((String item) {
-            return DropdownMenuItem<String>(
-              value: item,
-              child: Text(
-                item,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: item.contains('Merah') ? Colors.red :
-                         item.contains('Kuning') ? Colors.orange :
-                         item.contains('Hijau') ? Colors.green :
-                         item.contains('Biru') ? Colors.blue : Colors.black,
-                ),
-              ),
-            );
-          }).toList(),
+          items:
+              items.map((String item) {
+                return DropdownMenuItem<String>(
+                  value: item,
+                  child: Text(
+                    item,
+                    style: TextStyle(
+                      fontSize: 13,
+                      color:
+                          item.contains('Merah')
+                              ? Colors.red
+                              : item.contains('Kuning')
+                              ? Colors.orange
+                              : item.contains('Hijau')
+                              ? Colors.green
+                              : item.contains('Biru')
+                              ? Colors.blue
+                              : Colors.black,
+                    ),
+                  ),
+                );
+              }).toList(),
         ),
         const SizedBox(height: 16),
       ],
@@ -355,7 +437,10 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
               children: [
                 Icon(Icons.emergency, color: Colors.white, size: 16),
                 SizedBox(width: 4),
-                Text("DARURAT", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                Text(
+                  "DARURAT",
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
               ],
             ),
           ),
@@ -438,7 +523,8 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
                       hint: "Pilih jenis kelamin",
                       value: _selectedGender,
                       items: _genderOptions,
-                      onChanged: (value) => setState(() => _selectedGender = value),
+                      onChanged:
+                          (value) => setState(() => _selectedGender = value),
                     ),
                   ),
                 ],
@@ -478,7 +564,8 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
                 hint: "Pilih tingkat kesadaran pasien",
                 value: _selectedKesadaran,
                 items: _kesadaranOptions,
-                onChanged: (value) => setState(() => _selectedKesadaran = value),
+                onChanged:
+                    (value) => setState(() => _selectedKesadaran = value),
               ),
               _buildDropdownField(
                 label: "Level Triase (Tingkat Kegawatan)",
@@ -515,17 +602,21 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
                   children: [
                     const Text(
                       "Riwayat Alergi",
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Row(
                       children: [
                         Checkbox(
                           value: _riwayatAlergi,
-                          onChanged: (value) => setState(() {
-                            _riwayatAlergi = value ?? false;
-                            if (!_riwayatAlergi) _jenisAlergi = null;
-                          }),
+                          onChanged:
+                              (value) => setState(() {
+                                _riwayatAlergi = value ?? false;
+                                if (!_riwayatAlergi) _jenisAlergi = null;
+                              }),
                           activeColor: Colors.red,
                         ),
                         const Text("Memiliki riwayat alergi"),
@@ -540,7 +631,10 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                         ),
                       ),
                     ],
@@ -556,14 +650,16 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
                 hint: "Pilih cara kedatangan",
                 value: _selectedCaraDatang,
                 items: _caraDatangOptions,
-                onChanged: (value) => setState(() => _selectedCaraDatang = value),
+                onChanged:
+                    (value) => setState(() => _selectedCaraDatang = value),
               ),
               _buildDropdownField(
                 label: "Jenis Pembayaran",
                 hint: "Pilih jenis pembayaran",
                 value: _selectedJenisAsuransi,
                 items: _jenisAsuransiOptions,
-                onChanged: (value) => setState(() => _selectedJenisAsuransi = value),
+                onChanged:
+                    (value) => setState(() => _selectedJenisAsuransi = value),
               ),
 
               // Kontak Keluarga
@@ -586,7 +682,7 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
               ),
 
               const SizedBox(height: 24),
-              
+
               // Submit Button
               Container(
                 width: double.infinity,
@@ -615,49 +711,52 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: _isLoading
-                      ? const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  child:
+                      _isLoading
+                          ? const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 12),
-                            Text(
-                              "Memproses...",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                              SizedBox(width: 12),
+                              Text(
+                                "Memproses...",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                          ],
-                        )
-                      : const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.local_hospital, color: Colors.white),
-                            SizedBox(width: 8),
-                            Text(
-                              "DAFTAR IGD SEKARANG",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                            ],
+                          )
+                          : const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.local_hospital, color: Colors.white),
+                              SizedBox(width: 8),
+                              Text(
+                                "DAFTAR IGD SEKARANG",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Emergency Info
               Container(
                 padding: const EdgeInsets.all(16),
@@ -675,7 +774,10 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
                         const Expanded(
                           child: Text(
                             "KETERANGAN TRIASE:",
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -687,7 +789,10 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
                           children: [
                             Icon(Icons.circle, color: Colors.red, size: 12),
                             SizedBox(width: 8),
-                            Text("MERAH: Kondisi mengancam jiwa, butuh penanganan segera", style: TextStyle(fontSize: 11)),
+                            Text(
+                              "MERAH: Kondisi mengancam jiwa, butuh penanganan segera",
+                              style: TextStyle(fontSize: 11),
+                            ),
                           ],
                         ),
                         SizedBox(height: 4),
@@ -695,7 +800,10 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
                           children: [
                             Icon(Icons.circle, color: Colors.orange, size: 12),
                             SizedBox(width: 8),
-                            Text("KUNING: Urgensi tinggi, dapat ditunda maksimal 30 menit", style: TextStyle(fontSize: 11)),
+                            Text(
+                              "KUNING: Urgensi tinggi, dapat ditunda maksimal 30 menit",
+                              style: TextStyle(fontSize: 11),
+                            ),
                           ],
                         ),
                         SizedBox(height: 4),
@@ -703,7 +811,10 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
                           children: [
                             Icon(Icons.circle, color: Colors.green, size: 12),
                             SizedBox(width: 8),
-                            Text("HIJAU: Semi urgensi, dapat ditunda maksimal 2 jam", style: TextStyle(fontSize: 11)),
+                            Text(
+                              "HIJAU: Semi urgensi, dapat ditunda maksimal 2 jam",
+                              style: TextStyle(fontSize: 11),
+                            ),
                           ],
                         ),
                         SizedBox(height: 4),
@@ -711,7 +822,10 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
                           children: [
                             Icon(Icons.circle, color: Colors.blue, size: 12),
                             SizedBox(width: 8),
-                            Text("BIRU: Non urgensi, kondisi tidak darurat", style: TextStyle(fontSize: 11)),
+                            Text(
+                              "BIRU: Non urgensi, kondisi tidak darurat",
+                              style: TextStyle(fontSize: 11),
+                            ),
                           ],
                         ),
                       ],

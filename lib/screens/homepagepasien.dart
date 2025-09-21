@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:inocare/screens/billing1.dart';
+import 'package:inocare/screens/hasilforensik.dart';
+import 'package:inocare/screens/hasillab.dart';
+import 'package:inocare/screens/hasilpemeriksaan.dart';
+import 'package:inocare/screens/hasilradiologi.dart';
+import 'package:inocare/screens/hasilutdrs.dart';
+import 'package:inocare/screens/jadwaloperasi.dart';
+import 'package:inocare/screens/menumakanan.dart';
 import 'package:inocare/screens/order.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'rumahsakitmember.dart';
@@ -23,7 +31,6 @@ class HomePagePasien extends StatefulWidget {
   State<HomePagePasien> createState() => _HomePagePasienState();
 }
 
-
 class _HomePagePasienState extends State<HomePagePasien> {
   int _currentIndex = 0;
   String _patientName = 'Loading...';
@@ -32,17 +39,14 @@ class _HomePagePasienState extends State<HomePagePasien> {
   String? _antrianRajal;
   String? _antrianMCU;
   String? _antrianRanap;
-  
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
   }
- Future<void> _refreshData() async {
-    await _loadUserData();
-    setState(() {}); // Trigger rebuild
-  }
+
+
   Future<void> _loadUserData() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -68,14 +72,13 @@ class _HomePagePasienState extends State<HomePagePasien> {
       });
     }
   }
+
   void _openArticle(String url, String title) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => HybridWebView(url: url,),
-    ),
-  );
-}
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => HybridWebView(url: url)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -97,6 +100,7 @@ class _HomePagePasienState extends State<HomePagePasien> {
           _buildTodaySchedule(),
           _buildLiveQueue(),
           _buildRegistrationNumbers(),
+          _buildPatientServicesMenu(), // Tambahkan menu baru di sini
           _buildPromotion(),
           _buildHealthArticlesSection(),
           SizedBox(height: 100),
@@ -512,6 +516,315 @@ class _HomePagePasienState extends State<HomePagePasien> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildPatientServicesMenu() {
+    bool hasAnyRegistration =
+        _antrianIGD != null ||
+        _antrianRajal != null ||
+        _antrianMCU != null ||
+        _antrianRanap != null;
+
+    if (!hasAnyRegistration) {
+      return Container(); // Return empty if no registration
+    }
+
+    return Container(
+      margin: EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.medical_services, color: Color(0xFFFF6B35), size: 20),
+              SizedBox(width: 8),
+              Text(
+                'Layanan Pasien',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 16),
+
+          // Menu Grid
+          GridView.count(
+            crossAxisCount: 3,
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            childAspectRatio: 0.9,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            children: [
+              // Billing/Tagihan - Available for all
+              _buildServiceMenuItem(
+                icon: Icons.receipt_long,
+                label: 'Billing\nTagihan',
+                color: Colors.green,
+                onTap: () => _openBillingPage(),
+              ),
+
+              // Hasil Pemeriksaan - Available for all
+              _buildServiceMenuItem(
+                icon: Icons.assignment_outlined,
+                label: 'Hasil\nPemeriksaan',
+                color: Colors.blue,
+                onTap: () => _openHasilPemeriksaan(),
+              ),
+
+              // Hasil Lab - Available for IGD, Rajal, MCU, Ranap
+              if (_antrianIGD != null ||
+                  _antrianRajal != null ||
+                  _antrianMCU != null ||
+                  _antrianRanap != null)
+                _buildServiceMenuItem(
+                  icon: Icons.science_outlined,
+                  label: 'Hasil\nLab',
+                  color: Colors.purple,
+                  onTap: () => _openHasilLab(),
+                ),
+
+              // Hasil Radiologi - Available for IGD, Rajal, Ranap
+              if (_antrianIGD != null ||
+                  _antrianRajal != null ||
+                  _antrianRanap != null)
+                _buildServiceMenuItem(
+                  icon: Icons.camera_alt_outlined,
+                  label: 'Hasil\nRadiologi',
+                  color: Colors.orange,
+                  onTap: () => _openHasilRadiologi(),
+                ),
+
+              // Hasil UTDRS - Available for all
+              _buildServiceMenuItem(
+                icon: Icons.monitor_heart_outlined,
+                label: 'Hasil\nUTDRS',
+                color: Colors.red,
+                onTap: () => _openHasilUTDRS(),
+              ),
+
+              // Hasil Forensik - Available for IGD only
+              if (_antrianIGD != null)
+                _buildServiceMenuItem(
+                  icon: Icons.gavel_outlined,
+                  label: 'Hasil\nForensik',
+                  color: Colors.brown,
+                  onTap: () => _openHasilForensik(),
+                ),
+
+              // Menu Makanan - Available for Ranap only
+              if (_antrianRanap != null)
+                _buildServiceMenuItem(
+                  icon: Icons.restaurant_menu_outlined,
+                  label: 'Menu\nMakanan',
+                  color: Colors.teal,
+                  onTap: () => _openMenuMakanan(),
+                ),
+
+              // Jadwal Operasi - Available for Ranap and IGD (emergency surgery)
+              if (_antrianRanap != null || _antrianIGD != null)
+                _buildServiceMenuItem(
+                  icon: Icons.medical_services_outlined,
+                  label: 'Jadwal\nOperasi',
+                  color: Color(0xFFFF6B35),
+                  onTap: () => _openJadwalOperasi(),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildServiceMenuItem({
+    required IconData icon,
+    required String label,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.2),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, color: color, size: 24),
+            ),
+            SizedBox(height: 8),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Method handlers untuk setiap menu
+  void _openBillingPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => BillingPage(
+              patientName: _patientName,
+              registrations: {
+                if (_antrianIGD != null) 'IGD': _antrianIGD!,
+                if (_antrianRajal != null) 'RAJAL': _antrianRajal!,
+                if (_antrianMCU != null) 'MCU': _antrianMCU!,
+                if (_antrianRanap != null) 'RANAP': _antrianRanap!,
+              },
+            ),
+      ),
+    );
+  }
+
+  void _openHasilPemeriksaan() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => HasilPemeriksaanPage(
+              patientName: _patientName,
+              registrations: {
+                if (_antrianIGD != null) 'IGD': _antrianIGD!,
+                if (_antrianRajal != null) 'RAJAL': _antrianRajal!,
+                if (_antrianMCU != null) 'MCU': _antrianMCU!,
+                if (_antrianRanap != null) 'RANAP': _antrianRanap!,
+              },
+            ),
+      ),
+    );
+  }
+
+  void _openHasilLab() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => HasilLabPage(
+              patientName: _patientName,
+              registrations: {
+                if (_antrianIGD != null) 'IGD': _antrianIGD!,
+                if (_antrianRajal != null) 'RAJAL': _antrianRajal!,
+                if (_antrianMCU != null) 'MCU': _antrianMCU!,
+                if (_antrianRanap != null) 'RANAP': _antrianRanap!,
+              },
+            ),
+      ),
+    );
+  }
+
+  void _openHasilRadiologi() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => HasilRadiologiPage(
+              patientName: _patientName,
+              registrations: {
+                if (_antrianIGD != null) 'IGD': _antrianIGD!,
+                if (_antrianRajal != null) 'RAJAL': _antrianRajal!,
+                if (_antrianRanap != null) 'RANAP': _antrianRanap!,
+              },
+            ),
+      ),
+    );
+  }
+
+  void _openHasilUTDRS() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => HasilUTDRSPage(
+              patientName: _patientName,
+              registrations: {
+                if (_antrianIGD != null) 'IGD': _antrianIGD!,
+                if (_antrianRajal != null) 'RAJAL': _antrianRajal!,
+                if (_antrianMCU != null) 'MCU': _antrianMCU!,
+                if (_antrianRanap != null) 'RANAP': _antrianRanap!,
+              },
+            ),
+      ),
+    );
+  }
+
+  void _openHasilForensik() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => HasilForensikPage(
+              patientName: _patientName,
+              igdNumber: _antrianIGD!,
+            ),
+      ),
+    );
+  }
+
+  void _openMenuMakanan() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => MenuMakananPage(
+              patientName: _patientName,
+              ranapNumber: _antrianRanap!,
+            ),
+      ),
+    );
+  }
+
+  void _openJadwalOperasi() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => JadwalOperasiPage(
+              namaPasien: _patientName,
+              nik: '', // Ambil dari SharedPreferences jika perlu
+              umur: '', // Ambil dari SharedPreferences jika perlu
+              noRM: 'RM${DateTime.now().millisecondsSinceEpoch % 100000}',
+              unitPoli: _antrianRanap != null ? 'RANAP' : 'IGD',
+              dokter: 'Dr. Bedah, Sp.B',
+              nomorAntrian: _antrianRanap ?? _antrianIGD ?? '',
+            ),
       ),
     );
   }
@@ -975,7 +1288,8 @@ class _HomePagePasienState extends State<HomePagePasien> {
             date: 'Rabu, 3 September 2025',
             imagePath: 'assets/images/ginjal.jpg',
             gradient: [Color(0xFF87CEEB), Color(0xFFB0E0E6)],
-            url: 'https://www.biofarma.co.id/id/announcement/detail/5-cara-merawat-ginjal-agar-sehat-cegah-penyakit-ginjal',
+            url:
+                'https://www.biofarma.co.id/id/announcement/detail/5-cara-merawat-ginjal-agar-sehat-cegah-penyakit-ginjal',
           ),
           const SizedBox(height: 12),
           _buildArticleCard(
@@ -984,7 +1298,8 @@ class _HomePagePasienState extends State<HomePagePasien> {
             date: 'Senin, 30 Juni 2025',
             imagePath: 'assets/images/olang.jpg',
             gradient: [Color(0xFF98FB98), Color(0xFF90EE90)],
-            url: 'https://www.biofarma.co.id/id/announcement/detail/9-manfaat-kolang-kaling-yang-perlu-kamu-ketahui',
+            url:
+                'https://www.biofarma.co.id/id/announcement/detail/9-manfaat-kolang-kaling-yang-perlu-kamu-ketahui',
           ),
           const SizedBox(height: 12),
           _buildArticleCard(
@@ -993,7 +1308,8 @@ class _HomePagePasienState extends State<HomePagePasien> {
             date: 'Jumat, 12 Juni 2025',
             imagePath: 'assets/images/gerd.png',
             gradient: [Color(0xFFFFA07A), Color(0xFF7F50)],
-            url: 'https://www.biofarma.co.id/id/announcement/detail/kenali-jenis-makanan-penyebab-gerd',
+            url:
+                'https://www.biofarma.co.id/id/announcement/detail/kenali-jenis-makanan-penyebab-gerd',
           ),
         ],
       ),
@@ -1006,286 +1322,278 @@ class _HomePagePasienState extends State<HomePagePasien> {
     required String date,
     required String imagePath,
     required List<Color> gradient,
-      required String url, // 🔥 tambahkan parameter URL
-
+    required String url, // 🔥 tambahkan parameter URL
   }) {
     return GestureDetector(
-    onTap: () => _openArticle(url, title), // buka link artikel
-    child: Container(
-      height: 180,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: gradient,
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.black.withOpacity(0.6),
-                      Colors.black.withOpacity(0.3),
-                      Colors.transparent,
-                    ],
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              top: 12,
-              left: 12,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  category,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 30,
-              left: 12,
-              right: 80,
-              child: Text(
-                title,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(1, 1),
-                      blurRadius: 3,
-                      color: Colors.black.withOpacity(0.5),
-                    ),
-                  ],
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            Positioned(
-              bottom: 12,
-              left: 12,
-              child: Text(
-                date,
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.9),
-                  fontSize: 10,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(1, 1),
-                      blurRadius: 3,
-                      color: Colors.black.withOpacity(0.5),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 12,
-              right: 12,
-              child: Text(
-                'Baca Selengkapnya →',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(1, 1),
-                      blurRadius: 3,
-                      color: Colors.black.withOpacity(0.5),
-                    ),
-                  ],
-                ),
-              ),
+      onTap: () => _openArticle(url, title), // buka link artikel
+      child: Container(
+        height: 180,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: gradient,
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.black.withOpacity(0.6),
+                        Colors.black.withOpacity(0.3),
+                        Colors.transparent,
+                      ],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 12,
+                left: 12,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    category,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 30,
+                left: 12,
+                right: 80,
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        offset: Offset(1, 1),
+                        blurRadius: 3,
+                        color: Colors.black.withOpacity(0.5),
+                      ),
+                    ],
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Positioned(
+                bottom: 12,
+                left: 12,
+                child: Text(
+                  date,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.9),
+                    fontSize: 10,
+                    shadows: [
+                      Shadow(
+                        offset: Offset(1, 1),
+                        blurRadius: 3,
+                        color: Colors.black.withOpacity(0.5),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 12,
+                right: 12,
+                child: Text(
+                  'Baca Selengkapnya →',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    shadows: [
+                      Shadow(
+                        offset: Offset(1, 1),
+                        blurRadius: 3,
+                        color: Colors.black.withOpacity(0.5),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-    ),
     );
-
   }
 
   Widget _buildOtherPages() {
-  switch (_currentIndex) {
-    case 1: // Order
-      return const OrderPage();
-    case 2: // Live
-      return _buildLivePage();
-    case 3: // Riwayat
-      return _buildRiwayatPage();
-    case 4: // Setting
-      return _buildSettingPage();
-    default:
-      return _buildHomePage();
+    switch (_currentIndex) {
+      case 1: // Order
+        return const OrderPage();
+      case 2: // Live
+        return _buildLivePage();
+      case 3: // Riwayat
+        return _buildRiwayatPage();
+      case 4: // Setting
+        return _buildSettingPage();
+      default:
+        return _buildHomePage();
+    }
   }
-}
 
-Widget _buildLivePage() {
-  return Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.satellite_alt, size: 80, color: Colors.grey[400]),
-        SizedBox(height: 16),
-        Text(
-          'Live Tracking',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey[600],
-            fontWeight: FontWeight.w500,
+  Widget _buildLivePage() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.satellite_alt, size: 80, color: Colors.grey[400]),
+          SizedBox(height: 16),
+          Text(
+            'Live Tracking',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
           ),
-        ),
-        SizedBox(height: 8),
-        Text(
-          'Halaman dalam pengembangan',
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[500],
+          SizedBox(height: 8),
+          Text(
+            'Halaman dalam pengembangan',
+            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
           ),
-        ),
-      ],
-    ),
-  );
-}
-
-Widget _buildRiwayatPage() {
-  return Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.history, size: 80, color: Colors.grey[400]),
-        SizedBox(height: 16),
-        Text(
-          'Riwayat',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey[600],
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        SizedBox(height: 8),
-        Text(
-          'Halaman dalam pengembangan',
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[500],
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-Widget _buildSettingPage() {
-  return Center(
-    child: Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.settings, size: 80, color: Colors.grey[400]),
-        SizedBox(height: 16),
-        Text(
-          'Pengaturan',
-          style: TextStyle(
-            fontSize: 16,
-            color: Colors.grey[600],
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        SizedBox(height: 8),
-        Text(
-          'Halaman dalam pengembangan',
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[500],
-          ),
-        ),
-      ],
-    ),
-  );
-}
-
-Widget _buildBottomNavigation() {
-  final isDark = Theme.of(context).brightness == Brightness.dark;
-
-  return CurvedNavigationBar(
-    index: _currentIndex,
-    onTap: (index) {
-      setState(() {
-        _currentIndex = index;
-      });
-    },
-    color: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
-    backgroundColor: Colors.transparent,
-    buttonBackgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
-    height: 70,
-    animationCurve: Curves.easeInOut,
-    animationDuration: const Duration(milliseconds: 300),
-    items: [
-      _buildNavItemWithLabel(FontAwesomeIcons.house, 'Home'),
-      _buildNavItemWithLabel(FontAwesomeIcons.clipboardList, 'Order'),
-      _buildNavItemWithLabel(FontAwesomeIcons.satellite, 'Live'),
-      _buildNavItemWithLabel(FontAwesomeIcons.clockRotateLeft, 'Riwayat'),
-      _buildNavItemWithLabel(FontAwesomeIcons.gear, 'Setting'),
-    ],
-  );
-}
-
-Widget _buildNavItemWithLabel(IconData icon, String label) {
-  return Column(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Icon(icon, color: Colors.white, size: 20),
-      const SizedBox(height: 2),
-      Text(
-        label,
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 10,
-          fontWeight: FontWeight.w500,
-        ),
+        ],
       ),
-    ],
-  );
-}
+    );
+  }
+
+  Widget _buildRiwayatPage() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.history, size: 80, color: Colors.grey[400]),
+          SizedBox(height: 16),
+          Text(
+            'Riwayat',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Halaman dalam pengembangan',
+            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSettingPage() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.settings, size: 80, color: Colors.grey[400]),
+          SizedBox(height: 16),
+          Text(
+            'Pengaturan',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Halaman dalam pengembangan',
+            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBottomNavigation() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return CurvedNavigationBar(
+      index: _currentIndex,
+      onTap: (index) {
+        setState(() {
+          _currentIndex = index;
+        });
+      },
+      color: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
+      backgroundColor: Colors.transparent,
+      buttonBackgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
+      height: 70,
+      animationCurve: Curves.easeInOut,
+      animationDuration: const Duration(milliseconds: 300),
+      items: [
+        _buildNavItemWithLabel(FontAwesomeIcons.house, 'Home'),
+        _buildNavItemWithLabel(FontAwesomeIcons.clipboardList, 'Order'),
+        _buildNavItemWithLabel(FontAwesomeIcons.satellite, 'Live'),
+        _buildNavItemWithLabel(FontAwesomeIcons.clockRotateLeft, 'Riwayat'),
+        _buildNavItemWithLabel(FontAwesomeIcons.gear, 'Setting'),
+      ],
+    );
+  }
+
+  Widget _buildNavItemWithLabel(IconData icon, String label) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: Colors.white, size: 20),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 10,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
 }
