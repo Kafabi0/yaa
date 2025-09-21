@@ -32,13 +32,17 @@ class _HomePagePasienState extends State<HomePagePasien> {
   String? _antrianRajal;
   String? _antrianMCU;
   String? _antrianRanap;
+  
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
   }
-
+ Future<void> _refreshData() async {
+    await _loadUserData();
+    setState(() {}); // Trigger rebuild
+  }
   Future<void> _loadUserData() async {
     try {
       final prefs = await SharedPreferences.getInstance();

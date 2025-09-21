@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:inocare/screens/order_farmasi.dart';
+import 'package:inocare/screens/order_forensik.dart';
+import 'package:inocare/screens/order_lab.dart';
+import 'package:inocare/screens/order_radiologi.dart';
+import 'package:inocare/screens/order_utdrs.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'order_ambulance.dart';
 
 class OrderPage extends StatefulWidget {
   const OrderPage({Key? key}) : super(key: key);
@@ -8,18 +15,62 @@ class OrderPage extends StatefulWidget {
   State<OrderPage> createState() => _OrderPageState();
 }
 
+/// Simpan notifikasi order
+Future<void> _saveOrderNotification(
+  String serviceType,
+  String nomorOrder,
+) async {
+  final prefs = await SharedPreferences.getInstance();
+  List<String> notifs = prefs.getStringList('order_notifications') ?? [];
+
+  String newNotif =
+      "$serviceType|Nomor order Anda: $nomorOrder|${DateTime.now().toIso8601String()}";
+  notifs.add(newNotif);
+
+  await prefs.setStringList('order_notifications', notifs);
+}
+
+/// Generate nomor order unik per layanan
+Future<String> _generateOrderNumber(String serviceType) async {
+  final prefs = await SharedPreferences.getInstance();
+
+  final Map<String, String> prefixMap = {
+    'Ambulance': 'A',
+    'Farmasi': 'F',
+    'Lab': 'L',
+    'Radiologi': 'R',
+    'Forensik': 'FRS',
+    'UTDRS': 'U',
+  };
+
+  final prefix = prefixMap[serviceType] ?? 'X';
+
+  int current = prefs.getInt('counter_$serviceType') ?? 0;
+  current++;
+
+  await prefs.setInt('counter_$serviceType', current);
+
+  return "$prefix-${current.toString().padLeft(3, '0')}";
+}
+
 class _OrderPageState extends State<OrderPage> {
   final TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final screenWidth = size.width;
+
+    double fontScale = screenWidth / 400;
+    fontScale = fontScale.clamp(0.8, 1.2);
+
     return Scaffold(
       backgroundColor: Colors.grey[200],
       body: SafeArea(
         child: Column(
           children: [
-            _buildHeader(),
-            _buildSearchBar(),
+            _buildHeader(fontScale),
+            _buildSearchBar(fontScale),
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
@@ -30,8 +81,9 @@ class _OrderPageState extends State<OrderPage> {
                       subtitle: '3 Ambulance Tersedia',
                       buttonText: 'Order Sekarang',
                       colors: [Colors.red[600]!, Colors.red[800]!],
-                      icon: Icons.local_hospital,
-                      image: 'ambulance',
+                      icon: FontAwesomeIcons.truckMedical,
+                      fontScale: fontScale,
+                      onTap: () => _showOrderDialog('Ambulance'),
                     ),
                     const SizedBox(height: 16),
                     _buildOrderCard(
@@ -39,8 +91,9 @@ class _OrderPageState extends State<OrderPage> {
                       subtitle: '',
                       buttonText: 'Order Sekarang',
                       colors: [Colors.green[600]!, Colors.green[800]!],
-                      icon: Icons.local_pharmacy,
-                      image: 'pharmacy',
+                      icon: FontAwesomeIcons.pills,
+                      fontScale: fontScale,
+                      onTap: () => _showOrderDialog('Farmasi'),
                     ),
                     const SizedBox(height: 16),
                     _buildOrderCard(
@@ -48,8 +101,9 @@ class _OrderPageState extends State<OrderPage> {
                       subtitle: '',
                       buttonText: 'Cek Ketersediaan Lab',
                       colors: [Colors.blue[500]!, Colors.blue[700]!],
-                      icon: Icons.science,
-                      image: 'lab',
+                      icon: Icons.biotech,
+                      fontScale: fontScale,
+                      onTap: () => _showOrderDialog('Lab'),
                     ),
                     const SizedBox(height: 16),
                     _buildOrderCard(
@@ -57,8 +111,9 @@ class _OrderPageState extends State<OrderPage> {
                       subtitle: '',
                       buttonText: 'Cek Ketersediaan Radiologi',
                       colors: [Colors.grey[600]!, Colors.grey[800]!],
-                      icon: Icons.medical_services,
-                      image: 'radiology',
+                      icon: FontAwesomeIcons.xRay,
+                      fontScale: fontScale,
+                      onTap: () => _showOrderDialog('Radiologi'),
                     ),
                     const SizedBox(height: 16),
                     _buildOrderCard(
@@ -66,8 +121,9 @@ class _OrderPageState extends State<OrderPage> {
                       subtitle: '',
                       buttonText: 'Cek Ketersediaan Forensik',
                       colors: [Colors.indigo[600]!, Colors.indigo[800]!],
-                      icon: Icons.fingerprint,
-                      image: 'forensic',
+                      icon: FontAwesomeIcons.magnifyingGlass,
+                      fontScale: fontScale,
+                      onTap: () => _showOrderDialog('Forensik'),
                     ),
                     const SizedBox(height: 16),
                     _buildOrderCard(
@@ -75,8 +131,9 @@ class _OrderPageState extends State<OrderPage> {
                       subtitle: '',
                       buttonText: 'Cek Ketersediaan UTDRS',
                       colors: [Colors.red[700]!, Colors.red[900]!],
-                      icon: Icons.bloodtype,
-                      image: 'blood',
+                      icon: FontAwesomeIcons.droplet,
+                      fontScale: fontScale,
+                      onTap: () => _showOrderDialog('UTDRS'),
                     ),
                     const SizedBox(height: 20),
                   ],
@@ -89,7 +146,7 @@ class _OrderPageState extends State<OrderPage> {
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(double fontScale) {
     return Container(
       padding: const EdgeInsets.all(20),
       child: Row(
@@ -97,24 +154,24 @@ class _OrderPageState extends State<OrderPage> {
           GestureDetector(
             onTap: () => Navigator.pop(context),
             child: Container(
-              width: 40,
-              height: 40,
+              width: 40 * fontScale,
+              height: 40 * fontScale,
               decoration: BoxDecoration(
                 color: const Color(0xFFFF6B35),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.arrow_back,
                 color: Colors.white,
-                size: 20,
+                size: 20 * fontScale,
               ),
             ),
           ),
           const SizedBox(width: 16),
-          const Text(
+          Text(
             'Order Services',
             style: TextStyle(
-              fontSize: 24,
+              fontSize: 24 * fontScale,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
             ),
@@ -124,22 +181,33 @@ class _OrderPageState extends State<OrderPage> {
     );
   }
 
-  Widget _buildSearchBar() {
+  Widget _buildSearchBar(double fontScale) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       child: TextField(
         controller: _searchController,
+        style: TextStyle(fontSize: 14 * fontScale),
         decoration: InputDecoration(
           hintText: 'Cari Aja Dulu ...',
-          hintStyle: TextStyle(color: Colors.grey[500]),
-          prefixIcon: Icon(Icons.search, color: Colors.grey[500]),
+          hintStyle: TextStyle(
+            color: Colors.grey[500],
+            fontSize: 14 * fontScale,
+          ),
+          prefixIcon: Icon(
+            Icons.search,
+            color: Colors.grey[500],
+            size: 20 * fontScale,
+          ),
           filled: true,
           fillColor: Colors.white,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(25),
             borderSide: BorderSide.none,
           ),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 20 * fontScale,
+            vertical: 12 * fontScale,
+          ),
         ),
       ),
     );
@@ -151,14 +219,13 @@ class _OrderPageState extends State<OrderPage> {
     required String buttonText,
     required List<Color> colors,
     required IconData icon,
-    required String image,
+    required double fontScale,
+    required VoidCallback onTap,
   }) {
     return GestureDetector(
-      onTap: () {
-        _showOrderDialog(title);
-      },
+      onTap: onTap,
       child: Container(
-        height: 140,
+        padding: EdgeInsets.all(20 * fontScale),
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: colors,
@@ -174,165 +241,72 @@ class _OrderPageState extends State<OrderPage> {
             ),
           ],
         ),
-        child: Stack(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Background decoration
-            Positioned(
-              right: -20,
-              top: -10,
-              child: Container(
-                width: 120,
-                height: 120,
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
+            Text(
+              title,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20 * fontScale,
+                fontWeight: FontWeight.bold,
               ),
             ),
-            // Main content
-            Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            if (subtitle.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.9),
+                  fontSize: 14 * fontScale,
+                ),
+              ),
+            ],
+            SizedBox(height: 16 * fontScale),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 16 * fontScale,
+                    vertical: 8 * fontScale,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: Colors.white.withOpacity(0.3)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        title,
-                        style: const TextStyle(
+                        buttonText,
+                        style: TextStyle(
                           color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 12 * fontScale,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                      if (subtitle.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(
-                          subtitle,
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              buttonText,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(width: 4),
-                            const Icon(
-                              Icons.arrow_forward,
-                              color: Colors.white,
-                              size: 16,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Icon(
-                          icon,
-                          color: Colors.white,
-                          size: 30,
-                        ),
+                      const SizedBox(width: 4),
+                      Icon(
+                        Icons.arrow_forward,
+                        color: Colors.white,
+                        size: 16 * fontScale,
                       ),
                     ],
                   ),
-                ],
-              ),
+                ),
+                Container(
+                  width: 60 * fontScale,
+                  height: 60 * fontScale,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Icon(icon, color: Colors.white, size: 30 * fontScale),
+                ),
+              ],
             ),
-            // Medical symbol decoration for specific cards
-            if (title == 'Order Farmasi')
-              Positioned(
-                right: 10,
-                top: 10,
-                child: Icon(
-                  FontAwesomeIcons.pills,
-                  color: Colors.white.withOpacity(0.3),
-                  size: 40,
-                ),
-              ),
-            if (title == 'Order Lab')
-              Positioned(
-                right: 10,
-                top: 10,
-                child: Icon(
-                  Icons.biotech,
-                  color: Colors.white.withOpacity(0.3),
-                  size: 40,
-                ),
-              ),
-            if (title == 'Order Radiologi')
-              Positioned(
-                right: 10,
-                top: 10,
-                child: Icon(
-                  FontAwesomeIcons.xRay,
-                  color: Colors.white.withOpacity(0.3),
-                  size: 40,
-                ),
-              ),
-            if (title == 'Order Forensik')
-              Positioned(
-                right: 10,
-                top: 10,
-                child: Icon(
-                  FontAwesomeIcons.magnifyingGlass,
-                  color: Colors.white.withOpacity(0.3),
-                  size: 40,
-                ),
-              ),
-            if (title == 'Order UTDRS')
-              Positioned(
-                right: 10,
-                top: 10,
-                child: Icon(
-                  FontAwesomeIcons.droplet,
-                  color: Colors.white.withOpacity(0.3),
-                  size: 40,
-                ),
-              ),
-            if (title == 'Order Ambulance')
-              Positioned(
-                right: 10,
-                top: 10,
-                child: Icon(
-                  FontAwesomeIcons.truckMedical,
-                  color: Colors.white.withOpacity(0.3),
-                  size: 40,
-                ),
-              ),
           ],
         ),
       ),
@@ -373,52 +347,53 @@ class _OrderPageState extends State<OrderPage> {
               ),
             ],
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Apakah Anda ingin melanjutkan order untuk layanan $serviceType?',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[700],
-                ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.orange[50],
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: Colors.orange[200]!),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.info_outline, color: Colors.orange[700], size: 20),
-                    const SizedBox(width: 8),
-                    const Expanded(
-                      child: Text(
-                        'Layanan ini akan segera tersedia',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+          content: Text(
+            'Apakah Anda ingin melanjutkan order untuk layanan $serviceType?',
+            style: TextStyle(fontSize: 14, color: Colors.grey[700]),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                'Batal',
-                style: TextStyle(color: Colors.grey[600]),
-              ),
+              child: Text('Batal', style: TextStyle(color: Colors.grey[600])),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(context).pop();
+
+                String nomorOrder = await _generateOrderNumber(serviceType);
+                await _saveOrderNotification(serviceType, nomorOrder);
+
                 _showSuccessSnackbar(serviceType);
+
+                // 🔥 Navigasi sesuai servicenya
+                Widget page;
+                switch (serviceType) {
+                  case 'Ambulance':
+                    page = const OrderAmbulancePage();
+                    break;
+                  case 'Farmasi':
+                    page = const OrderFarmasiPage();
+                    break;
+                  case 'Lab':
+                    page = const OrderLabPage();
+                    break;
+                  case 'Radiologi':
+                    page = const OrderRadiologiPage();
+                    break;
+                  case 'Forensik':
+                    page = const OrderForensikPage();
+                    break;
+                  case 'UTDRS':
+                    page = const OrderUTDRSPage();
+                    break;
+                  default:
+                    return;
+                }
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => page),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFFF6B35),
@@ -449,9 +424,7 @@ class _OrderPageState extends State<OrderPage> {
         ),
         backgroundColor: Colors.green,
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
     );
   }

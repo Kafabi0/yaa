@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '../main.dart';
 
 class RegistrasiRajalPage extends StatefulWidget {
   const RegistrasiRajalPage({Key? key}) : super(key: key);
@@ -8,6 +10,7 @@ class RegistrasiRajalPage extends StatefulWidget {
   @override
   State<RegistrasiRajalPage> createState() => _RegistrasiRajalPageState();
 }
+// Letakkan di dalam class _RegistrasiRajalPageState
 
 class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
   final _formKey = GlobalKey<FormState>();
@@ -32,10 +35,27 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
   String? _selectedJadwalKunjungan;
 
   final List<String> _genderOptions = ['Laki-laki', 'Perempuan'];
-  final List<String> _agamaOptions = ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu'];
-  final List<String> _statusPerkawinanOptions = ['Belum Menikah', 'Menikah', 'Cerai Hidup', 'Cerai Mati'];
+  final List<String> _agamaOptions = [
+    'Islam',
+    'Kristen',
+    'Katolik',
+    'Hindu',
+    'Buddha',
+    'Konghucu',
+  ];
+  final List<String> _statusPerkawinanOptions = [
+    'Belum Menikah',
+    'Menikah',
+    'Cerai Hidup',
+    'Cerai Mati',
+  ];
   final List<String> _golonganDarahOptions = ['A', 'B', 'AB', 'O'];
-  final List<String> _jenisAsuransiOptions = ['BPJS Kesehatan', 'BPJS Ketenagakerjaan', 'Asuransi Swasta', 'Umum'];
+  final List<String> _jenisAsuransiOptions = [
+    'BPJS Kesehatan',
+    'BPJS Ketenagakerjaan',
+    'Asuransi Swasta',
+    'Umum',
+  ];
   final List<String> _poliOptions = [
     'Poli Umum',
     'Poli Anak',
@@ -46,30 +66,96 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
     'Poli Jantung',
     'Poli Paru',
     'Poli Saraf',
-    'Poli Kulit'
+    'Poli Kulit',
   ];
-  final List<String> _jadwalOptions = ['Pagi (08:00-12:00)', 'Siang (13:00-16:00)', 'Sore (16:00-19:00)'];
+  final List<String> _jadwalOptions = [
+    'Pagi (08:00-12:00)',
+    'Siang (13:00-16:00)',
+    'Sore (16:00-19:00)',
+  ];
 
   bool _isLoading = false;
+  Future<void> _showSuccessNotification(
+    String antrian,
+    String jenisRegistrasi,
+  ) async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'registrasi_channel', // ID unik untuk channel notifikasi
+          'Registrasi Berhasil', // Nama channel
+          channelDescription:
+              'Notifikasi untuk registrasi pasien yang berhasil',
+          importance: Importance.max,
+          priority: Priority.high,
+        );
+    const NotificationDetails platformChannelDetails = NotificationDetails(
+      android: androidDetails,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      0, // ID unik untuk notifikasi
+      'Registrasi $jenisRegistrasi Berhasil',
+      'Nomor antrian Anda: $antrian',
+      platformChannelDetails,
+      payload: 'notifications', // Payload untuk navigasi
+    );
+  }
+
+  // Contoh penggunaan di fungsi form submission
+  void _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      // Simulasi proses registrasi berhasil
+      String nomorAntrian =
+          'A123'; // Ganti dengan nomor antrian yang sebenarnya
+      String jenisRegistrasi = 'Rajal'; // Tipe registrasi
+
+      // Simpan ke SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('nomorAntrian_RAJAL', nomorAntrian);
+
+      // Tampilkan notifikasi
+      await _showSuccessNotification(nomorAntrian, jenisRegistrasi);
+
+      // Tampilkan SnackBar atau navigasi ke halaman lain jika perlu
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Registrasi berhasil!')));
+    }
+  }
 
   Future<void> _simpanData() async {
     final prefs = await SharedPreferences.getInstance();
     String nomor = "RJ${DateTime.now().millisecondsSinceEpoch % 10000}";
-    
+
     await prefs.setString('registeredName', _nameController.text.trim());
     await prefs.setString('registeredNIK', _nikController.text.trim());
     await prefs.setString('registeredNoKK', _noKKController.text.trim());
-    await prefs.setString('registeredTempatLahir', _tempatLahirController.text.trim());
-    await prefs.setString('registeredTanggalLahir', _tanggalLahirController.text.trim());
+    await prefs.setString(
+      'registeredTempatLahir',
+      _tempatLahirController.text.trim(),
+    );
+    await prefs.setString(
+      'registeredTanggalLahir',
+      _tanggalLahirController.text.trim(),
+    );
     await prefs.setString('registeredGender', _selectedGender ?? '');
     await prefs.setString('registeredAgama', _selectedAgama ?? '');
     await prefs.setString('registeredStatus', _selectedStatusPerkawinan ?? '');
     await prefs.setString('registeredGolDarah', _selectedGolonganDarah ?? '');
     await prefs.setString('registeredAlamat', _alamatController.text.trim());
     await prefs.setString('registeredNoHP', _nohpController.text.trim());
-    await prefs.setString('registeredPekerjaan', _pekerjaanController.text.trim());
-    await prefs.setString('registeredNamaKeluarga', _namaKeluargaController.text.trim());
-    await prefs.setString('registeredNoHPKeluarga', _nohpKeluargaController.text.trim());
+    await prefs.setString(
+      'registeredPekerjaan',
+      _pekerjaanController.text.trim(),
+    );
+    await prefs.setString(
+      'registeredNamaKeluarga',
+      _namaKeluargaController.text.trim(),
+    );
+    await prefs.setString(
+      'registeredNoHPKeluarga',
+      _nohpKeluargaController.text.trim(),
+    );
     await prefs.setString('registeredAsuransi', _selectedJenisAsuransi ?? '');
     await prefs.setString('registeredPoli', _selectedPoli ?? '');
     await prefs.setString('registeredJadwal', _selectedJadwalKunjungan ?? '');
@@ -88,8 +174,14 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
 
     try {
       await _simpanData();
-      
-      if (mounted) {
+      // Ambil nomor antrian yang baru disimpan
+      final prefs = await SharedPreferences.getInstance();
+      String? nomorAntrian = prefs.getString('nomorAntrian_RAJAL');
+
+      if (mounted && nomorAntrian != null) {
+        // Panggil fungsi notifikasi di sini
+        await _showSuccessNotification(nomorAntrian, 'Rajal');
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
@@ -97,7 +189,9 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
                 const Icon(Icons.check_circle, color: Colors.white),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text("Registrasi berhasil! Nomor antrian: RJ${DateTime.now().millisecondsSinceEpoch % 10000}"),
+                  child: Text(
+                    "Registrasi berhasil! Nomor antrian: $nomorAntrian",
+                  ),
                 ),
               ],
             ),
@@ -173,7 +267,10 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
             ),
             filled: true,
             fillColor: Colors.grey[50],
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -226,14 +323,15 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
             ),
             filled: true,
             fillColor: Colors.grey[50],
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
           ),
-          items: items.map((String item) {
-            return DropdownMenuItem<String>(
-              value: item,
-              child: Text(item),
-            );
-          }).toList(),
+          items:
+              items.map((String item) {
+                return DropdownMenuItem<String>(value: item, child: Text(item));
+              }).toList(),
         ),
         const SizedBox(height: 16),
       ],
@@ -275,10 +373,7 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
         elevation: 0,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
-          child: Container(
-            height: 1,
-            color: Colors.grey[200],
-          ),
+          child: Container(height: 1, color: Colors.grey[200]),
         ),
       ),
       body: Form(
@@ -379,7 +474,8 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
                       hint: "Pilih jenis kelamin",
                       value: _selectedGender,
                       items: _genderOptions,
-                      onChanged: (value) => setState(() => _selectedGender = value),
+                      onChanged:
+                          (value) => setState(() => _selectedGender = value),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return "Jenis kelamin harus dipilih";
@@ -395,7 +491,9 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
                       hint: "Pilih golongan darah",
                       value: _selectedGolonganDarah,
                       items: _golonganDarahOptions,
-                      onChanged: (value) => setState(() => _selectedGolonganDarah = value),
+                      onChanged:
+                          (value) =>
+                              setState(() => _selectedGolonganDarah = value),
                     ),
                   ),
                 ],
@@ -418,7 +516,9 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
                 hint: "Pilih status perkawinan",
                 value: _selectedStatusPerkawinan,
                 items: _statusPerkawinanOptions,
-                onChanged: (value) => setState(() => _selectedStatusPerkawinan = value),
+                onChanged:
+                    (value) =>
+                        setState(() => _selectedStatusPerkawinan = value),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Status perkawinan harus dipilih";
@@ -501,7 +601,8 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
                 hint: "Pilih jenis pembayaran",
                 value: _selectedJenisAsuransi,
                 items: _jenisAsuransiOptions,
-                onChanged: (value) => setState(() => _selectedJenisAsuransi = value),
+                onChanged:
+                    (value) => setState(() => _selectedJenisAsuransi = value),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Jenis pembayaran harus dipilih";
@@ -527,7 +628,8 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
                 hint: "Pilih waktu kunjungan",
                 value: _selectedJadwalKunjungan,
                 items: _jadwalOptions,
-                onChanged: (value) => setState(() => _selectedJadwalKunjungan = value),
+                onChanged:
+                    (value) => setState(() => _selectedJadwalKunjungan = value),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return "Jadwal kunjungan harus dipilih";
@@ -543,7 +645,7 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
               ),
 
               const SizedBox(height: 24),
-              
+
               // Submit Button
               Container(
                 width: double.infinity,
@@ -572,49 +674,52 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: _isLoading
-                      ? const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  child:
+                      _isLoading
+                          ? const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 12),
-                            Text(
-                              "Menyimpan...",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                              SizedBox(width: 12),
+                              Text(
+                                "Menyimpan...",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                          ],
-                        )
-                      : const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.app_registration, color: Colors.white),
-                            SizedBox(width: 8),
-                            Text(
-                              "Daftar Rawat Jalan",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                            ],
+                          )
+                          : const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.app_registration, color: Colors.white),
+                              SizedBox(width: 8),
+                              Text(
+                                "Daftar Rawat Jalan",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Info Text
               Container(
                 padding: const EdgeInsets.all(16),
