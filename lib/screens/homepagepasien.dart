@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:inocare/screens/order.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'rumahsakitmember.dart';
 import 'profilepagepasien.dart'; // Import halaman profile yang baru dibuat
@@ -9,6 +10,8 @@ import 'registrasi_rajal.dart';
 import 'registrasi_mcu.dart';
 import 'registrasi_ranap.dart';
 import 'notifikasi.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'webview_page.dart';
 
 class HomePagePasien extends StatefulWidget {
   final Hospital selectedHospital;
@@ -19,6 +22,7 @@ class HomePagePasien extends StatefulWidget {
   @override
   State<HomePagePasien> createState() => _HomePagePasienState();
 }
+
 
 class _HomePagePasienState extends State<HomePagePasien> {
   int _currentIndex = 0;
@@ -60,6 +64,14 @@ class _HomePagePasienState extends State<HomePagePasien> {
       });
     }
   }
+  void _openArticle(String url, String title) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => HybridWebView(url: url,),
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +94,7 @@ class _HomePagePasienState extends State<HomePagePasien> {
           _buildLiveQueue(),
           _buildRegistrationNumbers(),
           _buildPromotion(),
-          _buildHealthArticles(),
+          _buildHealthArticlesSection(),
           SizedBox(height: 100),
         ],
       ),
@@ -916,200 +928,360 @@ class _HomePagePasienState extends State<HomePagePasien> {
     );
   }
 
-  Widget _buildHealthArticles() {
-    return Container(
-      margin: EdgeInsets.all(16),
+  Widget _buildHealthArticlesSection() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 10),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Baca 100+ Artikel Kesehatan',
+                'Baca 100+ Artikel\nKesehatan',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
               ),
-              Spacer(),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 decoration: BoxDecoration(
                   color: Color(0xFFFF6B35),
-                  borderRadius: BorderRadius.circular(15),
+                  borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
                   'Lihat Semua',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 12,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: 12),
-          Container(
-            height: 200,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: Colors.teal[100],
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  left: 16,
-                  bottom: 16,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.teal,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'Kesehatan Giga',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        '5 Cara Merawat Ginjal agar Sehat',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text(
-                        '3 Cegah Penyakit Ginjal',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+          const SizedBox(height: 16),
+          _buildArticleCard(
+            category: 'Kesehatan Ginjal',
+            title: '5 Cara Merawat Ginjal agar Sehat & Cegah Penyakit Ginjal',
+            date: 'Rabu, 3 September 2025',
+            imagePath: 'assets/images/ginjal.jpg',
+            gradient: [Color(0xFF87CEEB), Color(0xFFB0E0E6)],
+            url: 'https://www.biofarma.co.id/id/announcement/detail/5-cara-merawat-ginjal-agar-sehat-cegah-penyakit-ginjal',
           ),
-          SizedBox(height: 12),
-          Container(
-            height: 120,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: Colors.grey[200],
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  left: 16,
-                  bottom: 16,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'Nutrisi',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        '5 manfaat kolang kaling yang',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text(
-                        'perlu kamu ketahui',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+          const SizedBox(height: 12),
+          _buildArticleCard(
+            category: 'Nutrisi',
+            title: '9 manfaat kolang kaling yang perlu kamu ketahui',
+            date: 'Senin, 30 Juni 2025',
+            imagePath: 'assets/images/olang.jpg',
+            gradient: [Color(0xFF98FB98), Color(0xFF90EE90)],
+            url: 'https://www.biofarma.co.id/id/announcement/detail/9-manfaat-kolang-kaling-yang-perlu-kamu-ketahui',
+          ),
+          const SizedBox(height: 12),
+          _buildArticleCard(
+            category: 'Pencernaan',
+            title: 'Kenali Jenis Makanan Penyebab GERD',
+            date: 'Jumat, 12 Juni 2025',
+            imagePath: 'assets/images/gerd.png',
+            gradient: [Color(0xFFFFA07A), Color(0xFF7F50)],
+            url: 'https://www.biofarma.co.id/id/announcement/detail/kenali-jenis-makanan-penyebab-gerd',
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildArticleCard({
+    required String category,
+    required String title,
+    required String date,
+    required String imagePath,
+    required List<Color> gradient,
+      required String url, // 🔥 tambahkan parameter URL
+
+  }) {
+    return GestureDetector(
+    onTap: () => _openArticle(url, title), // buka link artikel
+    child: Container(
+      height: 180,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: Image.asset(
+                imagePath,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: gradient,
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Positioned.fill(
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.black.withOpacity(0.6),
+                      Colors.black.withOpacity(0.3),
+                      Colors.transparent,
+                    ],
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: 12,
+              left: 12,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.9),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  category,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 30,
+              left: 12,
+              right: 80,
+              child: Text(
+                title,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(1, 1),
+                      blurRadius: 3,
+                      color: Colors.black.withOpacity(0.5),
+                    ),
+                  ],
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Positioned(
+              bottom: 12,
+              left: 12,
+              child: Text(
+                date,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.9),
+                  fontSize: 10,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(1, 1),
+                      blurRadius: 3,
+                      color: Colors.black.withOpacity(0.5),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: 12,
+              right: 12,
+              child: Text(
+                'Baca Selengkapnya →',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  shadows: [
+                    Shadow(
+                      offset: Offset(1, 1),
+                      blurRadius: 3,
+                      color: Colors.black.withOpacity(0.5),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ),
+    );
+
   }
 
   Widget _buildOtherPages() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.construction, size: 80, color: Colors.grey[400]),
-          SizedBox(height: 16),
-          Text(
-            'Halaman dalam pengembangan',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
-            ),
+  switch (_currentIndex) {
+    case 1: // Order
+      return const OrderPage();
+    case 2: // Live
+      return _buildLivePage();
+    case 3: // Riwayat
+      return _buildRiwayatPage();
+    case 4: // Setting
+      return _buildSettingPage();
+    default:
+      return _buildHomePage();
+  }
+}
+
+Widget _buildLivePage() {
+  return Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.satellite_alt, size: 80, color: Colors.grey[400]),
+        SizedBox(height: 16),
+        Text(
+          'Live Tracking',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey[600],
+            fontWeight: FontWeight.w500,
           ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBottomNavigation() {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-
-    return CurvedNavigationBar(
-      index: _currentIndex,
-      onTap: (index) {
-        setState(() {
-          _currentIndex = index;
-        });
-      },
-      color: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
-      backgroundColor: Colors.transparent,
-      buttonBackgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
-      height: 60,
-      animationCurve: Curves.easeInOut,
-      animationDuration: const Duration(milliseconds: 300),
-      items: [
-        Icon(FontAwesomeIcons.house, color: Colors.white, size: 24),
-        Icon(FontAwesomeIcons.calendarDay, color: Colors.white, size: 24),
-        Icon(FontAwesomeIcons.solidHeart, color: Colors.white, size: 24),
-        Icon(FontAwesomeIcons.solidCommentDots, color: Colors.white, size: 24),
-        Icon(FontAwesomeIcons.user, color: Colors.white, size: 24),
+        ),
+        SizedBox(height: 8),
+        Text(
+          'Halaman dalam pengembangan',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[500],
+          ),
+        ),
       ],
-    );
-  }
+    ),
+  );
+}
+
+Widget _buildRiwayatPage() {
+  return Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.history, size: 80, color: Colors.grey[400]),
+        SizedBox(height: 16),
+        Text(
+          'Riwayat',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey[600],
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        SizedBox(height: 8),
+        Text(
+          'Halaman dalam pengembangan',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[500],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildSettingPage() {
+  return Center(
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.settings, size: 80, color: Colors.grey[400]),
+        SizedBox(height: 16),
+        Text(
+          'Pengaturan',
+          style: TextStyle(
+            fontSize: 16,
+            color: Colors.grey[600],
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        SizedBox(height: 8),
+        Text(
+          'Halaman dalam pengembangan',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey[500],
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+Widget _buildBottomNavigation() {
+  final isDark = Theme.of(context).brightness == Brightness.dark;
+
+  return CurvedNavigationBar(
+    index: _currentIndex,
+    onTap: (index) {
+      setState(() {
+        _currentIndex = index;
+      });
+    },
+    color: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
+    backgroundColor: Colors.transparent,
+    buttonBackgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
+    height: 70,
+    animationCurve: Curves.easeInOut,
+    animationDuration: const Duration(milliseconds: 300),
+    items: [
+      _buildNavItemWithLabel(FontAwesomeIcons.house, 'Home'),
+      _buildNavItemWithLabel(FontAwesomeIcons.clipboardList, 'Order'),
+      _buildNavItemWithLabel(FontAwesomeIcons.satellite, 'Live'),
+      _buildNavItemWithLabel(FontAwesomeIcons.clockRotateLeft, 'Riwayat'),
+      _buildNavItemWithLabel(FontAwesomeIcons.gear, 'Setting'),
+    ],
+  );
+}
+
+Widget _buildNavItemWithLabel(IconData icon, String label) {
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Icon(icon, color: Colors.white, size: 20),
+      const SizedBox(height: 2),
+      Text(
+        label,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    ],
+  );
+}
 }

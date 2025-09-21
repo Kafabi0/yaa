@@ -77,7 +77,7 @@ class _InoCareAppState extends State<InoCareApp> {
     }
 
     return MaterialApp(
-      title: 'InoCare',
+      title: 'Digital Hospital',
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,

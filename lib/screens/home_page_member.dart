@@ -182,44 +182,44 @@ class _HomePageMemberState extends State<HomePageMember> {
               ),
             ),
             const SizedBox(width: 12),
-            GestureDetector(
-              onTap: () {
-                // Navigasi ke halaman profile juga
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProfilePage(),
-                  ),
-                );
-              },
-              child: Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Text(
-                    _userName?.isNotEmpty == true 
-                        ? _userName![0].toUpperCase()
-                        : 'M',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFFF6B35),
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            // GestureDetector(
+            //   onTap: () {
+            //     // Navigasi ke halaman profile juga
+            //     Navigator.push(
+            //       context,
+            //       MaterialPageRoute(
+            //         builder: (context) => const ProfilePage(),
+            //       ),
+            //     );
+            //   },
+            //   child: Container(
+            //     width: 40,
+            //     height: 40,
+            //     decoration: BoxDecoration(
+            //       shape: BoxShape.circle,
+            //       color: Colors.white,
+            //       boxShadow: [
+            //         BoxShadow(
+            //           color: Colors.black.withOpacity(0.1),
+            //           blurRadius: 4,
+            //           offset: const Offset(0, 2),
+            //         ),
+            //       ],
+            //     ),
+            //     child: Center(
+            //       child: Text(
+            //         _userName?.isNotEmpty == true 
+            //             ? _userName![0].toUpperCase()
+            //             : 'M',
+            //         style: const TextStyle(
+            //           fontSize: 18,
+            //           fontWeight: FontWeight.bold,
+            //           color: Color(0xFFFF6B35),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
           ],
         ),
       ],
