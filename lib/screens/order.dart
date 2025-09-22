@@ -149,50 +149,34 @@ class _OrderPageState extends State<OrderPage> {
 
   Widget _buildHeader(double fontScale) {
     return Container(
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        children: [
-          GestureDetector(
-            onTap:
-                () => Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const HomePageMember(),
-                  ),
-                  (route) => false,
-                ),
-
-            child: Container(
-              width: 40 * fontScale,
-              height: 40 * fontScale,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFF6B35),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Icon(
-                Icons.arrow_back,
-                color: Colors.white,
-                size: 20 * fontScale,
-              ),
-            ),
+      width: double.infinity,
+      padding: EdgeInsets.symmetric(
+        horizontal: 20 * fontScale,
+        vertical: 24 * fontScale,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.orange[700],
+        borderRadius: const BorderRadius.only(
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
+      ),
+      child: Center(
+        child: Text(
+          'Order Services',
+          style: TextStyle(
+            fontSize: 24 * fontScale,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
-          const SizedBox(width: 16),
-          Text(
-            'Order Services',
-            style: TextStyle(
-              fontSize: 24 * fontScale,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
 
   Widget _buildSearchBar(double fontScale) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: TextField(
         controller: _searchController,
         style: TextStyle(fontSize: 14 * fontScale),
