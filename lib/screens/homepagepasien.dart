@@ -126,7 +126,7 @@ class _HomePagePasienState extends State<HomePagePasien> {
           _buildTodaySchedule(),
           _buildLiveQueue(),
           _buildRegistrationNumbers(),
-          // _buildPatientServicesMenu(), // Tambahkan menu baru di sini
+          // _buildPatientServicesMenu(),
           _buildPromotion(),
           _buildHealthArticlesSection(),
           SizedBox(height: 100),
