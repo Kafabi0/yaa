@@ -10,9 +10,11 @@ import 'package:inocare/screens/hasilutdrs.dart';
 import 'package:inocare/screens/infobed.dart';
 import 'package:inocare/screens/infolabu.dart';
 import 'package:inocare/screens/jadwaloperasi.dart';
+import 'package:inocare/screens/liveantrian.dart';
 import 'package:inocare/screens/menumakanan.dart';
 import 'package:inocare/screens/billing_page.dart';
 import 'package:inocare/screens/order.dart';
+import 'package:inocare/screens/riwayat_registrasi_page.dart';
 import 'package:inocare/services/user_prefs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'rumahsakitmember.dart';
@@ -342,8 +344,8 @@ class _HomePagePasienState extends State<HomePagePasien> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "$title - Nomor: $number",
-                    style: TextStyle(fontWeight: FontWeight.w600),
+                    "$title - Nomor Antrian: $number",
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
                   ),
                   SizedBox(height: 4),
                   Text(
@@ -1640,9 +1642,13 @@ class _HomePagePasienState extends State<HomePagePasien> {
       case 1: // Order
         return const OrderPage();
       case 2: // Live
-        return _buildLivePage();
+        return const LiveAntrianPage(
+      nomorAntrian: "RJ40",
+      antrianSaatIni: "RJ37",
+      estimasiMenit: 20,
+    );
       case 3: // Riwayat
-        return _buildRiwayatPage();
+        return RiwayatRegistrasiPage();
       case 4: // Setting
         return SettingsScreen(onLogout: _handleLogout);
       default:
@@ -1650,30 +1656,30 @@ class _HomePagePasienState extends State<HomePagePasien> {
     }
   }
 
-  Widget _buildLivePage() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.satellite_alt, size: 80, color: Colors.grey[400]),
-          SizedBox(height: 16),
-          Text(
-            'Live Tracking',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Halaman dalam pengembangan',
-            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildLivePage() {
+  //   return Center(
+  //     child: Column(
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       children: [
+  //         Icon(Icons.satellite_alt, size: 80, color: Colors.grey[400]),
+  //         SizedBox(height: 16),
+  //         Text(
+  //           'Live Tracking',
+  //           style: TextStyle(
+  //             fontSize: 16,
+  //             color: Colors.grey[600],
+  //             fontWeight: FontWeight.w500,
+  //           ),
+  //         ),
+  //         SizedBox(height: 8),
+  //         Text(
+  //           'Halaman dalam pengembangan',
+  //           style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildRiwayatPage() {
     return Center(
