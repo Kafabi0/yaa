@@ -126,7 +126,7 @@ class _HomePagePasienState extends State<HomePagePasien> {
           _buildTodaySchedule(),
           _buildLiveQueue(),
           _buildRegistrationNumbers(),
-          _buildPatientServicesMenu(), // Tambahkan menu baru di sini
+          // _buildPatientServicesMenu(), // Tambahkan menu baru di sini
           _buildPromotion(),
           _buildHealthArticlesSection(),
           SizedBox(height: 100),
@@ -482,15 +482,16 @@ class _HomePagePasienState extends State<HomePagePasien> {
   }
 
   /// ✅ Function untuk modal bottom sheet
-  void _showAllQuickActions(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: const EdgeInsets.all(16),
+ void _showAllQuickActions(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (context) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -502,324 +503,316 @@ class _HomePagePasienState extends State<HomePagePasien> {
 
               GridView.count(
                 shrinkWrap: true,
-                crossAxisCount: 4, // 4 kolom agar rapi
+                physics: NeverScrollableScrollPhysics(),
+                crossAxisCount: 4,
                 mainAxisSpacing: 16,
                 crossAxisSpacing: 16,
                 children: [
-                  _buildQuickActionItem(
-                    Icons.add_box,
-                    'Registrasi IGD',
-                    Colors.red,
-                  ),
-                  _buildQuickActionItem(
-                    FontAwesomeIcons.userDoctor,
-                    'Registrasi Rajal',
-                    Colors.blue,
-                  ),
-                  _buildQuickActionItem(
-                    Icons.assignment,
-                    'Registrasi MCU',
-                    Color(0xFFFF6B35),
-                  ),
-                  _buildQuickActionItem(
-                    Icons.hotel,
-                    'Registrasi Ranap',
-                    Colors.teal,
-                  ),
-                  _buildQuickActionItem(
-                    Icons.receipt_long,
-                    'Tagihan',
-                    Colors.purple,
-                  ),
+                  // Registrasi
+                  _buildQuickActionItem(Icons.add_box, 'Registrasi IGD', Colors.red),
+                  _buildQuickActionItem(FontAwesomeIcons.userDoctor, 'Registrasi Rajal', Colors.blue),
+                  _buildQuickActionItem(Icons.assignment, 'Registrasi MCU', Color(0xFFFF6B35)),
+                  _buildQuickActionItem(Icons.hotel, 'Registrasi Ranap', Colors.teal),
+                  _buildQuickActionItem(Icons.receipt_long, 'Tagihan', Colors.purple),
+
+                  // Layanan pasien tambahan
+                  if (_antrianIGD != null || _antrianRajal != null || _antrianMCU != null || _antrianRanap != null)
+                    _buildQuickActionItem(Icons.assignment_outlined, 'Hasil Pemeriksaan', Colors.blue),
+                  if (_antrianIGD != null || _antrianRajal != null || _antrianMCU != null || _antrianRanap != null)
+                    _buildQuickActionItem(Icons.science_outlined, 'Hasil Lab', Colors.purple),
+                  if (_antrianIGD != null || _antrianRajal != null || _antrianRanap != null)
+                    _buildQuickActionItem(Icons.camera_alt_outlined, 'Hasil Radiologi', Colors.orange),
+                  _buildQuickActionItem(Icons.monitor_heart_outlined, 'Hasil UTDRS', Colors.red),
+                  if (_antrianIGD != null)
+                    _buildQuickActionItem(Icons.gavel_outlined, 'Hasil Forensik', Colors.brown),
+                  if (_antrianRanap != null)
+                    _buildQuickActionItem(Icons.restaurant_menu_outlined, 'Menu Makanan', Colors.teal),
+                  if (_antrianRanap != null || _antrianIGD != null)
+                    _buildQuickActionItem(Icons.medical_services_outlined, 'Jadwal Operasi', Color(0xFFFF6B35)),
                 ],
               ),
             ],
           ),
-        );
-      },
-    );
-  }
+        ),
+      );
+    },
+  );
+}
+
 
   Widget _buildQuickActionItem(IconData icon, String label, Color color) {
-    return GestureDetector(
-      onTap: () async {
-        String? nomorAntrian;
-
-        if (label == 'Registrasi IGD') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const RegistrasiIGDPage()),
-          ).then((value) async {
+  return GestureDetector(
+    onTap: () async {
+      switch (label) {
+        case 'Registrasi IGD':
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const RegistrasiIGDPage()))
+              .then((_) async {
             await _refreshData();
             final prefs = await SharedPreferences.getInstance();
-            nomorAntrian = prefs.getString('nomorAntrian_IGD');
-            if (nomorAntrian != null) {
-              _showRealtimeDialog('IGD', nomorAntrian!);
-            }
+            String? nomorAntrian = prefs.getString('nomorAntrian_IGD');
+            if (nomorAntrian != null) _showRealtimeDialog('IGD', nomorAntrian);
           });
-        } else if (label == 'Registrasi Rajal') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const RegistrasiRajalPage()),
-          ).then((value) async {
+          break;
+
+        case 'Registrasi Rajal':
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const RegistrasiRajalPage()))
+              .then((_) async {
             await _refreshData();
             final prefs = await SharedPreferences.getInstance();
-            nomorAntrian = prefs.getString('nomorAntrian_RAJAL');
-            if (nomorAntrian != null) {
-              _showRealtimeDialog('RAJAL', nomorAntrian!);
-            }
+            String? nomorAntrian = prefs.getString('nomorAntrian_RAJAL');
+            if (nomorAntrian != null) _showRealtimeDialog('RAJAL', nomorAntrian);
           });
-        } else if (label == 'Registrasi MCU') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const RegistrasiMCUPage()),
-          ).then((value) async {
-            await _refreshData();
-            final prefs = await SharedPreferences.getInstance();
-            nomorAntrian = prefs.getString('nomorAntrian_MCU');
-            if (nomorAntrian != null) {
-              _showRealtimeDialog('MCU', nomorAntrian!);
-            }
-          });
-        } else if (label == 'Registrasi Ranap') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const RegistrasiRanapPage()),
-          ).then((value) async {
-            await _refreshData();
-            final prefs = await SharedPreferences.getInstance();
-            nomorAntrian = prefs.getString('nomorAntrian_RANAP');
-            if (nomorAntrian != null) {
-              _showRealtimeDialog('RANAP', nomorAntrian!);
-            }
-          });
-        } else if (label == 'Tagihan') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const BillingPage()),
-          );
-        }
-      },
-      child: Column(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: Icon(icon, color: Colors.white, size: 28),
+          break;
+
+        case 'Tagihan':
+          _openBillingPage();
+          break;
+
+        case 'Hasil Pemeriksaan':
+          _openHasilPemeriksaan();
+          break;
+
+        case 'Hasil Lab':
+          _openHasilLab();
+          break;
+
+        case 'Hasil Radiologi':
+          _openHasilRadiologi();
+          break;
+
+        case 'Hasil UTDRS':
+          _openHasilUTDRS();
+          break;
+
+        case 'Hasil Forensik':
+          _openHasilForensik();
+          break;
+
+        case 'Menu Makanan':
+          _openMenuMakanan();
+          break;
+
+        case 'Jadwal Operasi':
+          _openJadwalOperasi();
+          break;
+      }
+    },
+    child: Column(
+      children: [
+        Container(
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(30),
           ),
-          SizedBox(height: 8),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPatientServicesMenu() {
-    bool hasAnyRegistration =
-        _antrianIGD != null ||
-        _antrianRajal != null ||
-        _antrianMCU != null ||
-        _antrianRanap != null;
-
-    if (!hasAnyRegistration) {
-      return Container(); // Return empty if no registration
-    }
-
-    return Container(
-      margin: EdgeInsets.all(16),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 4,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.medical_services, color: Color(0xFFFF6B35), size: 20),
-              SizedBox(width: 8),
-              Text(
-                'Layanan Pasien',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: 16),
-
-          // Menu Grid
-          GridView.count(
-            crossAxisCount: 3,
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            childAspectRatio: 0.9,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            children: [
-              // Billing/Tagihan - Available for all
-              _buildServiceMenuItem(
-                icon: Icons.receipt_long,
-                label: 'Billing\nTagihan',
-                color: Colors.green,
-                onTap: () => _openBillingPage(),
-              ),
-
-              // Hasil Pemeriksaan - Available for all
-              _buildServiceMenuItem(
-                icon: Icons.assignment_outlined,
-                label: 'Hasil\nPemeriksaan',
-                color: Colors.blue,
-                onTap: () => _openHasilPemeriksaan(),
-              ),
-
-              // Hasil Lab - Available for IGD, Rajal, MCU, Ranap
-              if (_antrianIGD != null ||
-                  _antrianRajal != null ||
-                  _antrianMCU != null ||
-                  _antrianRanap != null)
-                _buildServiceMenuItem(
-                  icon: Icons.science_outlined,
-                  label: 'Hasil\nLab',
-                  color: Colors.purple,
-                  onTap: () => _openHasilLab(),
-                ),
-
-              // Hasil Radiologi - Available for IGD, Rajal, Ranap
-              if (_antrianIGD != null ||
-                  _antrianRajal != null ||
-                  _antrianRanap != null)
-                _buildServiceMenuItem(
-                  icon: Icons.camera_alt_outlined,
-                  label: 'Hasil\nRadiologi',
-                  color: Colors.orange,
-                  onTap: () => _openHasilRadiologi(),
-                ),
-              if (_antrianRanap != null)
-                _buildServiceMenuItem(
-                  icon: Icons.restaurant_menu,
-                  label: 'Menu\nMakanan',
-                  color: Colors.green,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => MenuMakananPage(
-                              patientName:
-                                  "Budi Santoso", // ambil dari data pasien
-                              ranapNumber:
-                                  _antrianRanap ?? "-", // nomor rawat inap
-                            ),
-                      ),
-                    );
-                  },
-                ),
-
-              // Hasil UTDRS - Available for all
-              _buildServiceMenuItem(
-                icon: Icons.monitor_heart_outlined,
-                label: 'Hasil\nUTDRS',
-                color: Colors.red,
-                onTap: () => _openHasilUTDRS(),
-              ),
-
-              // Hasil Forensik - Available for IGD only
-              if (_antrianIGD != null)
-                _buildServiceMenuItem(
-                  icon: Icons.gavel_outlined,
-                  label: 'Hasil\nForensik',
-                  color: Colors.brown,
-                  onTap: () => _openHasilForensik(),
-                ),
-
-              // Menu Makanan - Available for Ranap only
-              if (_antrianRanap != null)
-                _buildServiceMenuItem(
-                  icon: Icons.restaurant_menu_outlined,
-                  label: 'Menu\nMakanan',
-                  color: Colors.teal,
-                  onTap: () => _openMenuMakanan(),
-                ),
-
-              // Jadwal Operasi - Available for Ranap and IGD (emergency surgery)
-              if (_antrianRanap != null || _antrianIGD != null)
-                _buildServiceMenuItem(
-                  icon: Icons.medical_services_outlined,
-                  label: 'Jadwal\nOperasi',
-                  color: Color(0xFFFF6B35),
-                  onTap: () => _openJadwalOperasi(),
-                ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildServiceMenuItem({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: color.withOpacity(0.3)),
+          child: Icon(icon, color: Colors.white, size: 28),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.2),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: color, size: 24),
-            ),
-            SizedBox(height: 8),
-            Text(
-              label,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
-              ),
-            ),
-          ],
+        SizedBox(height: 8),
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: Colors.black87),
         ),
-      ),
-    );
-  }
+      ],
+    ),
+  );
+}
+
+  // Widget _buildPatientServicesMenu() {
+  //   bool hasAnyRegistration =
+  //       _antrianIGD != null ||
+  //       _antrianRajal != null ||
+  //       _antrianMCU != null ||
+  //       _antrianRanap != null;
+
+  //   if (!hasAnyRegistration) {
+  //     return Container(); // Return empty if no registration
+  //   }
+
+  //   return Container(
+  //     margin: EdgeInsets.all(16),
+  //     padding: EdgeInsets.all(16),
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       borderRadius: BorderRadius.circular(12),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.grey.withOpacity(0.1),
+  //           spreadRadius: 1,
+  //           blurRadius: 4,
+  //           offset: Offset(0, 2),
+  //         ),
+  //       ],
+  //     ),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         Row(
+  //           children: [
+  //             Icon(Icons.medical_services, color: Color(0xFFFF6B35), size: 20),
+  //             SizedBox(width: 8),
+  //             Text(
+  //               'Layanan Pasien',
+  //               style: TextStyle(
+  //                 fontSize: 16,
+  //                 fontWeight: FontWeight.bold,
+  //                 color: Colors.black87,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //         SizedBox(height: 16),
+
+  //         // Menu Grid
+  //         GridView.count(
+  //           crossAxisCount: 3,
+  //           shrinkWrap: true,
+  //           physics: NeverScrollableScrollPhysics(),
+  //           childAspectRatio: 0.9,
+  //           crossAxisSpacing: 12,
+  //           mainAxisSpacing: 12,
+  //           children: [
+  //             // Billing/Tagihan - Available for all
+  //             _buildServiceMenuItem(
+  //               icon: Icons.receipt_long,
+  //               label: 'Billing\nTagihan',
+  //               color: Colors.green,
+  //               onTap: () => _openBillingPage(),
+  //             ),
+
+  //             // Hasil Pemeriksaan - Available for all
+  //             _buildServiceMenuItem(
+  //               icon: Icons.assignment_outlined,
+  //               label: 'Hasil\nPemeriksaan',
+  //               color: Colors.blue,
+  //               onTap: () => _openHasilPemeriksaan(),
+  //             ),
+
+  //             // Hasil Lab - Available for IGD, Rajal, MCU, Ranap
+  //             if (_antrianIGD != null ||
+  //                 _antrianRajal != null ||
+  //                 _antrianMCU != null ||
+  //                 _antrianRanap != null)
+  //               _buildServiceMenuItem(
+  //                 icon: Icons.science_outlined,
+  //                 label: 'Hasil\nLab',
+  //                 color: Colors.purple,
+  //                 onTap: () => _openHasilLab(),
+  //               ),
+
+  //             // Hasil Radiologi - Available for IGD, Rajal, Ranap
+  //             if (_antrianIGD != null ||
+  //                 _antrianRajal != null ||
+  //                 _antrianRanap != null)
+  //               _buildServiceMenuItem(
+  //                 icon: Icons.camera_alt_outlined,
+  //                 label: 'Hasil\nRadiologi',
+  //                 color: Colors.orange,
+  //                 onTap: () => _openHasilRadiologi(),
+  //               ),
+  //             // if (_antrianRanap != null)
+  //             //   _buildServiceMenuItem(
+  //             //     icon: Icons.restaurant_menu,
+  //             //     label: 'Menu\nMakanan',
+  //             //     color: Colors.green,
+  //             //     onTap: () {
+  //             //       Navigator.push(
+  //             //         context,
+  //             //         MaterialPageRoute(
+  //             //           builder:
+  //             //               (context) => MenuMakananPage(
+  //             //                 patientName:
+  //             //                     "Budi Santoso", // ambil dari data pasien
+  //             //                 ranapNumber:
+  //             //                     _antrianRanap ?? "-", // nomor rawat inap
+  //             //               ),
+  //             //         ),
+  //             //       );
+  //             //     },
+  //             //   ),
+
+  //             // Hasil UTDRS - Available for all
+  //             _buildServiceMenuItem(
+  //               icon: Icons.monitor_heart_outlined,
+  //               label: 'Hasil\nUTDRS',
+  //               color: Colors.red,
+  //               onTap: () => _openHasilUTDRS(),
+  //             ),
+
+  //             // Hasil Forensik - Available for IGD only
+  //             if (_antrianIGD != null)
+  //               _buildServiceMenuItem(
+  //                 icon: Icons.gavel_outlined,
+  //                 label: 'Hasil\nForensik',
+  //                 color: Colors.brown,
+  //                 onTap: () => _openHasilForensik(),
+  //               ),
+
+  //             // Menu Makanan - Available for Ranap only
+  //             if (_antrianRanap != null)
+  //               _buildServiceMenuItem(
+  //                 icon: Icons.restaurant_menu_outlined,
+  //                 label: 'Menu\nMakanan',
+  //                 color: Colors.teal,
+  //                 onTap: () => _openMenuMakanan(),
+  //               ),
+
+  //             // Jadwal Operasi - Available for Ranap and IGD (emergency surgery)
+  //             if (_antrianRanap != null || _antrianIGD != null)
+  //               _buildServiceMenuItem(
+  //                 icon: Icons.medical_services_outlined,
+  //                 label: 'Jadwal\nOperasi',
+  //                 color: Color(0xFFFF6B35),
+  //                 onTap: () => _openJadwalOperasi(),
+  //               ),
+  //           ],
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  // Widget _buildServiceMenuItem({
+  //   required IconData icon,
+  //   required String label,
+  //   required Color color,
+  //   required VoidCallback onTap,
+  // }) {
+  //   return GestureDetector(
+  //     onTap: onTap,
+  //     child: Container(
+  //       decoration: BoxDecoration(
+  //         color: color.withOpacity(0.1),
+  //         borderRadius: BorderRadius.circular(12),
+  //         border: Border.all(color: color.withOpacity(0.3)),
+  //       ),
+  //       child: Column(
+  //         mainAxisAlignment: MainAxisAlignment.center,
+  //         children: [
+  //           Container(
+  //             padding: EdgeInsets.all(12),
+  //             decoration: BoxDecoration(
+  //               color: color.withOpacity(0.2),
+  //               shape: BoxShape.circle,
+  //             ),
+  //             child: Icon(icon, color: color, size: 24),
+  //           ),
+  //           SizedBox(height: 8),
+  //           Text(
+  //             label,
+  //             textAlign: TextAlign.center,
+  //             style: TextStyle(
+  //               fontSize: 11,
+  //               fontWeight: FontWeight.w600,
+  //               color: Colors.black87,
+  //             ),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   // Method handlers untuk setiap menu
   void _openBillingPage() {
