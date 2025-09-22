@@ -372,7 +372,7 @@ class _OrderPageState extends State<OrderPage> {
                 String nomorOrder = await _generateOrderNumber(serviceType);
                 await _saveOrderNotification(serviceType, nomorOrder);
 
-                _showSuccessSnackbar(serviceType);
+                // _showSuccessSnackbar(serviceType);
 
                 // 🔥 Navigasi sesuai servicenya
                 Widget page;
@@ -421,22 +421,22 @@ class _OrderPageState extends State<OrderPage> {
     );
   }
 
-  void _showSuccessSnackbar(String serviceType) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Row(
-          children: [
-            const Icon(Icons.check_circle, color: Colors.white),
-            const SizedBox(width: 8),
-            Text('Order $serviceType berhasil dibuat!'),
-          ],
-        ),
-        backgroundColor: Colors.green,
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      ),
-    );
-  }
+  // void _showSuccessSnackbar(String serviceType) {
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     SnackBar(
+  //       content: Row(
+  //         children: [
+  //           const Icon(Icons.check_circle, color: Colors.white),
+  //           const SizedBox(width: 8),
+  //           Text('Order $serviceType berhasil dibuat!'),
+  //         ],
+  //       ),
+  //       backgroundColor: Colors.green,
+  //       behavior: SnackBarBehavior.floating,
+  //       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+  //     ),
+  //   );
+  // }
 
   @override
   void dispose() {
