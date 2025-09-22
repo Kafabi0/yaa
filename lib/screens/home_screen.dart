@@ -808,7 +808,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
                       Icon(Icons.location_on, color: Colors.red, size: 16),
                       const SizedBox(width: 4),
                       Text(
-                        'Bandar Lampung',
+                        '                     ',
                         style: TextStyle(
                           color: Colors.grey[600],
                           fontSize: 12,
