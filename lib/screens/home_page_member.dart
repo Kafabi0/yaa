@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inocare/screens/order.dart';
 import 'package:inocare/screens/rumahsakitmember.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
@@ -29,14 +30,13 @@ class _HomePageMemberState extends State<HomePageMember> {
     super.initState();
     _loadUserData();
   }
+
   void _openArticle(String url, String title) {
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => HybridWebView(url: url,),
-    ),
-  );
-}
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => HybridWebView(url: url)),
+    );
+  }
 
   Future<void> _loadUserData() async {
     final user = await UserPrefs.getUser();
@@ -62,26 +62,17 @@ class _HomePageMemberState extends State<HomePageMember> {
     });
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Logout berhasil')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Logout berhasil')));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final pages = [
-      _buildHomePage(),
-      _buildOtherPages(),
-      _buildOtherPages(),
-      _buildOtherPages(),
-    ];
-
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: _currentIndex == 0 ? pages[0] : pages[_currentIndex],
-      ),
+      backgroundColor: Colors.grey[50],
+      body: _currentIndex == 0 ? _buildHomePage() : _buildOtherPages(),
       bottomNavigationBar: _buildBottomNavigation(),
     );
   }
@@ -105,175 +96,233 @@ class _HomePageMemberState extends State<HomePageMember> {
   }
 
   Widget _buildHeader() {
-  return Container(
-    padding: const EdgeInsets.all(20),
-    decoration: const BoxDecoration(
-      gradient: LinearGradient(
-        colors: [Color(0xFFFF6B35), Color(0xFFFF8A50)],
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFFFF6B35), Color(0xFFFF8A50)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(25),
+          bottomRight: Radius.circular(25),
+        ),
       ),
-      borderRadius: BorderRadius.only(
-        bottomLeft: Radius.circular(25),
-        bottomRight: Radius.circular(25),
-      ),
-    ),
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        // Buat bagian ini menjadi clickable
-        GestureDetector(
-          onTap: () {
-            // Navigasi ke halaman profile
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const ProfilePage(),
-              ),
-            );
-          },
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // Buat bagian ini menjadi clickable
+          GestureDetector(
+            onTap: () {
+              // Navigasi ke halaman profile
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfilePage()),
+              );
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Halo, ${_userName ?? "Member"} 👋',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Text(
+                  'Semoga sehat selalu!',
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                ),
+                // Tambahkan indikator bahwa area ini clickable
+                const SizedBox(height: 4),
+                // Text(
+                //   'Ketuk untuk lihat profil',
+                //   style: TextStyle(
+                //     color: Colors.white.withOpacity(0.8),
+                //     fontSize: 12,
+                //     fontStyle: FontStyle.italic,
+                //   ),
+                // ),
+              ],
+            ),
+          ),
+          Row(
             children: [
-              Text(
-                'Halo, ${_userName ?? "Member"} 👋',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
+              GestureDetector(
+                onTap: () {
+                  // TODO: Implement notifications
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Fitur notifikasi akan segera hadir'),
+                      backgroundColor: Color(0xFFFF6B35),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.2),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.notifications,
+                    color: Colors.white,
+                    size: 24,
+                  ),
                 ),
               ),
-              const Text(
-                'Semoga sehat selalu!',
-                style: TextStyle(color: Colors.white70, fontSize: 14),
-              ),
-              // Tambahkan indikator bahwa area ini clickable
-              const SizedBox(height: 4),
-              // Text(
-              //   'Ketuk untuk lihat profil',
-              //   style: TextStyle(
-              //     color: Colors.white.withOpacity(0.8),
-              //     fontSize: 12,
-              //     fontStyle: FontStyle.italic,
+              const SizedBox(width: 12),
+              // GestureDetector(
+              //   onTap: () {
+              //     // Navigasi ke halaman profile juga
+              //     Navigator.push(
+              //       context,
+              //       MaterialPageRoute(
+              //         builder: (context) => const ProfilePage(),
+              //       ),
+              //     );
+              //   },
+              //   child: Container(
+              //     width: 40,
+              //     height: 40,
+              //     decoration: BoxDecoration(
+              //       shape: BoxShape.circle,
+              //       color: Colors.white,
+              //       boxShadow: [
+              //         BoxShadow(
+              //           color: Colors.black.withOpacity(0.1),
+              //           blurRadius: 4,
+              //           offset: const Offset(0, 2),
+              //         ),
+              //       ],
+              //     ),
+              //     child: Center(
+              //       child: Text(
+              //         _userName?.isNotEmpty == true
+              //             ? _userName![0].toUpperCase()
+              //             : 'M',
+              //         style: const TextStyle(
+              //           fontSize: 18,
+              //           fontWeight: FontWeight.bold,
+              //           color: Color(0xFFFF6B35),
+              //         ),
+              //       ),
+              //     ),
               //   ),
               // ),
             ],
           ),
-        ),
-        Row(
-          children: [
-            GestureDetector(
-              onTap: () {
-                // TODO: Implement notifications
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Fitur notifikasi akan segera hadir'),
-                    backgroundColor: Color(0xFFFF6B35),
-                  ),
-                );
-              },
-              child: Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.notifications, color: Colors.white, size: 24),
-              ),
-            ),
-            const SizedBox(width: 12),
-            // GestureDetector(
-            //   onTap: () {
-            //     // Navigasi ke halaman profile juga
-            //     Navigator.push(
-            //       context,
-            //       MaterialPageRoute(
-            //         builder: (context) => const ProfilePage(),
-            //       ),
-            //     );
-            //   },
-            //   child: Container(
-            //     width: 40,
-            //     height: 40,
-            //     decoration: BoxDecoration(
-            //       shape: BoxShape.circle,
-            //       color: Colors.white,
-            //       boxShadow: [
-            //         BoxShadow(
-            //           color: Colors.black.withOpacity(0.1),
-            //           blurRadius: 4,
-            //           offset: const Offset(0, 2),
-            //         ),
-            //       ],
-            //     ),
-            //     child: Center(
-            //       child: Text(
-            //         _userName?.isNotEmpty == true 
-            //             ? _userName![0].toUpperCase()
-            //             : 'M',
-            //         style: const TextStyle(
-            //           fontSize: 18,
-            //           fontWeight: FontWeight.bold,
-            //           color: Color(0xFFFF6B35),
-            //         ),
-            //       ),
-            //     ),
-            //   ),
-            // ),
-          ],
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
+
   Widget _buildBottomNavigation() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return CurvedNavigationBar(
       index: _currentIndex,
       onTap: (index) {
-        if (index == 4) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => SettingsScreen(onLogout: _handleLogout),
-            ),
-          );
-        } else {
-          setState(() {
-            _currentIndex = index;
-          });
-        }
+        setState(() {
+          _currentIndex = index;
+        });
       },
       color: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
       backgroundColor: Colors.transparent,
       buttonBackgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
-      height: 60,
+      height: 70,
       animationCurve: Curves.easeInOut,
       animationDuration: const Duration(milliseconds: 300),
-      items: const [
-        Icon(FontAwesomeIcons.house, color: Colors.white, size: 24),
-        Icon(FontAwesomeIcons.calendarDay, color: Colors.white, size: 24),
-        Icon(FontAwesomeIcons.solidHeart, color: Colors.white, size: 24),
-        Icon(FontAwesomeIcons.solidCommentDots, color: Colors.white, size: 24),
-        Icon(FontAwesomeIcons.user, color: Colors.white, size: 24),
+      items: [
+        _buildNavItemWithLabel(FontAwesomeIcons.house, 'Home'),
+        _buildNavItemWithLabel(FontAwesomeIcons.clipboardList, 'Order'),
+        _buildNavItemWithLabel(FontAwesomeIcons.satellite, 'Live'),
+        _buildNavItemWithLabel(FontAwesomeIcons.clockRotateLeft, 'Riwayat'),
+        _buildNavItemWithLabel(FontAwesomeIcons.gear, 'Setting'),
       ],
     );
   }
 
+  Widget _buildNavItemWithLabel(IconData icon, String label) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: Colors.white, size: 20),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 10,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+
   Widget _buildOtherPages() {
+    switch (_currentIndex) {
+      case 1: // Order
+        return const OrderPage();
+      case 2: // Live
+        return _buildLivePage();
+      case 3: // Riwayat
+        return _buildRiwayatPage();
+      case 4: // Setting
+        return SettingsScreen(onLogout: _handleLogout);
+      default:
+        return _buildHomePage();
+    }
+  }
+  Widget _buildLivePage() {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(Icons.construction, size: 80, color: Colors.grey[400]),
-          const SizedBox(height: 16),
+          Icon(Icons.satellite_alt, size: 80, color: Colors.grey[400]),
+          SizedBox(height: 16),
           Text(
-            'Halaman dalam pengembangan',
+            'Live Tracking',
             style: TextStyle(
               fontSize: 16,
               color: Colors.grey[600],
               fontWeight: FontWeight.w500,
             ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Halaman dalam pengembangan',
+            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRiwayatPage() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.history, size: 80, color: Colors.grey[400]),
+          SizedBox(height: 16),
+          Text(
+            'Riwayat',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[600],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          SizedBox(height: 8),
+          Text(
+            'Halaman dalam pengembangan',
+            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
           ),
         ],
       ),
@@ -647,7 +696,7 @@ class _HomePageMemberState extends State<HomePageMember> {
               ),
             ),
             IconButton(
-              onPressed: onTap, 
+              onPressed: onTap,
               icon: Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
@@ -659,7 +708,7 @@ class _HomePageMemberState extends State<HomePageMember> {
                   size: 24,
                   color: Colors.white,
                 ),
-              )
+              ),
             ),
           ],
         ),
@@ -808,7 +857,8 @@ class _HomePageMemberState extends State<HomePageMember> {
             date: 'Rabu, 3 September 2025',
             imagePath: 'assets/images/ginjal.jpg',
             gradient: [Color(0xFF87CEEB), Color(0xFFB0E0E6)],
-            url: 'https://www.biofarma.co.id/id/announcement/detail/5-cara-merawat-ginjal-agar-sehat-cegah-penyakit-ginjal',
+            url:
+                'https://www.biofarma.co.id/id/announcement/detail/5-cara-merawat-ginjal-agar-sehat-cegah-penyakit-ginjal',
           ),
           const SizedBox(height: 12),
           _buildArticleCard(
@@ -817,7 +867,8 @@ class _HomePageMemberState extends State<HomePageMember> {
             date: 'Senin, 30 Juni 2025',
             imagePath: 'assets/images/olang.jpg',
             gradient: [Color(0xFF98FB98), Color(0xFF90EE90)],
-            url: 'https://www.biofarma.co.id/id/announcement/detail/9-manfaat-kolang-kaling-yang-perlu-kamu-ketahui',
+            url:
+                'https://www.biofarma.co.id/id/announcement/detail/9-manfaat-kolang-kaling-yang-perlu-kamu-ketahui',
           ),
           const SizedBox(height: 12),
           _buildArticleCard(
@@ -826,7 +877,8 @@ class _HomePageMemberState extends State<HomePageMember> {
             date: 'Jumat, 12 Juni 2025',
             imagePath: 'assets/images/gerd.png',
             gradient: [Color(0xFFFFA07A), Color(0xFF7F50)],
-            url: 'https://www.biofarma.co.id/id/announcement/detail/kenali-jenis-makanan-penyebab-gerd',
+            url:
+                'https://www.biofarma.co.id/id/announcement/detail/kenali-jenis-makanan-penyebab-gerd',
           ),
         ],
       ),
@@ -839,144 +891,145 @@ class _HomePageMemberState extends State<HomePageMember> {
     required String date,
     required String imagePath,
     required List<Color> gradient,
-      required String url, // 🔥 tambahkan parameter URL
-
+    required String url, // 🔥 tambahkan parameter URL
   }) {
     return GestureDetector(
-    onTap: () => _openArticle(url, title), // buka link artikel
-    child: Container(
-      height: 180,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: gradient,
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.black.withOpacity(0.6),
-                      Colors.black.withOpacity(0.3),
-                      Colors.transparent,
-                    ],
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              top: 12,
-              left: 12,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.9),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  category,
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 30,
-              left: 12,
-              right: 80,
-              child: Text(
-                title,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(1, 1),
-                      blurRadius: 3,
-                      color: Colors.black.withOpacity(0.5),
-                    ),
-                  ],
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            Positioned(
-              bottom: 12,
-              left: 12,
-              child: Text(
-                date,
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.9),
-                  fontSize: 10,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(1, 1),
-                      blurRadius: 3,
-                      color: Colors.black.withOpacity(0.5),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 12,
-              right: 12,
-              child: Text(
-                'Baca Selengkapnya →',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                  shadows: [
-                    Shadow(
-                      offset: Offset(1, 1),
-                      blurRadius: 3,
-                      color: Colors.black.withOpacity(0.5),
-                    ),
-                  ],
-                ),
-              ),
+      onTap: () => _openArticle(url, title), // buka link artikel
+      child: Container(
+        height: 180,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
           ],
         ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: gradient,
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.black.withOpacity(0.6),
+                        Colors.black.withOpacity(0.3),
+                        Colors.transparent,
+                      ],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 12,
+                left: 12,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    category,
+                    style: TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 30,
+                left: 12,
+                right: 80,
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    shadows: [
+                      Shadow(
+                        offset: Offset(1, 1),
+                        blurRadius: 3,
+                        color: Colors.black.withOpacity(0.5),
+                      ),
+                    ],
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Positioned(
+                bottom: 12,
+                left: 12,
+                child: Text(
+                  date,
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.9),
+                    fontSize: 10,
+                    shadows: [
+                      Shadow(
+                        offset: Offset(1, 1),
+                        blurRadius: 3,
+                        color: Colors.black.withOpacity(0.5),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: 12,
+                right: 12,
+                child: Text(
+                  'Baca Selengkapnya →',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    shadows: [
+                      Shadow(
+                        offset: Offset(1, 1),
+                        blurRadius: 3,
+                        color: Colors.black.withOpacity(0.5),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-    ),
     );
-
   }
 
   void _showFAQ() {
@@ -1093,7 +1146,10 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                         width: _currentPage == index ? 20 : 8,
                         height: 8,
                         decoration: BoxDecoration(
-                          color: _currentPage == index ? _pageColors[_currentPage] : Colors.grey[300],
+                          color:
+                              _currentPage == index
+                                  ? _pageColors[_currentPage]
+                                  : Colors.grey[300],
                           borderRadius: BorderRadius.circular(4),
                         ),
                       );
@@ -1116,7 +1172,9 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                             },
                             child: Text(
                               'Sebelumnya',
-                              style: TextStyle(color: _pageColors[_currentPage]),
+                              style: TextStyle(
+                                color: _pageColors[_currentPage],
+                              ),
                             ),
                           )
                         else
@@ -1124,7 +1182,10 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
 
                         Text(
                           '${_currentPage + 1} dari 5',
-                          style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                          style: TextStyle(
+                            color: Colors.grey[600],
+                            fontSize: 14,
+                          ),
                         ),
 
                         ElevatedButton(
@@ -1152,7 +1213,9 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                           onPressed: () {
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (context) => RumahSakitMemberPage()),
+                              MaterialPageRoute(
+                                builder: (context) => RumahSakitMemberPage(),
+                              ),
                             );
                           },
                           style: ElevatedButton.styleFrom(
@@ -1499,7 +1562,9 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  _buildServiceItem('Daftar Rawat Jalan langsung dari aplikasi'),
+                  _buildServiceItem(
+                    'Daftar Rawat Jalan langsung dari aplikasi',
+                  ),
                   _buildServiceItem('Antri IGD jika darurat'),
                   _buildServiceItem('MCU sesuai jadwal'),
                   _buildServiceItem('Rujukan bila perlu pemeriksaan lanjutan'),
@@ -1734,7 +1799,9 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  _buildTipItem('Aktifkan lokasi untuk mendapatkan data yang akurat'),
+                  _buildTipItem(
+                    'Aktifkan lokasi untuk mendapatkan data yang akurat',
+                  ),
                   _buildTipItem('Ubah kota jika Anda pindah kota'),
                   _buildTipItem('Lihat FAQ jika ada kendala'),
                   const SizedBox(height: 8),
@@ -1757,10 +1824,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
               children: [
                 Text(
                   '5 dari 5',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -1775,19 +1839,12 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
-          Icon(
-            Icons.check_circle,
-            color: Color(0xFF2196F3),
-            size: 14,
-          ),
+          Icon(Icons.check_circle, color: Color(0xFF2196F3), size: 14),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[700],
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey[700]),
             ),
           ),
         ],
@@ -1800,19 +1857,12 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
-          Icon(
-            icon,
-            color: Color(0xFF03A9F4),
-            size: 14,
-          ),
+          Icon(icon, color: Color(0xFF03A9F4), size: 14),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[700],
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey[700]),
             ),
           ),
         ],
@@ -1825,19 +1875,12 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
-          Icon(
-            Icons.medical_services,
-            color: Color(0xFF00BCD4),
-            size: 14,
-          ),
+          Icon(Icons.medical_services, color: Color(0xFF00BCD4), size: 14),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[700],
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey[700]),
             ),
           ),
         ],
@@ -1845,7 +1888,11 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
     );
   }
 
-  Widget _buildAdditionalFeatureItem(IconData icon, String title, String description) {
+  Widget _buildAdditionalFeatureItem(
+    IconData icon,
+    String title,
+    String description,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Column(
@@ -1853,11 +1900,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
         children: [
           Row(
             children: [
-              Icon(
-                icon,
-                color: Color(0xFF009688),
-                size: 14,
-              ),
+              Icon(icon, color: Color(0xFF009688), size: 14),
               const SizedBox(width: 6),
               Text(
                 title,
@@ -1874,10 +1917,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
             padding: const EdgeInsets.only(left: 20),
             child: Text(
               description,
-              style: TextStyle(
-                fontSize: 11,
-                color: Colors.grey[600],
-              ),
+              style: TextStyle(fontSize: 11, color: Colors.grey[600]),
             ),
           ),
         ],
@@ -1890,19 +1930,12 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
       padding: const EdgeInsets.symmetric(vertical: 3),
       child: Row(
         children: [
-          Icon(
-            Icons.lightbulb,
-            color: Color(0xFF4CAF50),
-            size: 14,
-          ),
+          Icon(Icons.lightbulb, color: Color(0xFF4CAF50), size: 14),
           const SizedBox(width: 6),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[700],
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey[700]),
             ),
           ),
         ],
@@ -1931,7 +1964,10 @@ class FAQWidget extends StatelessWidget {
                   children: [
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
-                      child: const Icon(Icons.arrow_back, color: Color(0xFFFF6B35)),
+                      child: const Icon(
+                        Icons.arrow_back,
+                        color: Color(0xFFFF6B35),
+                      ),
                     ),
                     const Text(
                       'FAQ',

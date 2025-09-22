@@ -21,7 +21,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
   Future<void> _loadNotifications() async {
     final prefs = await SharedPreferences.getInstance();
 
-    // Ambil nomor antrian yang tersimpan
     final igd = prefs.getString('nomorAntrian_IGD');
     final rajal = prefs.getString('nomorAntrian_RAJAL');
     final mcu = prefs.getString('nomorAntrian_MCU');
@@ -107,7 +106,6 @@ class _NotificationsPageState extends State<NotificationsPage> {
                         style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                       onTap: () {
-                        // Tentukan jenis antrian dari title
                         String jenis = '';
                         if (notif.title.contains('IGD')) jenis = 'IGD';
                         if (notif.title.contains('Rajal')) jenis = 'Rajal';

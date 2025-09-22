@@ -55,33 +55,33 @@ class SettingsScreen extends StatelessWidget {
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNavigation(context),
+      // bottomNavigationBar: _buildBottomNavigation(context),
     );
   }
 
-  Widget _buildBottomNavigation(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+  // Widget _buildBottomNavigation(BuildContext context) {
+  //   final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return CurvedNavigationBar(
-      index: 4, // Settings tab
-      onTap: (index) {
-        if (index != 4) {
-          Navigator.pop(context, index); // balik ke MainPage dengan index tertentu
-        }
-      },
-      color: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
-      backgroundColor: Colors.transparent,
-      buttonBackgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
-      height: 60,
-      animationCurve: Curves.easeInOut,
-      animationDuration: const Duration(milliseconds: 300),
-      items: const [
-        Icon(FontAwesomeIcons.house, color: Colors.white, size: 24),
-        Icon(FontAwesomeIcons.calendarDay, color: Colors.white, size: 24),
-        Icon(FontAwesomeIcons.solidHeart, color: Colors.white, size: 24),
-        Icon(FontAwesomeIcons.solidCommentDots, color: Colors.white, size: 24),
-        Icon(FontAwesomeIcons.user, color: Colors.white, size: 24),
-      ],
-    );
-  }
+  //   return CurvedNavigationBar(
+  //     index: 4, // Settings tab
+  //     onTap: (index) {
+  //       if (index != 4) {
+  //         Navigator.pop(context, index); // balik ke MainPage dengan index tertentu
+  //       }
+  //     },
+  //     color: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
+  //     backgroundColor: Colors.transparent,
+  //     buttonBackgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
+  //     height: 60,
+  //     animationCurve: Curves.easeInOut,
+  //     animationDuration: const Duration(milliseconds: 300),
+  //     items: const [
+  //       Icon(FontAwesomeIcons.house, color: Colors.white, size: 24),
+  //       Icon(FontAwesomeIcons.calendarDay, color: Colors.white, size: 24),
+  //       Icon(FontAwesomeIcons.solidHeart, color: Colors.white, size: 24),
+  //       Icon(FontAwesomeIcons.solidCommentDots, color: Colors.white, size: 24),
+  //       Icon(FontAwesomeIcons.user, color: Colors.white, size: 24),
+  //     ],
+  //   );
+  // }
 }

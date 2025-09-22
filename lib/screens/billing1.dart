@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-class BillingPage extends StatelessWidget {
+class BillingPage1 extends StatelessWidget {
   final String patientName;
   final Map<String, String> registrations;
 
-  const BillingPage({
+  const BillingPage1({
     super.key, // pakai super.key biar lebih singkat
     required this.patientName,
     required this.registrations,

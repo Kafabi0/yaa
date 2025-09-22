@@ -6,7 +6,7 @@ import 'package:inocare/screens/order_lab.dart';
 import 'package:inocare/screens/order_radiologi.dart';
 import 'package:inocare/screens/order_utdrs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'order_ambulance.dart';
+import 'orderambulance.dart';
 
 class OrderPage extends StatefulWidget {
   const OrderPage({Key? key}) : super(key: key);
