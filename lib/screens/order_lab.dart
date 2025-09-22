@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OrderLabPage extends StatefulWidget {
   const OrderLabPage({super.key});
@@ -107,6 +107,7 @@ class _OrderLabPageState extends State<OrderLabPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text("Order Lab"),
         backgroundColor: Colors.blue[700],
@@ -392,7 +393,6 @@ class _OrderLabPageState extends State<OrderLabPage> {
   String _calculateTotal() {
     int total = 0;
     for (var test in _selectedTests) {
-      // Remove 'Rp ' and '.' then convert to int
       String priceStr = test['price'].replaceAll('Rp ', '').replaceAll('.', '');
       total += int.parse(priceStr);
     }
@@ -431,8 +431,36 @@ class _LabOrderSummaryPageState extends State<LabOrderSummaryPage> {
     super.dispose();
   }
 
+  // Generate unique lab order number
+  String _generateLabOrderNumber() {
+    final now = DateTime.now();
+    final timestamp = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}';
+    return 'LAB$timestamp';
+  }
+
+  Future<void> _saveLabOrder(String orderNumber) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('nomorAntrian_LAB', orderNumber);
+    
+    // Save additional lab order info
+    final labInfo = {
+      'orderNumber': orderNumber,
+      'patientName': _nameController.text,
+      'phone': _phoneController.text,
+      'address': _addressController.text,
+      'tests': widget.selectedTests.map((test) => test['name']).join(', '),
+      'totalCost': _calculateTotalWithAdmin(),
+      'orderDate': DateTime.now().toIso8601String(),
+    };
+    
+    await prefs.setString('labOrderInfo', labInfo.toString());
+  }
+
   void _processOrder() {
     if (_formKey.currentState!.validate()) {
+      // Generate order number
+      final orderNumber = _generateLabOrderNumber();
+      
       // Simulate order processing
       showDialog(
         context: context,
@@ -450,7 +478,10 @@ class _LabOrderSummaryPageState extends State<LabOrderSummaryPage> {
       );
 
       // Simulate processing delay
-      Future.delayed(const Duration(seconds: 2), () {
+      Future.delayed(const Duration(seconds: 2), () async {
+        // Save to SharedPreferences
+        await _saveLabOrder(orderNumber);
+        
         Navigator.pop(context); // Close loading dialog
         
         // Show success dialog
@@ -459,7 +490,26 @@ class _LabOrderSummaryPageState extends State<LabOrderSummaryPage> {
           barrierDismissible: false,
           builder: (context) => AlertDialog(
             title: const Text('Pemesanan Berhasil'),
-            content: const Text('Pesanan lab Anda telah diterima dan akan segera diproses.'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.check_circle,
+                  color: Colors.green,
+                  size: 48,
+                ),
+                const SizedBox(height: 16),
+                const Text('Pesanan lab Anda telah diterima!'),
+                const SizedBox(height: 8),
+                Text(
+                  'Nomor Antrian: $orderNumber',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                ),
+              ],
+            ),
             actions: [
               TextButton(
                 onPressed: () {
@@ -478,6 +528,7 @@ class _LabOrderSummaryPageState extends State<LabOrderSummaryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text("Ringkasan Pemesanan Lab"),
         backgroundColor: Colors.blue[700],
@@ -496,158 +547,208 @@ class _LabOrderSummaryPageState extends State<LabOrderSummaryPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Patient Information Section
-                const Text(
-                  'Informasi Pasien',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                
-                // Name field
-                TextFormField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Nama Lengkap',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    prefixIcon: const Icon(Icons.person),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Mohon masukkan nama lengkap';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                
-                // Phone field
-                TextFormField(
-                  controller: _phoneController,
-                  decoration: InputDecoration(
-                    labelText: 'Nomor Telepon',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    prefixIcon: const Icon(Icons.phone),
-                  ),
-                  keyboardType: TextInputType.phone,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Mohon masukkan nomor telepon';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                
-                // Address field
-                TextFormField(
-                  controller: _addressController,
-                  decoration: InputDecoration(
-                    labelText: 'Alamat',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    prefixIcon: const Icon(Icons.location_on),
-                  ),
-                  maxLines: 3,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Mohon masukkan alamat';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 24),
-                
-                // Selected Tests Section
-                const Text(
-                  'Pilihan Test',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                
                 Container(
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.grey[100],
-                    borderRadius: BorderRadius.circular(8),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  child: ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: widget.selectedTests.length,
-                    separatorBuilder: (context, index) => const Divider(height: 1),
-                    itemBuilder: (context, index) {
-                      final test = widget.selectedTests[index];
-                      return ListTile(
-                        leading: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color: test['color'].withOpacity(0.1),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Informasi Pasien',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      // Name field
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          labelText: 'Nama Lengkap',
+                          border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
-                          child: Icon(
-                            test['icon'],
-                            color: test['color'],
-                            size: 20,
-                          ),
+                          prefixIcon: const Icon(Icons.person),
                         ),
-                        title: Text(
-                          test['name'],
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Mohon masukkan nama lengkap';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      // Phone field
+                      TextFormField(
+                        controller: _phoneController,
+                        decoration: InputDecoration(
+                          labelText: 'Nomor Telepon',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
+                          prefixIcon: const Icon(Icons.phone),
                         ),
-                        subtitle: Text(
-                          test['description'],
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
+                        keyboardType: TextInputType.phone,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Mohon masukkan nomor telepon';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      // Address field
+                      TextFormField(
+                        controller: _addressController,
+                        decoration: InputDecoration(
+                          labelText: 'Alamat',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
                           ),
+                          prefixIcon: const Icon(Icons.location_on),
                         ),
-                        trailing: Text(
-                          test['price'],
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue[700],
-                          ),
-                        ),
-                      );
-                    },
+                        maxLines: 3,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Mohon masukkan alamat';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 24),
+                
+                const SizedBox(height: 16),
+                
+                // Selected Tests Section
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Pilihan Test',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: widget.selectedTests.length,
+                        separatorBuilder: (context, index) => const Divider(),
+                        itemBuilder: (context, index) {
+                          final test = widget.selectedTests[index];
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: test['color'].withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                test['icon'],
+                                color: test['color'],
+                                size: 20,
+                              ),
+                            ),
+                            title: Text(
+                              test['name'],
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                            subtitle: Text(
+                              test['description'],
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            trailing: Text(
+                              test['price'],
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue[700],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: 16),
                 
                 // Notes field
-                TextFormField(
-                  controller: _notesController,
-                  decoration: InputDecoration(
-                    labelText: 'Catatan (Opsional)',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    prefixIcon: const Icon(Icons.note),
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  maxLines: 3,
+                  child: TextFormField(
+                    controller: _notesController,
+                    decoration: InputDecoration(
+                      labelText: 'Catatan (Opsional)',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      prefixIcon: const Icon(Icons.note),
+                    ),
+                    maxLines: 3,
+                  ),
                 ),
-                const SizedBox(height: 24),
+                
+                const SizedBox(height: 16),
                 
                 // Cost Estimation
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
                     color: Colors.blue[50],
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: Colors.blue[200]!),
                   ),
                   child: Column(
@@ -732,7 +833,8 @@ class _LabOrderSummaryPageState extends State<LabOrderSummaryPage> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 32),
+                
+                const SizedBox(height: 24),
                 
                 // Order Buttons
                 Row(
@@ -791,7 +893,6 @@ class _LabOrderSummaryPageState extends State<LabOrderSummaryPage> {
   String _calculateTotal() {
     int total = 0;
     for (var test in widget.selectedTests) {
-      // Remove 'Rp ' and '.' then convert to int
       String priceStr = test['price'].replaceAll('Rp ', '').replaceAll('.', '');
       total += int.parse(priceStr);
     }
@@ -801,7 +902,6 @@ class _LabOrderSummaryPageState extends State<LabOrderSummaryPage> {
   String _calculateTotalWithAdmin() {
     int total = 0;
     for (var test in widget.selectedTests) {
-      // Remove 'Rp ' and '.' then convert to int
       String priceStr = test['price'].replaceAll('Rp ', '').replaceAll('.', '');
       total += int.parse(priceStr);
     }

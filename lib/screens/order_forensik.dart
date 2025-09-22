@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OrderForensikPage extends StatefulWidget {
   const OrderForensikPage({super.key});
@@ -98,7 +98,6 @@ class _OrderForensikPageState extends State<OrderForensikPage> {
         ),
       ),
     ).then((_) {
-      // Refresh the page when returning
       setState(() {});
     });
   }
@@ -106,6 +105,7 @@ class _OrderForensikPageState extends State<OrderForensikPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text("Order Forensik"),
         backgroundColor: Colors.indigo[700],
@@ -385,7 +385,7 @@ class _OrderForensikPageState extends State<OrderForensikPage> {
   }
 }
 
-// Forensik Patient Info Page
+// Enhanced Patient Info Page
 class ForensikPatientInfoPage extends StatefulWidget {
   final Map<String, dynamic> selectedService;
 
@@ -450,6 +450,7 @@ class _ForensikPatientInfoPageState extends State<ForensikPatientInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text("Informasi Pasien"),
         backgroundColor: Colors.indigo[700],
@@ -468,182 +469,213 @@ class _ForensikPatientInfoPageState extends State<ForensikPatientInfoPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Selected Service Section
-                const Text(
-                  'Nama Layanan',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                
                 Container(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    color: Colors.indigo[50],
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.indigo[200]!),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
-                  child: Row(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: widget.selectedService['color'].withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Icon(
-                          widget.selectedService['icon'],
-                          color: widget.selectedService['color'],
-                          size: 24,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              widget.selectedService['name'],
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              widget.selectedService['description'],
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Text(
-                        widget.selectedService['price'],
+                      const Text(
+                        'Layanan Dipilih',
                         style: TextStyle(
-                          fontSize: 16,
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.indigo[700],
+                          color: Colors.black87,
                         ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: widget.selectedService['color'].withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(
+                              widget.selectedService['icon'],
+                              color: widget.selectedService['color'],
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  widget.selectedService['name'],
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  widget.selectedService['description'],
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey[600],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Text(
+                            widget.selectedService['price'],
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.indigo[700],
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
+                
+                const SizedBox(height: 16),
                 
                 // Patient Information Section
-                const Text(
-                  'Informasi Pasien',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.1),
+                        blurRadius: 5,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Informasi Pasien',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      // Name field
+                      TextFormField(
+                        controller: _nameController,
+                        decoration: InputDecoration(
+                          labelText: 'Nama Lengkap',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          prefixIcon: const Icon(Icons.person),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Mohon masukkan nama lengkap';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      // Age field
+                      TextFormField(
+                        controller: _ageController,
+                        decoration: InputDecoration(
+                          labelText: 'Umur',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          prefixIcon: const Icon(Icons.cake),
+                        ),
+                        keyboardType: TextInputType.number,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Mohon masukkan umur';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      // ID field
+                      TextFormField(
+                        controller: _idController,
+                        decoration: InputDecoration(
+                          labelText: 'Nomor Identitas',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          prefixIcon: const Icon(Icons.badge),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Mohon masukkan nomor identitas';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      // Phone field
+                      TextFormField(
+                        controller: _phoneController,
+                        decoration: InputDecoration(
+                          labelText: 'Nomor Telepon',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          prefixIcon: const Icon(Icons.phone),
+                        ),
+                        keyboardType: TextInputType.phone,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Mohon masukkan nomor telepon';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      
+                      // Address field
+                      TextFormField(
+                        controller: _addressController,
+                        decoration: InputDecoration(
+                          labelText: 'Alamat',
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          prefixIcon: const Icon(Icons.location_on),
+                        ),
+                        maxLines: 3,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Mohon masukkan alamat';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 16),
                 
-                // Name field
-                TextFormField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    labelText: 'Nama Lengkap',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    prefixIcon: const Icon(Icons.person),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Mohon masukkan nama lengkap';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                
-                // Age field
-                TextFormField(
-                  controller: _ageController,
-                  decoration: InputDecoration(
-                    labelText: 'Umur',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    prefixIcon: const Icon(Icons.cake),
-                  ),
-                  keyboardType: TextInputType.number,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Mohon masukkan umur';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                
-                // ID field
-                TextFormField(
-                  controller: _idController,
-                  decoration: InputDecoration(
-                    labelText: 'Nomor Identitas',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    prefixIcon: const Icon(Icons.badge),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Mohon masukkan nomor identitas';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                
-                // Phone field
-                TextFormField(
-                  controller: _phoneController,
-                  decoration: InputDecoration(
-                    labelText: 'Nomor Telepon',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    prefixIcon: const Icon(Icons.phone),
-                  ),
-                  keyboardType: TextInputType.phone,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Mohon masukkan nomor telepon';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-                
-                // Address field
-                TextFormField(
-                  controller: _addressController,
-                  decoration: InputDecoration(
-                    labelText: 'Alamat',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    prefixIcon: const Icon(Icons.location_on),
-                  ),
-                  maxLines: 3,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Mohon masukkan alamat';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 24),
                 
                 // Continue Button
                 SizedBox(
@@ -676,7 +708,7 @@ class _ForensikPatientInfoPageState extends State<ForensikPatientInfoPage> {
   }
 }
 
-// Forensik Confirmation Page
+// Enhanced Confirmation Page with Notification Support
 class ForensikConfirmationPage extends StatefulWidget {
   final Map<String, dynamic> selectedService;
   final Map<String, dynamic> patientInfo;
@@ -706,8 +738,34 @@ class _ForensikConfirmationPageState extends State<ForensikConfirmationPage> {
     super.dispose();
   }
 
+  // Generate unique forensik order number
+  String _generateForensikOrderNumber() {
+    final now = DateTime.now();
+    final timestamp = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}${now.hour.toString().padLeft(2, '0')}${now.minute.toString().padLeft(2, '0')}';
+    return 'FOR$timestamp';
+  }
+
+  Future<void> _saveForensikOrder(String orderNumber) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('nomorAntrian_FORENSIK', orderNumber);
+    
+    // Save additional forensik order info
+    final forensikInfo = {
+      'orderNumber': orderNumber,
+      'patientName': widget.patientInfo['name'],
+      'phone': widget.patientInfo['phone'],
+      'service': widget.selectedService['name'],
+      'price': widget.selectedService['price'],
+      'orderDate': DateTime.now().toIso8601String(),
+    };
+    
+    await prefs.setString('forensikOrderInfo', forensikInfo.toString());
+  }
+
   void _processOrder() {
-    // Simulate order processing
+    // Generate order number
+    final orderNumber = _generateForensikOrderNumber();
+    
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -723,17 +781,36 @@ class _ForensikConfirmationPageState extends State<ForensikConfirmationPage> {
       ),
     );
 
-    // Simulate processing delay
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 2), () async {
+      await _saveForensikOrder(orderNumber);
+      
       Navigator.pop(context); // Close loading dialog
       
-      // Show success dialog
       showDialog(
         context: context,
         barrierDismissible: false,
         builder: (context) => AlertDialog(
           title: const Text('Pemesanan Berhasil'),
-          content: const Text('Pesanan forensik Anda telah diterima dan akan segera diproses.'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.check_circle,
+                color: Colors.green,
+                size: 48,
+              ),
+              const SizedBox(height: 16),
+              const Text('Pesanan forensik Anda telah diterima!'),
+              const SizedBox(height: 8),
+              Text(
+                'Nomor Antrian: $orderNumber',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blue,
+                ),
+              ),
+            ],
+          ),
           actions: [
             TextButton(
               onPressed: () {
@@ -750,6 +827,7 @@ class _ForensikConfirmationPageState extends State<ForensikConfirmationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text("Konfirmasi Order"),
         backgroundColor: Colors.indigo[700],
@@ -766,236 +844,165 @@ class _ForensikConfirmationPageState extends State<ForensikConfirmationPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Patient Details Section
-              const Text(
-                'Detail Pasien',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 12),
-              
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      children: [
-                        const Text(
-                          'Nama: ',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            widget.patientInfo['name'],
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ),
-                      ],
+                    const Text(
+                      'Detail Pasien',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Text(
-                          'Umur: ',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            widget.patientInfo['age'],
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Text(
-                          'ID: ',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            widget.patientInfo['id'],
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Text(
-                          'Telepon: ',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            widget.patientInfo['phone'],
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          'Alamat: ',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        Expanded(
-                          child: Text(
-                            widget.patientInfo['address'],
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    const SizedBox(height: 16),
+                    _buildInfoRow('Nama', widget.patientInfo['name']),
+                    _buildInfoRow('Umur', widget.patientInfo['age']),
+                    _buildInfoRow('ID', widget.patientInfo['id']),
+                    _buildInfoRow('Telepon', widget.patientInfo['phone']),
+                    _buildInfoRow('Alamat', widget.patientInfo['address']),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              
+              const SizedBox(height: 16),
               
               // Service Details Section
-              const Text(
-                'Detail Layanan',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 12),
-              
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: Colors.indigo[50],
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.indigo[200]!),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: widget.selectedService['color'].withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Icon(
-                        widget.selectedService['icon'],
-                        color: widget.selectedService['color'],
-                        size: 24,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.selectedService['name'],
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black87,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            widget.selectedService['description'],
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Text(
-                      widget.selectedService['price'],
+                    const Text(
+                      'Detail Layanan',
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.indigo[700],
+                        color: Colors.black87,
                       ),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: widget.selectedService['color'].withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(
+                            widget.selectedService['icon'],
+                            color: widget.selectedService['color'],
+                            size: 24,
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                widget.selectedService['name'],
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black87,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                widget.selectedService['description'],
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Text(
+                          widget.selectedService['price'],
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.indigo[700],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              
+              const SizedBox(height: 16),
               
               // Notes field
-              TextFormField(
-                controller: _notesController,
-                decoration: InputDecoration(
-                  labelText: 'Catatan (Opsional)',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  prefixIcon: const Icon(Icons.note),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.1),
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                 ),
-                maxLines: 3,
+                child: TextFormField(
+                  controller: _notesController,
+                  decoration: InputDecoration(
+                    labelText: 'Catatan (Opsional)',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    prefixIcon: const Icon(Icons.note),
+                  ),
+                  maxLines: 3,
+                ),
               ),
-              const SizedBox(height: 24),
+              
+              const SizedBox(height: 16),
               
               // Cost Estimation
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.indigo[50],
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: Colors.indigo[200]!),
                 ),
                 child: Column(
                   children: [
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        const Text(
                           'Biaya Layanan',
                           style: TextStyle(
                             fontSize: 14,
@@ -1003,8 +1010,8 @@ class _ForensikConfirmationPageState extends State<ForensikConfirmationPage> {
                           ),
                         ),
                         Text(
-                          'Rp 2.500.000',
-                          style: TextStyle(
+                          widget.selectedService['price'],
+                          style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             color: Colors.black87,
@@ -1046,7 +1053,7 @@ class _ForensikConfirmationPageState extends State<ForensikConfirmationPage> {
                           ),
                         ),
                         Text(
-                          'Rp 2.550.000',
+                          _calculateTotalWithAdmin(),
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -1058,7 +1065,8 @@ class _ForensikConfirmationPageState extends State<ForensikConfirmationPage> {
                   ],
                 ),
               ),
-              const SizedBox(height: 32),
+              
+              const SizedBox(height: 24),
               
               // Order Buttons
               Row(
@@ -1111,5 +1119,46 @@ class _ForensikConfirmationPageState extends State<ForensikConfirmationPage> {
         ),
       ),
     );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 80,
+            child: Text(
+              '$label:',
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _calculateTotalWithAdmin() {
+    String priceStr = widget.selectedService['price'].replaceAll('Rp ', '').replaceAll('.', '');
+    int servicePrice = int.parse(priceStr);
+    int adminFee = 50000;
+    int total = servicePrice + adminFee;
+    
+    return 'Rp ${total.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]}.')}';
   }
 }
