@@ -71,6 +71,8 @@ dependencies:
   concentric_transition: ^1.0.3
   qr_flutter: ^4.1.0
   percent_indicator: ^4.2.5
+  google_maps_flutter: ^2.13.1
+  geolocator: ^14.0.2
 
 dev_dependencies:
   flutter_test:

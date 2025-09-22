@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:inocare/screens/tiketantrian.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'suratkonsul.dart';
+import 'suratrujukan.dart';
+import 'ambulance_order_page.dart';
 
 class NotificationsPage extends StatefulWidget {
   const NotificationsPage({Key? key}) : super(key: key);
@@ -11,6 +14,8 @@ class NotificationsPage extends StatefulWidget {
 
 class _NotificationsPageState extends State<NotificationsPage> {
   List<NotificationItem> _notifications = [];
+  String? _rajalNumber;
+  String? _ambulanceOrder; // simpan order ambulance
 
   @override
   void initState() {
@@ -25,6 +30,9 @@ class _NotificationsPageState extends State<NotificationsPage> {
     final rajal = prefs.getString('nomorAntrian_RAJAL');
     final mcu = prefs.getString('nomorAntrian_MCU');
     final ranap = prefs.getString('nomorAntrian_RANAP');
+    final ambulance = prefs.getString(
+      'orderAmbulance',
+    ); // 🔹 ambil order ambulance
 
     List<NotificationItem> tempNotifications = [];
 
@@ -38,13 +46,24 @@ class _NotificationsPageState extends State<NotificationsPage> {
       );
     }
     if (rajal != null) {
-      tempNotifications.add(
+      _rajalNumber = rajal;
+      tempNotifications.addAll([
         NotificationItem(
           title: 'Registrasi Rajal berhasil',
           message: 'Nomor antrian Anda: $rajal',
           time: DateTime.now(),
         ),
-      );
+        NotificationItem(
+          title: 'Surat Konsultasi tersedia',
+          message: 'Klik untuk melihat Surat Konsultasi',
+          time: DateTime.now(),
+        ),
+        NotificationItem(
+          title: 'Surat Rujukan tersedia',
+          message: 'Klik untuk melihat Surat Rujukan',
+          time: DateTime.now(),
+        ),
+      ]);
     }
     if (mcu != null) {
       tempNotifications.add(
@@ -60,6 +79,16 @@ class _NotificationsPageState extends State<NotificationsPage> {
         NotificationItem(
           title: 'Registrasi Ranap berhasil',
           message: 'Nomor antrian Anda: $ranap',
+          time: DateTime.now(),
+        ),
+      );
+    }
+    if (ambulance != null) {
+      _ambulanceOrder = ambulance;
+      tempNotifications.add(
+        NotificationItem(
+          title: 'Order Ambulance berhasil',
+          message: 'Kode pemesanan: $ambulance',
           time: DateTime.now(),
         ),
       );
@@ -106,25 +135,57 @@ class _NotificationsPageState extends State<NotificationsPage> {
                         style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                       ),
                       onTap: () {
-                        String jenis = '';
-                        if (notif.title.contains('IGD')) jenis = 'IGD';
-                        if (notif.title.contains('Rajal')) jenis = 'Rajal';
-                        if (notif.title.contains('MCU')) jenis = 'MCU';
-                        if (notif.title.contains('Ranap')) jenis = 'Ranap';
-
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (_) => QueueTicketPage(
-                                  jenis: jenis,
-                                  nomorAntrian: notif.message.replaceAll(
-                                    'Nomor antrian Anda: ',
-                                    '',
+                        if (notif.title.contains('Surat Konsultasi')) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (_) => ConsultationLetterPage(
+                                    nomorAntrian: _rajalNumber ?? '',
                                   ),
-                                ),
-                          ),
-                        );
+                            ),
+                          );
+                        } else if (notif.title.contains('Surat Rujukan')) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (_) => ReferralLetterPage(
+                                    nomorAntrian: _rajalNumber ?? '',
+                                  ),
+                            ),
+                          );
+                        } else if (notif.title.contains('Order Ambulance')) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (_) => AmbulanceOrderPage(
+                                    orderCode: _ambulanceOrder ?? '',
+                                  ),
+                            ),
+                          );
+                        } else {
+                          String jenis = '';
+                          if (notif.title.contains('IGD')) jenis = 'IGD';
+                          if (notif.title.contains('Rajal')) jenis = 'Rajal';
+                          if (notif.title.contains('MCU')) jenis = 'MCU';
+                          if (notif.title.contains('Ranap')) jenis = 'Ranap';
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder:
+                                  (_) => QueueTicketPage(
+                                    jenis: jenis,
+                                    nomorAntrian: notif.message.replaceAll(
+                                      'Nomor antrian Anda: ',
+                                      '',
+                                    ),
+                                  ),
+                            ),
+                          );
+                        }
                       },
                     ),
                   );

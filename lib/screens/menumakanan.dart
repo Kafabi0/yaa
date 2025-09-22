@@ -129,32 +129,32 @@ class _MenuMakananPageState extends State<MenuMakananPage>
             ],
           ),
           const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  Icons.restaurant_menu,
-                  color: Colors.teal,
-                  size: 16,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  patientDiet,
-                  style: const TextStyle(
-                    color: Colors.teal,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // Container(
+          //   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          //   decoration: BoxDecoration(
+          //     color: Colors.white,
+          //     borderRadius: BorderRadius.circular(20),
+          //   ),
+          //   child: Row(
+          //     mainAxisSize: MainAxisSize.min,
+          //     children: [
+          //       const Icon(
+          //         Icons.restaurant_menu,
+          //         color: Colors.teal,
+          //         size: 16,
+          //       ),
+          //       const SizedBox(width: 8),
+          //       Text(
+          //         patientDiet,
+          //         style: const TextStyle(
+          //           color: Colors.teal,
+          //           fontSize: 14,
+          //           fontWeight: FontWeight.w600,
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
         ],
       ),
     );

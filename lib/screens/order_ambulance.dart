@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class OrderAmbulancePage extends StatefulWidget {
   const OrderAmbulancePage({Key? key}) : super(key: key);
@@ -13,14 +16,16 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
   final TextEditingController _destinationController = TextEditingController();
   final TextEditingController _patientNameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _emergencyContactController = TextEditingController();
-  final TextEditingController _medicalConditionController = TextEditingController();
+  final TextEditingController _emergencyContactController =
+      TextEditingController();
+  final TextEditingController _medicalConditionController =
+      TextEditingController();
 
   String? _selectedAmbulanceType;
   String? _selectedPriority;
   bool _needMedicalEquipment = false;
   bool _needMedicalPersonnel = false;
-  
+
   final List<Map<String, dynamic>> ambulanceTypes = [
     {
       'type': 'Basic Life Support (BLS)',
@@ -80,7 +85,10 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text("Order Ambulance", style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          "Order Ambulance",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         backgroundColor: Colors.red[700],
         foregroundColor: Colors.white,
         elevation: 0,
@@ -93,12 +101,7 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Column(
-            children: [
-              _buildHeaderInfo(),
-              _buildFormContent(),
-            ],
-          ),
+          child: Column(children: [_buildHeaderInfo(), _buildFormContent()]),
         ),
       ),
     );
@@ -125,7 +128,11 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
                   color: Colors.white.withOpacity(0.2),
                   shape: BoxShape.circle,
                 ),
-                child: Icon(Icons.local_hospital, color: Colors.white, size: 32),
+                child: Icon(
+                  Icons.local_hospital,
+                  color: Colors.white,
+                  size: 32,
+                ),
               ),
               SizedBox(width: 16),
               Expanded(
@@ -220,7 +227,9 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
               ],
             ),
             SizedBox(height: 16),
-            ...priorityLevels.map((priority) => _buildPriorityOption(priority)).toList(),
+            ...priorityLevels
+                .map((priority) => _buildPriorityOption(priority))
+                .toList(),
           ],
         ),
       ),
@@ -229,7 +238,7 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
 
   Widget _buildPriorityOption(Map<String, dynamic> priority) {
     bool isSelected = _selectedPriority == priority['level'];
-    
+
     return Container(
       margin: EdgeInsets.only(bottom: 8),
       child: InkWell(
@@ -242,7 +251,10 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
         child: Container(
           padding: EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: isSelected ? priority['color'].withOpacity(0.1) : Colors.transparent,
+            color:
+                isSelected
+                    ? priority['color'].withOpacity(0.1)
+                    : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected ? priority['color'] : Colors.grey[300]!,
@@ -251,11 +263,7 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
           ),
           child: Row(
             children: [
-              Icon(
-                priority['icon'],
-                color: priority['color'],
-                size: 24,
-              ),
+              Icon(priority['icon'], color: priority['color'], size: 24),
               SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -270,10 +278,7 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
                     ),
                     Text(
                       priority['description'],
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
                   ],
                 ),
@@ -307,7 +312,9 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
               ],
             ),
             SizedBox(height: 16),
-            ...ambulanceTypes.map((type) => _buildAmbulanceTypeOption(type)).toList(),
+            ...ambulanceTypes
+                .map((type) => _buildAmbulanceTypeOption(type))
+                .toList(),
           ],
         ),
       ),
@@ -316,7 +323,7 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
 
   Widget _buildAmbulanceTypeOption(Map<String, dynamic> type) {
     bool isSelected = _selectedAmbulanceType == type['type'];
-    
+
     return Container(
       margin: EdgeInsets.only(bottom: 8),
       child: InkWell(
@@ -329,7 +336,10 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
         child: Container(
           padding: EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: isSelected ? type['color'].withOpacity(0.1) : Colors.transparent,
+            color:
+                isSelected
+                    ? type['color'].withOpacity(0.1)
+                    : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected ? type['color'] : Colors.grey[300]!,
@@ -338,11 +348,7 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
           ),
           child: Row(
             children: [
-              Icon(
-                type['icon'],
-                color: type['color'],
-                size: 32,
-              ),
+              Icon(type['icon'], color: type['color'], size: 32),
               SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -357,10 +363,7 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
                     ),
                     Text(
                       type['description'],
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                     ),
                     Text(
                       "Rp ${_formatPrice(type['price'])}",
@@ -373,8 +376,7 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
                   ],
                 ),
               ),
-              if (isSelected)
-                Icon(Icons.check_circle, color: type['color']),
+              if (isSelected) Icon(Icons.check_circle, color: type['color']),
             ],
           ),
         ),
@@ -406,7 +408,9 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
               controller: _patientNameController,
               label: "Nama Pasien",
               icon: Icons.person_outline,
-              validator: (val) => val?.isEmpty ?? true ? "Nama pasien wajib diisi" : null,
+              validator:
+                  (val) =>
+                      val?.isEmpty ?? true ? "Nama pasien wajib diisi" : null,
             ),
             SizedBox(height: 16),
             _buildTextField(
@@ -414,7 +418,9 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
               label: "Nomor Telepon",
               icon: Icons.phone,
               keyboardType: TextInputType.phone,
-              validator: (val) => val?.isEmpty ?? true ? "Nomor telepon wajib diisi" : null,
+              validator:
+                  (val) =>
+                      val?.isEmpty ?? true ? "Nomor telepon wajib diisi" : null,
             ),
             SizedBox(height: 16),
             _buildTextField(
@@ -429,7 +435,9 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
               label: "Kondisi Medis/Keluhan",
               icon: Icons.medical_information,
               maxLines: 3,
-              validator: (val) => val?.isEmpty ?? true ? "Kondisi medis wajib diisi" : null,
+              validator:
+                  (val) =>
+                      val?.isEmpty ?? true ? "Kondisi medis wajib diisi" : null,
             ),
           ],
         ),
@@ -461,7 +469,11 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
               controller: _pickupController,
               label: "Lokasi Penjemputan",
               icon: Icons.my_location,
-              validator: (val) => val?.isEmpty ?? true ? "Lokasi penjemputan wajib diisi" : null,
+              validator:
+                  (val) =>
+                      val?.isEmpty ?? true
+                          ? "Lokasi penjemputan wajib diisi"
+                          : null,
               suffixIcon: IconButton(
                 icon: Icon(Icons.gps_fixed),
                 onPressed: () => _getCurrentLocation(),
@@ -472,7 +484,9 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
               controller: _destinationController,
               label: "Lokasi Tujuan",
               icon: Icons.local_hospital,
-              validator: (val) => val?.isEmpty ?? true ? "Lokasi tujuan wajib diisi" : null,
+              validator:
+                  (val) =>
+                      val?.isEmpty ?? true ? "Lokasi tujuan wajib diisi" : null,
             ),
           ],
         ),
@@ -563,7 +577,7 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
 
   Widget _buildOrderButton() {
     int totalPrice = _calculateTotalPrice();
-    
+
     return Column(
       children: [
         if (_selectedAmbulanceType != null) ...[
@@ -598,7 +612,9 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
           height: 56,
           child: ElevatedButton.icon(
             onPressed: () {
-              if (_formKey.currentState!.validate() && _selectedPriority != null && _selectedAmbulanceType != null) {
+              if (_formKey.currentState!.validate() &&
+                  _selectedPriority != null &&
+                  _selectedAmbulanceType != null) {
                 _confirmOrder();
               } else {
                 _showValidationError();
@@ -631,17 +647,17 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
 
   int _calculateTotalPrice() {
     int basePrice = 0;
-    
+
     for (var type in ambulanceTypes) {
       if (type['type'] == _selectedAmbulanceType) {
         basePrice = type['price'];
         break;
       }
     }
-    
+
     if (_needMedicalEquipment) basePrice += 200000;
     if (_needMedicalPersonnel) basePrice += 500000;
-    
+
     return basePrice;
   }
 
@@ -666,7 +682,7 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
     String message = "Mohon lengkapi:";
     if (_selectedPriority == null) message += "\n• Tingkat prioritas";
     if (_selectedAmbulanceType == null) message += "\n• Jenis ambulance";
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -676,53 +692,70 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
     );
   }
 
-  void _confirmOrder() {
+  void _confirmOrder() async {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
-          children: [
-            Icon(Icons.warning, color: Colors.orange),
-            SizedBox(width: 8),
-            Text("Konfirmasi Order"),
-          ],
-        ),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Detail Order:"),
-            SizedBox(height: 8),
-            Text("• Prioritas: $_selectedPriority"),
-            Text("• Jenis: $_selectedAmbulanceType"),
-            Text("• Pasien: ${_patientNameController.text}"),
-            Text("• Dari: ${_pickupController.text}"),
-            Text("• Ke: ${_destinationController.text}"),
-            Text("• Total: Rp ${_formatPrice(_calculateTotalPrice())}"),
-            SizedBox(height: 16),
-            Text(
-              "Tim medis akan segera dikirim ke lokasi Anda.",
-              style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red[700]),
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("Batal"),
+            title: Row(
+              children: [
+                Icon(Icons.warning, color: Colors.orange),
+                SizedBox(width: 8),
+                Text("Konfirmasi Order"),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text("Detail Order:"),
+                SizedBox(height: 8),
+                Text("• Prioritas: $_selectedPriority"),
+                Text("• Jenis: $_selectedAmbulanceType"),
+                Text("• Pasien: ${_patientNameController.text}"),
+                Text("• Dari: ${_pickupController.text}"),
+                Text("• Ke: ${_destinationController.text}"),
+                Text("• Total: Rp ${_formatPrice(_calculateTotalPrice())}"),
+                SizedBox(height: 16),
+                Text(
+                  "Tim medis akan segera dikirim ke lokasi Anda.",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red[700],
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text("Batal"),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+
+                  final prefs = await SharedPreferences.getInstance();
+                  String orderCode =
+                      "AMB${Random().nextInt(99999).toString().padLeft(5, '0')}";
+                  await prefs.setString('orderAmbulance', orderCode);
+
+                  Navigator.pop(context); // keluar dari form
+                  _showSuccessMessage();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red[700],
+                ),
+                child: Text(
+                  "Konfirmasi",
+                  style: TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-              _showSuccessMessage();
-            },
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.red[700]),
-            child: Text("Konfirmasi", style: TextStyle(color: Colors.white)),
-          ),
-        ],
-      ),
     );
   }
 
@@ -759,37 +792,51 @@ class _OrderAmbulancePageState extends State<OrderAmbulancePage> {
   void _showHelpDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text("Bantuan Order Ambulance"),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text("Tingkat Prioritas:", style: TextStyle(fontWeight: FontWeight.bold)),
-              Text("• Emergency: Kondisi mengancam nyawa"),
-              Text("• Urgent: Kondisi serius tapi stabil"),
-              Text("• Scheduled: Transport terencana"),
-              SizedBox(height: 12),
-              Text("Jenis Ambulance:", style: TextStyle(fontWeight: FontWeight.bold)),
-              Text("• BLS: Peralatan dasar"),
-              Text("• ALS: Peralatan dan tenaga medis lengkap"),
-              Text("• Neonatal: Khusus bayi/anak"),
-              Text("• Jenazah: Transport jenazah"),
-              SizedBox(height: 12),
-              Text("Untuk kondisi darurat, hubungi 119", 
-                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+      builder:
+          (context) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            title: Text("Bantuan Order Ambulance"),
+            content: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    "Tingkat Prioritas:",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text("• Emergency: Kondisi mengancam nyawa"),
+                  Text("• Urgent: Kondisi serius tapi stabil"),
+                  Text("• Scheduled: Transport terencana"),
+                  SizedBox(height: 12),
+                  Text(
+                    "Jenis Ambulance:",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text("• BLS: Peralatan dasar"),
+                  Text("• ALS: Peralatan dan tenaga medis lengkap"),
+                  Text("• Neonatal: Khusus bayi/anak"),
+                  Text("• Jenazah: Transport jenazah"),
+                  SizedBox(height: 12),
+                  Text(
+                    "Untuk kondisi darurat, hubungi 119",
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text("Mengerti"),
+              ),
             ],
           ),
-        ),
-        actions: [
-          ElevatedButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text("Mengerti"),
-          ),
-        ],
-      ),
     );
   }
 

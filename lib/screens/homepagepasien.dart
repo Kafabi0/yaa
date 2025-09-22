@@ -90,7 +90,7 @@ class _HomePagePasienState extends State<HomePagePasien> {
     }
   }
 
-   // Tambahkan metode untuk refresh data
+  // Tambahkan metode untuk refresh data
   Future<void> _refreshData() async {
     await _loadUserData();
   }
@@ -714,6 +714,26 @@ class _HomePagePasienState extends State<HomePagePasien> {
                   color: Colors.orange,
                   onTap: () => _openHasilRadiologi(),
                 ),
+              if (_antrianRanap != null)
+                _buildServiceMenuItem(
+                  icon: Icons.restaurant_menu,
+                  label: 'Menu\nMakanan',
+                  color: Colors.green,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => MenuMakananPage(
+                              patientName:
+                                  "Budi Santoso", // ambil dari data pasien
+                              ranapNumber:
+                                  _antrianRanap ?? "-", // nomor rawat inap
+                            ),
+                      ),
+                    );
+                  },
+                ),
 
               // Hasil UTDRS - Available for all
               _buildServiceMenuItem(
@@ -1010,91 +1030,93 @@ class _HomePagePasienState extends State<HomePagePasien> {
   }
 
   Widget _buildTodaySchedule() {
-  return Container(
-    margin: EdgeInsets.all(16),
-    padding: EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: Colors.blue, width: 1),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.grey.withOpacity(0.1),
-          spreadRadius: 1,
-          blurRadius: 4,
-          offset: Offset(0, 2),
-        ),
-      ],
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Ganti bagian Row ini dengan desain baru
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                Icon(Icons.calendar_today, color: Color(0xFFFF6B35)),
-                const SizedBox(width: 8),
-                Text(
-                  'Hari Ini',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-              ],
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 6,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: Color(0xFFFF6B35)),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
+    return Container(
+      margin: EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.blue, width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 4,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Ganti bagian Row ini dengan desain baru
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
                 children: [
-                  Icon(Icons.location_on, color: Colors.red, size: 16),
-                  const SizedBox(width: 4),
+                  Icon(Icons.calendar_today, color: Color(0xFFFF6B35)),
+                  const SizedBox(width: 8),
                   Text(
-                    widget.selectedHospital.name, // Gunakan nama rumah sakit yang dipilih
+                    'Hari Ini',
                     style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
-        ),
-        SizedBox(height: 12),
-        _buildScheduleItem(
-          'Ketersediaan Lalu Darah',
-          'Sabtu 12 Sep 2025 - 07:00',
-          'A-12  B-8  O-20  AB-5',
-          Colors.red,
-          Icons.bloodtype,
-        ),
-        SizedBox(height: 8),
-        _buildScheduleItem(
-          'Ketersediaan Bed',
-          'Update 12 Sep 2025 - 07:00',
-          'VIP: 2  Kls I: 5  Kls II: 7  Kls III: 12',
-          Colors.grey[700]!,
-          Icons.hotel,
-        ),
-      ],
-    ),
-  );
-}
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: Color(0xFFFF6B35)),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.location_on, color: Colors.red, size: 16),
+                    const SizedBox(width: 4),
+                    Text(
+                      widget
+                          .selectedHospital
+                          .name, // Gunakan nama rumah sakit yang dipilih
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12),
+          _buildScheduleItem(
+            'Ketersediaan Lalu Darah',
+            'Sabtu 12 Sep 2025 - 07:00',
+            'A-12  B-8  O-20  AB-5',
+            Colors.red,
+            Icons.bloodtype,
+          ),
+          SizedBox(height: 8),
+          _buildScheduleItem(
+            'Ketersediaan Bed',
+            'Update 12 Sep 2025 - 07:00',
+            'VIP: 2  Kls I: 5  Kls II: 7  Kls III: 12',
+            Colors.grey[700]!,
+            Icons.hotel,
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildScheduleItem(
     String title,
