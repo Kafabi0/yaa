@@ -268,15 +268,16 @@ class OTPModal extends StatefulWidget {
 }
 
 class _OTPModalState extends State<OTPModal> {
-  final List<TextEditingController> _otpControllers = 
-      List.generate(6, (index) => TextEditingController());
-  final List<FocusNode> _focusNodes = 
-      List.generate(6, (index) => FocusNode());
-  
+  final List<TextEditingController> _otpControllers = List.generate(
+    6,
+    (index) => TextEditingController(),
+  );
+  final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
+
   Timer? _timer;
   int _countdown = 60;
   bool _isResendEnabled = false;
-  
+
   @override
   void initState() {
     super.initState();
@@ -288,7 +289,7 @@ class _OTPModalState extends State<OTPModal> {
       _countdown = 60;
       _isResendEnabled = false;
     });
-    
+
     _timer?.cancel();
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
       if (_countdown > 0) {
@@ -334,7 +335,8 @@ class _OTPModalState extends State<OTPModal> {
 
   void _verifyOTP(String otp) {
     // Simulasi verifikasi OTP (dalam implementasi nyata, kirim ke server)
-    if (otp == "123456") { // OTP dummy untuk testing
+    if (otp == "123456") {
+      // OTP dummy untuk testing
       Navigator.pop(context);
       widget.onOTPVerified();
     } else {
@@ -407,18 +409,14 @@ class _OTPModalState extends State<OTPModal> {
                       color: Colors.grey[200],
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(
-                      Icons.close,
-                      size: 20,
-                      color: Colors.grey[600],
-                    ),
+                    child: Icon(Icons.close, size: 20, color: Colors.grey[600]),
                   ),
                 ),
               ],
             ),
-            
+
             SizedBox(height: 20),
-            
+
             // WhatsApp Icon
             Container(
               padding: EdgeInsets.all(16),
@@ -426,15 +424,11 @@ class _OTPModalState extends State<OTPModal> {
                 color: Color(0xFF25D366).withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(
-                Icons.phone,
-                size: 40,
-                color: Color(0xFF25D366),
-              ),
+              child: Icon(Icons.phone, size: 40, color: Color(0xFF25D366)),
             ),
-            
+
             SizedBox(height: 16),
-            
+
             // Description
             Text(
               'Kode verifikasi telah dikirim melalui WhatsApp ke nomor terdaftar Anda.',
@@ -445,9 +439,9 @@ class _OTPModalState extends State<OTPModal> {
                 height: 1.4,
               ),
             ),
-            
+
             SizedBox(height: 24),
-            
+
             // OTP Input Fields
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -457,9 +451,10 @@ class _OTPModalState extends State<OTPModal> {
                   height: 45,
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color: _otpControllers[index].text.isEmpty 
-                          ? Colors.grey[300]! 
-                          : Color(0xFFFF8C00),
+                      color:
+                          _otpControllers[index].text.isEmpty
+                              ? Colors.grey[300]!
+                              : Color(0xFFFF8C00),
                       width: 2,
                     ),
                     borderRadius: BorderRadius.circular(8),
@@ -487,17 +482,14 @@ class _OTPModalState extends State<OTPModal> {
                 );
               }),
             ),
-            
+
             SizedBox(height: 24),
-            
+
             // Countdown and Resend
             if (!_isResendEnabled)
               Text(
                 'Kirim ulang kode dalam $_countdown detik',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.grey[600],
-                ),
+                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
               )
             else
               GestureDetector(
@@ -512,16 +504,19 @@ class _OTPModalState extends State<OTPModal> {
                   ),
                 ),
               ),
-            
+
             SizedBox(height: 24),
-            
+
             // Verify Button
             Container(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  String otp = _otpControllers.map((controller) => controller.text).join();
+                  String otp =
+                      _otpControllers
+                          .map((controller) => controller.text)
+                          .join();
                   if (otp.length == 6) {
                     _verifyOTP(otp);
                   } else {
@@ -544,16 +539,13 @@ class _OTPModalState extends State<OTPModal> {
                 ),
                 child: Text(
                   'Verifikasi',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
               ),
             ),
-            
+
             SizedBox(height: 12),
-            
+
             // Help Text
             Text(
               'Gunakan kode "123456" untuk testing',
@@ -665,6 +657,7 @@ class _RegisterPageState extends State<RegisterPage> {
           _buildTextField(
             controller: _whatsappController,
             hintText: 'No Whatsapp',
+            isNumeric: true, // tambahkan parameter baru
           ),
           const SizedBox(height: 40),
           _buildRegisterButton(),
@@ -679,6 +672,8 @@ class _RegisterPageState extends State<RegisterPage> {
     required TextEditingController controller,
     required String hintText,
     bool isNik = false,
+    bool isNumeric = false, // tambahkan ini
+
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -687,14 +682,16 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
       child: TextField(
         controller: controller,
-        keyboardType: isNik ? TextInputType.number : TextInputType.text,
+        keyboardType: isNumeric || isNik  ? TextInputType.number : TextInputType.text,
         inputFormatters:
             isNik
                 ? [
                   FilteringTextInputFormatter.digitsOnly,
                   LengthLimitingTextInputFormatter(16),
                 ]
-                : [],
+                : isNumeric
+              ? [FilteringTextInputFormatter.digitsOnly]
+              : [],
         style: const TextStyle(color: Colors.black87, fontSize: 16),
         decoration: InputDecoration(
           hintText: hintText,
