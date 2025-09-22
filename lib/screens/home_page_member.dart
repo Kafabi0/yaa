@@ -97,126 +97,79 @@ class _HomePageMemberState extends State<HomePageMember> {
   }
 
   Widget _buildHeader() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Color(0xFFFF6B35), Color(0xFFFF8A50)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
+    return SafeArea(
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFFF6B35), Color(0xFFFF8A50)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.only(
+            bottomLeft: Radius.circular(25),
+            bottomRight: Radius.circular(25),
+          ),
         ),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(25),
-          bottomRight: Radius.circular(25),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          // Buat bagian ini menjadi clickable
-          GestureDetector(
-            onTap: () {
-              // Navigasi ke halaman profile
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfilePage()),
-              );
-            },
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Bagian nama user yang clickable
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const ProfilePage()),
+                );
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Halo, ${_userName ?? "Member"} 👋',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Text(
+                    'Semoga sehat selalu!',
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                  ),
+                  const SizedBox(height: 4),
+                ],
+              ),
+            ),
+            Row(
               children: [
-                Text(
-                  'Halo, ${_userName ?? "Member"} 👋',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+                GestureDetector(
+                  onTap: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Fitur notifikasi akan segera hadir'),
+                        backgroundColor: Color(0xFFFF6B35),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.notifications,
+                      color: Colors.white,
+                      size: 24,
+                    ),
                   ),
                 ),
-                const Text(
-                  'Semoga sehat selalu!',
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
-                ),
-                // Tambahkan indikator bahwa area ini clickable
-                const SizedBox(height: 4),
-                // Text(
-                //   'Ketuk untuk lihat profil',
-                //   style: TextStyle(
-                //     color: Colors.white.withOpacity(0.8),
-                //     fontSize: 12,
-                //     fontStyle: FontStyle.italic,
-                //   ),
-                // ),
+                const SizedBox(width: 12),
               ],
             ),
-          ),
-          Row(
-            children: [
-              GestureDetector(
-                onTap: () {
-                  // TODO: Implement notifications
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Fitur notifikasi akan segera hadir'),
-                      backgroundColor: Color(0xFFFF6B35),
-                    ),
-                  );
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.notifications,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              // GestureDetector(
-              //   onTap: () {
-              //     // Navigasi ke halaman profile juga
-              //     Navigator.push(
-              //       context,
-              //       MaterialPageRoute(
-              //         builder: (context) => const ProfilePage(),
-              //       ),
-              //     );
-              //   },
-              //   child: Container(
-              //     width: 40,
-              //     height: 40,
-              //     decoration: BoxDecoration(
-              //       shape: BoxShape.circle,
-              //       color: Colors.white,
-              //       boxShadow: [
-              //         BoxShadow(
-              //           color: Colors.black.withOpacity(0.1),
-              //           blurRadius: 4,
-              //           offset: const Offset(0, 2),
-              //         ),
-              //       ],
-              //     ),
-              //     child: Center(
-              //       child: Text(
-              //         _userName?.isNotEmpty == true
-              //             ? _userName![0].toUpperCase()
-              //             : 'M',
-              //         style: const TextStyle(
-              //           fontSize: 18,
-              //           fontWeight: FontWeight.bold,
-              //           color: Color(0xFFFF6B35),
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
