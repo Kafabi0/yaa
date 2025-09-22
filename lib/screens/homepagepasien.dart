@@ -43,6 +43,9 @@ class _HomePagePasienState extends State<HomePagePasien> {
   String _patientName = 'Loading...';
   String? _userName;
 
+  final PageController _promoPageController = PageController();
+    int _currentPromoIndex = 0;
+
   String? _antrianIGD;
   String? _antrianRajal;
   String? _antrianMCU;
@@ -52,6 +55,28 @@ class _HomePagePasienState extends State<HomePagePasien> {
   void initState() {
     super.initState();
     _loadUserData();
+  }
+
+  void _startPromoAutoSlide() {
+    Future.delayed(Duration(seconds: 5), () {
+      if (mounted) {
+        setState(() {
+          _currentPromoIndex = (_currentPromoIndex + 1) % 3;
+        });
+        _promoPageController.animateToPage(
+          _currentPromoIndex,
+          duration: Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+        _startPromoAutoSlide();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _promoPageController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadUserData() async {
@@ -127,7 +152,7 @@ class _HomePagePasienState extends State<HomePagePasien> {
           _buildLiveQueue(),
           _buildRegistrationNumbers(),
           // _buildPatientServicesMenu(),
-          _buildPromotion(),
+          _buildPromoSection(),
           _buildHealthArticlesSection(),
           SizedBox(height: 100),
         ],
@@ -1291,9 +1316,9 @@ class _HomePagePasienState extends State<HomePagePasien> {
   //   );
   // }
 
-  Widget _buildPromotion() {
-    return Container(
-      margin: EdgeInsets.all(16),
+  Widget _buildPromoSection() {
+    return Padding(
+      padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -1302,112 +1327,90 @@ class _HomePagePasienState extends State<HomePagePasien> {
               Text(
                 'Hot Promo',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 18,
                   fontWeight: FontWeight.bold,
                   color: Colors.black87,
                 ),
               ),
-              Icon(Icons.local_fire_department, color: Colors.orange, size: 20),
+              Icon(Icons.local_fire_department, color: Color(0xFFFF6B35)),
             ],
           ),
-          SizedBox(height: 12),
-          Container(
-            height: 180,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              gradient: LinearGradient(
-                colors: [Colors.pink[100]!, Colors.pink[50]!],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              ),
-            ),
-            child: Stack(
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 200,
+            child: PageView(
+              controller: _promoPageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentPromoIndex = index;
+                });
+              },
               children: [
-                Positioned(
-                  left: 16,
-                  top: 16,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.blue,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          'Mayapada Royal Hospital',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'WOMAN\'S HEALTH',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.pink[600],
-                        ),
-                      ),
-                      Text(
-                        'CHECK UP',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.pink[600],
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'PAPSMEAR + KONSULTASI',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          Text(
-                            'RP',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red,
-                            ),
-                          ),
-                          Text(
-                            '788.',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red,
-                            ),
-                          ),
-                          Text(
-                            '000',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+                _buildPromoCard(imagePath: 'assets/images/promo1.png'),
+                _buildPromoCard(imagePath: 'assets/images/promo3.jpg'),
+                _buildPromoCard(imagePath: 'assets/images/promo4.jpg'),
               ],
             ),
           ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(3, (index) {
+              return AnimatedContainer(
+                duration: Duration(milliseconds: 300),
+                margin: EdgeInsets.symmetric(horizontal: 4),
+                width: _currentPromoIndex == index ? 20 : 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color:
+                      _currentPromoIndex == index
+                          ? Color(0xFFFF6B35)
+                          : Colors.grey[300],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              );
+            }),
+          ),
         ],
+      ),
+    );
+  }
+
+  // Tambahkan metode _buildPromoCard
+  Widget _buildPromoCard({required String imagePath}) {
+    return Container(
+      margin: EdgeInsets.symmetric(horizontal: 4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Image.asset(
+          imagePath,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Color(0xFFFFB6C1), Color(0xFFDDA0DD)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: Center(
+                child: Icon(Icons.local_offer, color: Colors.white, size: 60),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
