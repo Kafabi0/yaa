@@ -7,6 +7,8 @@ import 'package:inocare/screens/hasillab.dart';
 import 'package:inocare/screens/hasilpemeriksaan.dart';
 import 'package:inocare/screens/hasilradiologi.dart';
 import 'package:inocare/screens/hasilutdrs.dart';
+import 'package:inocare/screens/infobed.dart';
+import 'package:inocare/screens/infolabu.dart';
 import 'package:inocare/screens/jadwaloperasi.dart';
 import 'package:inocare/screens/menumakanan.dart';
 import 'package:inocare/screens/billing_page.dart';
@@ -1099,11 +1101,21 @@ class _HomePagePasienState extends State<HomePagePasien> {
           ),
           SizedBox(height: 12),
           _buildScheduleItem(
-            'Ketersediaan Lalu Darah',
+            'Ketersediaan Labu Darah',
             'Sabtu 12 Sep 2025 - 07:00',
             'A-12  B-8  O-20  AB-5',
             Colors.red,
             Icons.bloodtype,
+            () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (_) =>
+                          const BloodAvailabilityPage(), // 👈 halaman labu darah
+                ),
+              );
+            },
           ),
           SizedBox(height: 8),
           _buildScheduleItem(
@@ -1112,6 +1124,14 @@ class _HomePagePasienState extends State<HomePagePasien> {
             'VIP: 2  Kls I: 5  Kls II: 7  Kls III: 12',
             Colors.grey[700]!,
             Icons.hotel,
+            () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const BedAvailabilityPage(), 
+                ),
+              );
+            },
           ),
         ],
       ),
@@ -1124,57 +1144,62 @@ class _HomePagePasienState extends State<HomePagePasien> {
     String details,
     Color color,
     IconData icon,
+    VoidCallback onTap, // 👈 tambahkan callback
   ) {
-    return Container(
-      padding: EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.2)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
+    return InkWell(
+      onTap: onTap, // 👈 panggil callback ketika diklik
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        padding: EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.05),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color.withOpacity(0.2)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: color, size: 20),
             ),
-            child: Icon(icon, color: color, size: 20),
-          ),
-          SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+            SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black87,
+                    ),
                   ),
-                ),
-                Text(
-                  time,
-                  style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                ),
-                Text(
-                  details,
-                  style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                ),
-              ],
+                  Text(
+                    time,
+                    style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                  ),
+                  Text(
+                    details,
+                    style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Container(
-            padding: EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.green,
-              borderRadius: BorderRadius.circular(20),
+            Container(
+              padding: EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.green,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(Icons.chevron_right, color: Colors.white, size: 16),
             ),
-            child: Icon(Icons.chevron_right, color: Colors.white, size: 16),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

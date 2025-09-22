@@ -103,7 +103,7 @@ class _InoCareAppState extends State<InoCareApp> {
           onCompleted: () {
             Navigator.of(context).pushReplacement(
               MaterialPageRoute(
-                builder: (_) => OrderPage(
+                builder: (_) => HealthAppHomePage(
                 ),
               ),
             );
