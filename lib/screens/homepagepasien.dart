@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+<<<<<<< Updated upstream
 import 'package:inocare/screens/billing1.dart';
 import 'package:inocare/screens/hasilforensik.dart';
 import 'package:inocare/screens/hasillab.dart';
@@ -9,6 +10,9 @@ import 'package:inocare/screens/hasilradiologi.dart';
 import 'package:inocare/screens/hasilutdrs.dart';
 import 'package:inocare/screens/jadwaloperasi.dart';
 import 'package:inocare/screens/menumakanan.dart';
+=======
+import 'package:inocare/screens/billing_page.dart';
+>>>>>>> Stashed changes
 import 'package:inocare/screens/order.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'rumahsakitmember.dart';
@@ -356,169 +360,218 @@ class _HomePagePasienState extends State<HomePagePasien> {
   }
 
   Widget _buildHospitalCard() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            widget.selectedHospital.name,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+  return Container(
+    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // 🏥 Nama Rumah Sakit
+        Text(
+          widget.selectedHospital.name,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black87,
           ),
-          SizedBox(height: 8),
-          Container(
-            height: 180,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              image: DecorationImage(
-                image: AssetImage(widget.selectedHospital.imagePath),
-                fit: BoxFit.cover,
-                onError: (error, stackTrace) {},
-              ),
-            ),
-            child: Container(
-              decoration: BoxDecoration(
+        ),
+        const SizedBox(height: 8),
+
+        // 🖼️ Gambar Rumah Sakit (lebih besar)
+        ClipRRect(
+          borderRadius: BorderRadius.circular(16),
+          child: Image.asset(
+            widget.selectedHospital.imagePath,
+            height: 200, // ✅ diperbesar
+            width: double.infinity,
+            fit: BoxFit.cover,
+          ),
+        ),
+
+        const SizedBox(height: 8),
+
+        // 🔘 Tombol Lihat Semua (Rata Kanan)
+        Align(
+          alignment: Alignment.centerRight,
+          child: ElevatedButton(
+            onPressed: () => _showAllQuickActions(context),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFF6B35),
+              shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                gradient: LinearGradient(
-                  colors: [Colors.blue.withOpacity(0.3), Colors.transparent],
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                ),
               ),
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 12,
-                    right: 12,
-                    child: Container(
-                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        'Lihat Semua',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            ),
+            child: const Text(
+              "Lihat Semua",
+              style: TextStyle(color: Colors.white, fontSize: 14),
             ),
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildQuickActions() {
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildQuickActionItem(Icons.add_box, 'Registrasi IGD', Colors.red),
-          _buildQuickActionItem(
-            FontAwesomeIcons.userDoctor,
-            'Registrasi Rajal',
-            Colors.blue,
-          ),
-          _buildQuickActionItem(
-            Icons.assignment,
-            'Registrasi MCU',
-            Color(0xFFFF6B35),
-          ),
-          _buildQuickActionItem(Icons.hotel, 'Registrasi Ranap', Colors.teal),
-        ],
+  return Container(
+    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        // ✅ Tampilkan hanya 4 item utama di baris pertama
+        _buildQuickActionItem(Icons.add_box, 'Registrasi IGD', Colors.red),
+        _buildQuickActionItem(FontAwesomeIcons.userDoctor, 'Registrasi Rajal', Colors.blue),
+        _buildQuickActionItem(Icons.assignment, 'Registrasi MCU', Color(0xFFFF6B35)),
+        _buildQuickActionItem(Icons.hotel, 'Registrasi Ranap', Colors.teal),
+      ],
+    ),
+  );
+}
+
+/// ✅ Tombol "Lihat Semua" kamu taruh di bawah _buildHospitalCard()
+Widget _buildSeeAllButton(BuildContext context) {
+  return Center(
+    child: ElevatedButton(
+      onPressed: () => _showAllQuickActions(context),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: const Color(0xFFFF6B35),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
       ),
-    );
-  }
+      child: const Text(
+        "Lihat Semua",
+        style: TextStyle(color: Colors.white, fontSize: 14),
+      ),
+    ),
+  );
+}
+
+/// ✅ Function untuk modal bottom sheet
+void _showAllQuickActions(BuildContext context) {
+  showModalBottomSheet(
+    context: context,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+    ),
+    builder: (context) {
+      return Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              "Semua Menu",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+
+            GridView.count(
+              shrinkWrap: true,
+              crossAxisCount: 4, // 4 kolom agar rapi
+              mainAxisSpacing: 16,
+              crossAxisSpacing: 16,
+              children: [
+                _buildQuickActionItem(Icons.add_box, 'Registrasi IGD', Colors.red),
+                _buildQuickActionItem(FontAwesomeIcons.userDoctor, 'Registrasi Rajal', Colors.blue),
+                _buildQuickActionItem(Icons.assignment, 'Registrasi MCU', Color(0xFFFF6B35)),
+                _buildQuickActionItem(Icons.hotel, 'Registrasi Ranap', Colors.teal),
+                _buildQuickActionItem(Icons.receipt_long, 'Tagihan', Colors.purple),
+              ],
+            ),
+          ],
+        ),
+      );
+    },
+  );
+}
+
+
 
   Widget _buildQuickActionItem(IconData icon, String label, Color color) {
-    return GestureDetector(
-      onTap: () async {
-        String? nomorAntrian;
+  return GestureDetector(
+    onTap: () async {
+      String? nomorAntrian;
 
-        if (label == 'Registrasi IGD') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const RegistrasiIGDPage()),
-          ).then((value) async {
-            // Ambil nomor antrian dari SharedPreferences setelah registrasi
-            final prefs = await SharedPreferences.getInstance();
-            nomorAntrian = prefs.getString('nomorAntrian_IGD');
-            if (nomorAntrian != null) {
-              _showRealtimeDialog('IGD', nomorAntrian!);
-            }
-          });
-        } else if (label == 'Registrasi Rajal') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const RegistrasiRajalPage()),
-          ).then((value) async {
-            final prefs = await SharedPreferences.getInstance();
-            nomorAntrian = prefs.getString('nomorAntrian_RAJAL');
-            if (nomorAntrian != null) {
-              _showRealtimeDialog('RAJAL', nomorAntrian!);
-            }
-          });
-        } else if (label == 'Registrasi MCU') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const RegistrasiMCUPage()),
-          ).then((value) async {
-            final prefs = await SharedPreferences.getInstance();
-            nomorAntrian = prefs.getString('nomorAntrian_MCU');
-            if (nomorAntrian != null) {
-              _showRealtimeDialog('MCU', nomorAntrian!);
-            }
-          });
-        } else if (label == 'Registrasi Ranap') {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const RegistrasiRanapPage()),
-          ).then((value) async {
-            final prefs = await SharedPreferences.getInstance();
-            nomorAntrian = prefs.getString('nomorAntrian_RANAP');
-            if (nomorAntrian != null) {
-              _showRealtimeDialog('RANAP', nomorAntrian!);
-            }
-          });
-        }
-      },
-      child: Column(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: Icon(icon, color: Colors.white, size: 28),
+      if (label == 'Registrasi IGD') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const RegistrasiIGDPage()),
+        ).then((value) async {
+          final prefs = await SharedPreferences.getInstance();
+          nomorAntrian = prefs.getString('nomorAntrian_IGD');
+          if (nomorAntrian != null) {
+            _showRealtimeDialog('IGD', nomorAntrian!);
+          }
+        });
+      } else if (label == 'Registrasi Rajal') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const RegistrasiRajalPage()),
+        ).then((value) async {
+          final prefs = await SharedPreferences.getInstance();
+          nomorAntrian = prefs.getString('nomorAntrian_RAJAL');
+          if (nomorAntrian != null) {
+            _showRealtimeDialog('RAJAL', nomorAntrian!);
+          }
+        });
+      } else if (label == 'Registrasi MCU') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const RegistrasiMCUPage()),
+        ).then((value) async {
+          final prefs = await SharedPreferences.getInstance();
+          nomorAntrian = prefs.getString('nomorAntrian_MCU');
+          if (nomorAntrian != null) {
+            _showRealtimeDialog('MCU', nomorAntrian!);
+          }
+        });
+      } else if (label == 'Registrasi Ranap') {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const RegistrasiRanapPage()),
+        ).then((value) async {
+          final prefs = await SharedPreferences.getInstance();
+          nomorAntrian = prefs.getString('nomorAntrian_RANAP');
+          if (nomorAntrian != null) {
+            _showRealtimeDialog('RANAP', nomorAntrian!);
+          }
+        });
+      } else if (label == 'Tagihan') {
+        // ✅ Navigasi ke halaman Billing
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const BillingPage()),
+        );
+      }
+    },
+    child: Column(
+      children: [
+        Container(
+          width: 60,
+          height: 60,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(30),
           ),
-          SizedBox(height: 8),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
-            ),
+          child: Icon(icon, color: Colors.white, size: 28),
+        ),
+        SizedBox(height: 8),
+        Text(
+          label,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w500,
+            color: Colors.black87,
           ),
-        ],
-      ),
-    );
-  }
+        ),
+      ],
+    ),
+  );
+}
+
 
   Widget _buildPatientServicesMenu() {
     bool hasAnyRegistration =
