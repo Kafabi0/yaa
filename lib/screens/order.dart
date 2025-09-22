@@ -6,7 +6,8 @@ import 'package:inocare/screens/order_lab.dart';
 import 'package:inocare/screens/order_radiologi.dart';
 import 'package:inocare/screens/order_utdrs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'orderambulance.dart';
+import 'order_ambulance.dart';
+import 'home_page_member.dart';
 
 class OrderPage extends StatefulWidget {
   const OrderPage({Key? key}) : super(key: key);
@@ -152,7 +153,15 @@ class _OrderPageState extends State<OrderPage> {
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => Navigator.pop(context),
+            onTap:
+                () => Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const HomePageMember(),
+                  ),
+                  (route) => false,
+                ),
+
             child: Container(
               width: 40 * fontScale,
               height: 40 * fontScale,

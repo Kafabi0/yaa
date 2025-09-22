@@ -75,6 +75,7 @@ class _HomePagePasienState extends State<HomePagePasien> {
       });
     }
   }
+
   Future<void> _handleLogout() async {
     await UserPrefs.clearUser();
     setState(() {
@@ -83,9 +84,9 @@ class _HomePagePasienState extends State<HomePagePasien> {
     });
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Logout berhasil')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Logout berhasil')));
     }
   }
 
@@ -1565,7 +1566,7 @@ class _HomePagePasienState extends State<HomePagePasien> {
       case 3: // Riwayat
         return _buildRiwayatPage();
       case 4: // Setting
-        return  SettingsScreen(onLogout: _handleLogout);
+        return SettingsScreen(onLogout: _handleLogout);
       default:
         return _buildHomePage();
     }

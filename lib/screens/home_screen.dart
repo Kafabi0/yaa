@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:inocare/screens/login.dart';
 import 'rumahsakitpublic.dart';
 import 'webview_page.dart';
-
+import 'package:inocare/screens/order.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 
 class HealthAppHomePage extends StatefulWidget {
-  final VoidCallback? onLoginSuccess; // Tambahkan properti ini
-  final bool isLoggedIn; // Add this parameter
+  final VoidCallback? onLoginSuccess;
+  final bool isLoggedIn;
 
   const HealthAppHomePage({
     Key? key,
-    this.onLoginSuccess, // Tambahkan ini ke constructor
-    this.isLoggedIn = false, // Default to false (public user)
+    this.onLoginSuccess,
+    this.isLoggedIn = false,
   }) : super(key: key);
 
   @override
@@ -24,8 +24,8 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
   final TextEditingController _searchController = TextEditingController();
   final PageController _promoPageController = PageController();
   int _currentPromoIndex = 0;
-    int _currentNavIndex = 0; // Add navigation index
-
+  int _currentIndex = 0;
+  GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
 
   @override
   void initState() {
@@ -63,55 +63,6 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
     super.dispose();
   }
 
-  void _onNavTap(int index) {
-    if (!widget.isLoggedIn && index > 1) {
-      _showLoginRequired(_getFeatureName(index));
-      return;
-    }
-
-    setState(() {
-      _currentNavIndex = index;
-    });
-
-    // Handle navigation based on index
-    switch (index) {
-      case 0:
-        // Already on Home
-        break;
-      case 1:
-        if (!widget.isLoggedIn) {
-          _navigateToLogin();
-        } else {
-          // Navigate to search page
-          _showLoginRequired('Pencarian');
-        }
-        break;
-      case 2:
-        _showLoginRequired('Rekam Medis');
-        break;
-      case 3:
-        _showLoginRequired('Notifikasi');
-        break;
-      case 4:
-        _showLoginRequired('Profil');
-        break;
-    }
-  }
-
-  String _getFeatureName(int index) {
-    switch (index) {
-      case 2:
-        return 'Rekam Medis';
-      case 3:
-        return 'Notifikasi';
-      case 4:
-        return 'Profil';
-      default:
-        return 'fitur ini';
-    }
-  }
-
-  // Method baru untuk navigate ke login
   void _navigateToLogin() async {
     await Navigator.push(
       context,
@@ -119,7 +70,6 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
     );
   }
 
-  // Method baru untuk menampilkan prompt login diperlukan
   void _showLoginRequired(String feature) {
     showDialog(
       context: context,
@@ -143,7 +93,6 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Icon
                 Container(
                   width: 80,
                   height: 80,
@@ -161,10 +110,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
                     size: 40,
                   ),
                 ),
-
                 const SizedBox(height: 20),
-
-                // Title
                 Text(
                   'Login Diperlukan',
                   style: TextStyle(
@@ -174,10 +120,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-
                 const SizedBox(height: 12),
-
-                // Description
                 Text(
                   'Untuk mengakses $feature, Anda perlu masuk ke akun terlebih dahulu.',
                   style: TextStyle(
@@ -187,16 +130,19 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-
                 const SizedBox(height: 24),
-
-                // Buttons
                 Row(
                   children: [
-                    // Batal button
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: () => Navigator.pop(context),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const HealthAppHomePage(),
+                            ),
+                          );
+                        },
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Color(0xFFFF6B35),
                           side: BorderSide(color: Color(0xFFFF6B35)),
@@ -214,15 +160,12 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
                         ),
                       ),
                     ),
-
                     const SizedBox(width: 12),
-
-                    // Login button
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.pop(context); // Close modal
-                          _navigateToLogin(); // Navigate to login
+                          Navigator.pop(context);
+                          _navigateToLogin();
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color(0xFFFF6B35),
@@ -252,70 +195,232 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
     );
   }
 
-  Widget _buildBottomNavigationBar() {
+  // Method untuk handle navigation dengan login check
+  void _onNavTap(int index) {
+    // Jika user belum login dan mencoba akses selain Home (index 0)
+    if (!widget.isLoggedIn && index != 0) {
+      // Tampilkan popup login required dengan nama fitur yang sesuai
+      String featureName = _getFeatureName(index);
+      _showLoginRequired(featureName);
+
+      // Reset navigation bar ke posisi home setelah delay singkat
+      Future.delayed(Duration(milliseconds: 100), () {
+        if (mounted && _bottomNavigationKey.currentState != null) {
+          _bottomNavigationKey.currentState!.setPage(0);
+        }
+      });
+      return;
+    }
+
+    // Jika sudah login atau mengakses Home, lanjutkan navigasi normal
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  // Method untuk mendapatkan nama fitur berdasarkan index
+  String _getFeatureName(int index) {
+    switch (index) {
+      case 1:
+        return 'fitur Order';
+      case 2:
+        return 'fitur Live Tracking';
+      case 3:
+        return 'fitur Riwayat';
+      case 4:
+        return 'fitur Settings';
+      default:
+        return 'fitur ini';
+    }
+  }
+
+  Widget _buildBottomNavigation() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return CurvedNavigationBar(
-      index: _currentNavIndex,
-      onTap: _onNavTap,
+      key: _bottomNavigationKey,
+      index: _currentIndex,
+      onTap: _onNavTap, // Gunakan method yang sudah dimodifikasi
       color: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
       backgroundColor: Colors.transparent,
       buttonBackgroundColor: isDark ? const Color(0xFF1E1E2C) : Colors.orange,
-      height: 60,
+      height: 70,
       animationCurve: Curves.easeInOut,
       animationDuration: const Duration(milliseconds: 300),
-      items: _getNavigationItems(isDark),
+      items: [
+        _buildNavItemWithLabel(FontAwesomeIcons.house, 'Home'),
+        _buildNavItemWithLabel(FontAwesomeIcons.clipboardList, 'Order'),
+        _buildNavItemWithLabel(FontAwesomeIcons.satellite, 'Live'),
+        _buildNavItemWithLabel(FontAwesomeIcons.clockRotateLeft, 'Riwayat'),
+        _buildNavItemWithLabel(FontAwesomeIcons.gear, 'Setting'),
+      ],
     );
   }
 
-  List<Widget> _getNavigationItems(bool isDark) {
+  Widget _buildNavItemWithLabel(IconData icon, String label) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: Colors.white, size: 20),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 10,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildOtherPages() {
+    // Hanya tampilkan halaman lain jika user sudah login
     if (!widget.isLoggedIn) {
-      return [
-        Icon(FontAwesomeIcons.house, color: Colors.white), // 0 = Home
-        Icon(FontAwesomeIcons.rightToBracket, color: Colors.white), // 1 = Login
-        Icon(
-          FontAwesomeIcons.solidHeart,
-          color: Colors.white.withOpacity(0.5),
-        ), // 2
-        Icon(
-          FontAwesomeIcons.solidBell,
-          color: Colors.white.withOpacity(0.5),
-        ), // 3
-        Icon(FontAwesomeIcons.user, color: Colors.white.withOpacity(0.5)), // 4
-      ];
+      return _buildHomePage();
     }
 
-    return [
-      Icon(FontAwesomeIcons.house, color: Colors.white), // 0 = Home
-      Icon(FontAwesomeIcons.magnifyingGlass, color: Colors.white), // 1 = Search
-      Icon(FontAwesomeIcons.solidHeart, color: Colors.white), // 2 = Rekam Medis
-      Icon(FontAwesomeIcons.solidBell, color: Colors.white), // 3 = Notifikasi
-      Icon(FontAwesomeIcons.user, color: Colors.white), // 4 = Profil
-    ];
+    switch (_currentIndex) {
+      case 1: // Order
+        return const OrderPage();
+      case 2: // Live
+        return _buildLivePage();
+      case 3: // Riwayat
+        return _buildRiwayatPage();
+      case 4: // Setting
+        return _buildSettingPage();
+      default:
+        return _buildHomePage();
+    }
+  }
+
+  Widget _buildLivePage() {
+    return Scaffold(
+      backgroundColor: Colors.grey[50],
+      appBar: AppBar(
+        title: Text('Live Tracking'),
+        backgroundColor: Colors.orange,
+        foregroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.satellite_alt, size: 80, color: Colors.grey[400]),
+            SizedBox(height: 16),
+            Text(
+              'Live Tracking',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Halaman dalam pengembangan',
+              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRiwayatPage() {
+    return Scaffold(
+      backgroundColor: Colors.grey[50],
+      appBar: AppBar(
+        title: Text('Riwayat'),
+        backgroundColor: Colors.orange,
+        foregroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.history, size: 80, color: Colors.grey[400]),
+            SizedBox(height: 16),
+            Text(
+              'Riwayat',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Halaman dalam pengembangan',
+              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSettingPage() {
+    return Scaffold(
+      backgroundColor: Colors.grey[50],
+      appBar: AppBar(
+        title: Text('Settings'),
+        backgroundColor: Colors.orange,
+        foregroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.settings, size: 80, color: Colors.grey[400]),
+            SizedBox(height: 16),
+            Text(
+              'Settings',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            SizedBox(height: 8),
+            Text(
+              'Halaman dalam pengembangan',
+              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(),
-              _buildSearchSection(),
-              _buildNearestHospitalSection(),
-              _buildQuickAccessSection(),
-              _buildTodaySection(),
-              _buildPromoSection(),
-              _buildHealthArticlesSection(),
-            ],
-          ),
-        ),
+      body: _currentIndex == 0 ? _buildHomePage() : _buildOtherPages(),
+      bottomNavigationBar: _buildBottomNavigation(),
+    );
+  }
+
+  Widget _buildHomePage() {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildHeader(),
+          _buildSearchSection(),
+          _buildNearestHospitalSection(),
+          _buildQuickAccessSection(),
+          _buildTodaySection(),
+          _buildPromoSection(),
+          _buildHealthArticlesSection(),
+          const SizedBox(height: 20),
+        ],
       ),
-      bottomNavigationBar:
-          _buildBottomNavigationBar(), // Add bottom navigation here
     );
   }
 
@@ -351,8 +456,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
                     ),
                   ),
                   GestureDetector(
-                    onTap:
-                        () => _navigateToLogin(), // Menggunakan GestureDetector
+                    onTap: () => _navigateToLogin(),
                     child: Text(
                       'Login / Register',
                       style: TextStyle(
@@ -933,8 +1037,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
             date: 'Rabu, 3 September 2025',
             imagePath: 'assets/images/ginjal.jpg',
             url:
-                'https://www.biofarma.co.id/id/announcement/detail/5-cara-merawat-ginjal-agar-sehat-cegah-penyakit-ginjal', // 🔥 link artikel
-
+                'https://www.biofarma.co.id/id/announcement/detail/5-cara-merawat-ginjal-agar-sehat-cegah-penyakit-ginjal',
             gradient: [Color(0xFF87CEEB), Color(0xFFB0E0E6)],
           ),
           const SizedBox(height: 12),
@@ -945,7 +1048,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
             imagePath: 'assets/images/olang.jpg',
             gradient: [Color(0xFF98FB98), Color(0xFF90EE90)],
             url:
-                'https://www.biofarma.co.id/id/announcement/detail/9-manfaat-kolang-kaling-yang-perlu-kamu-ketahui', // 🔥 link artikel
+                'https://www.biofarma.co.id/id/announcement/detail/9-manfaat-kolang-kaling-yang-perlu-kamu-ketahui',
           ),
           const SizedBox(height: 12),
           _buildArticleCard(
@@ -955,7 +1058,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
             imagePath: 'assets/images/gerd.png',
             gradient: [Color(0xFFFFA07A), Color(0xFFFF7F50)],
             url:
-                'https://www.biofarma.co.id/id/announcement/detail/kenali-jenis-makanan-penyebab-gerd', // 🔥 link artikel
+                'https://www.biofarma.co.id/id/announcement/detail/kenali-jenis-makanan-penyebab-gerd',
           ),
         ],
       ),
@@ -971,7 +1074,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
     required String url,
   }) {
     return GestureDetector(
-      onTap: () => _openArticle(url, title), // buka link artikel
+      onTap: () => _openArticle(url, title),
       child: Container(
         height: 200,
         margin: const EdgeInsets.only(bottom: 12),
@@ -1126,7 +1229,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header
             Container(
               padding: EdgeInsets.fromLTRB(16, 20, 16, 16),
               child: Row(
@@ -1151,8 +1253,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                 ],
               ),
             ),
-
-            // Page content
             Expanded(
               child: PageView(
                 controller: _pageController,
@@ -1170,13 +1270,10 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                 ],
               ),
             ),
-
-            // Bottom navigation
             Container(
               padding: EdgeInsets.all(20),
               child: Column(
                 children: [
-                  // Page indicator
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(5, (index) {
@@ -1195,10 +1292,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                       );
                     }),
                   ),
-
                   SizedBox(height: 20),
-
-                  // Navigation buttons
                   if (_currentPage < 4)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1218,7 +1312,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                           )
                         else
                           SizedBox(width: 80),
-
                         Text(
                           '${_currentPage + 1} dari 5',
                           style: TextStyle(
@@ -1226,7 +1319,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                             fontSize: 14,
                           ),
                         ),
-
                         ElevatedButton(
                           onPressed: () {
                             _pageController.nextPage(
@@ -1246,7 +1338,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                       ],
                     )
                   else
-                    // Last page buttons
                     Column(
                       children: [
                         ElevatedButton(
@@ -1268,9 +1359,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                           ),
                           child: Text('Mulai Sekarang!'),
                         ),
-
                         SizedBox(height: 12),
-
                         Row(
                           children: [
                             Expanded(
@@ -1333,7 +1422,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Illustration
           Container(
             height: 300,
             width: double.infinity,
@@ -1389,7 +1477,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
             ),
           ),
           SizedBox(height: 20),
-          // Title
           Text(
             'Selamat datang di aplikasi Rumah Sakit Digital Hospital',
             style: TextStyle(
@@ -1400,7 +1487,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 20),
-          // Description
           Text(
             'Aplikasi ini membantu Anda mencari rumah sakit, daftar berobat, cek antrian, dan banyak lagi!',
             style: TextStyle(
@@ -1421,7 +1507,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Illustration
           Container(
             height: 300,
             width: double.infinity,
@@ -1473,7 +1558,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
             ),
           ),
           SizedBox(height: 20),
-          // Title
           Text(
             'Cari Rumah Sakit Terdekat',
             style: TextStyle(
@@ -1484,7 +1568,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 20),
-          // Description
           Text(
             'Lihat daftar rumah sakit terdekat sesuai lokasi Anda. Dapatkan informasi alamat, nomor telepon, dan layanan yang tersedia.',
             style: TextStyle(
@@ -1505,7 +1588,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Illustration
           Container(
             height: 300,
             width: double.infinity,
@@ -1561,7 +1643,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
             ),
           ),
           SizedBox(height: 20),
-          // Title
           Text(
             'Lihat Layanan & Info Kesehatan',
             style: TextStyle(
@@ -1572,7 +1653,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 20),
-          // Description
           Text(
             'Cek layanan yang tersedia seperti rawat jalan, IGD, MCU. Pantau info penting seperti ketersediaan labu darah dan promo kesehatan.',
             style: TextStyle(
@@ -1593,7 +1673,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Illustration - Circular format
           Container(
             height: 300,
             width: double.infinity,
@@ -1666,7 +1745,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
             ),
           ),
           SizedBox(height: 20),
-          // Title
           Text(
             'Daftar & Pantau Antrian',
             style: TextStyle(
@@ -1677,7 +1755,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 20),
-          // Description
           Text(
             'Setelah login dan memilih rumah sakit terdekat, Anda dapat mendaftar berobat langsung melalui aplikasi. Status antrian dapat dipantau secara real-time tanpa perlu menunggu lama di lokasi.',
             style: TextStyle(
@@ -1698,7 +1775,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Icon Container
           Container(
             height: 300,
             width: double.infinity,
@@ -1733,7 +1809,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
             ),
           ),
           SizedBox(height: 20),
-          // Title
           Text(
             'Mulai Sekarang!',
             style: TextStyle(
@@ -1744,7 +1819,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 20),
-          // Description
           Text(
             'Anda siap menggunakan aplikasi. Silakan login atau daftar untuk mulai menggunakan layanan kami.',
             style: TextStyle(
@@ -1760,7 +1834,6 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
   }
 }
 
-// Cara Mendaftar Widget
 class CaraMendaftarWidget extends StatefulWidget {
   @override
   _CaraMendaftarWidgetState createState() => _CaraMendaftarWidgetState();
@@ -1769,14 +1842,14 @@ class CaraMendaftarWidget extends StatefulWidget {
 class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  // Define colors for each page
   final List<Color> _pageColors = [
-    Color(0xFFF83707), // Orange for page 1
-    Color(0xFF2196F3), // Blue for page 2
-    Color(0xFF4CAF50), // Green for page 3
-    Color(0xFFFF6B35), // Orange for page 4
-    Color(0xFF9C27B0), // Purple for page 5
+    Color(0xFFF83707),
+    Color(0xFF2196F3),
+    Color(0xFF4CAF50),
+    Color(0xFFFF6B35),
+    Color(0xFF9C27B0),
   ];
+
   @override
   void dispose() {
     _pageController.dispose();
@@ -1790,7 +1863,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header
             Container(
               padding: EdgeInsets.fromLTRB(16, 20, 16, 16),
               child: Row(
@@ -1818,8 +1890,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
                 ],
               ),
             ),
-
-            // Page content
             Expanded(
               child: PageView(
                 controller: _pageController,
@@ -1837,13 +1907,10 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
                 ],
               ),
             ),
-
-            // Bottom navigation
             Container(
               padding: EdgeInsets.all(20),
               child: Column(
                 children: [
-                  // Page indicator
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(5, (index) {
@@ -1863,7 +1930,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
                     }),
                   ),
                   SizedBox(height: 20),
-                  // Navigation buttons
                   if (_currentPage < 4)
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1885,7 +1951,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
                           )
                         else
                           SizedBox(width: 80),
-
                         Text(
                           '${_currentPage + 1} dari 5',
                           style: TextStyle(
@@ -1893,7 +1958,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
                             fontSize: 14,
                           ),
                         ),
-
                         ElevatedButton(
                           onPressed: () {
                             _pageController.nextPage(
@@ -1913,22 +1977,12 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
                       ],
                     )
                   else
-                    // Last page buttons
                     Column(
                       children: [
                         ElevatedButton(
                           onPressed: () {
                             Navigator.pop(context);
-                            // TODO: Navigate to registration
                           },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Color(0xFF9C27B0),
-                            foregroundColor: Colors.white,
-                            minimumSize: Size(double.infinity, 50),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                          ),
                           child: Text('Mulai Sekarang!'),
                         ),
                       ],
@@ -1948,7 +2002,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Illustration
           Container(
             height: 300,
             width: double.infinity,
@@ -2004,7 +2057,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
             ),
           ),
           SizedBox(height: 20),
-          // Title
           Text(
             'Langkah 1: Isi Data Diri & Buat Akun',
             style: TextStyle(
@@ -2015,7 +2067,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 20),
-          // Description
           Text(
             'Buka aplikasi dan pilih "Registrasi". Isi formulir dengan data diri yang valid, lalu buat username dan kata sandi untuk akun Anda.',
             style: TextStyle(
@@ -2036,7 +2087,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Illustration
           Container(
             height: 300,
             width: double.infinity,
@@ -2092,7 +2142,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
             ),
           ),
           SizedBox(height: 20),
-          // Title
           Text(
             'Langkah 2: Verifikasi Akun & Login',
             style: TextStyle(
@@ -2103,7 +2152,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 20),
-          // Description
           Text(
             'Setelah mengisi data, sistem akan mengirimkan kode verifikasi ke email atau nomor telepon Anda. Masukkan kode tersebut untuk memverifikasi akun dan login ke aplikasi.',
             style: TextStyle(
@@ -2124,7 +2172,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Illustration
           Container(
             height: 300,
             width: double.infinity,
@@ -2180,7 +2227,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
             ),
           ),
           SizedBox(height: 20),
-          // Title
           Text(
             'Langkah 3: Cari & Pilih Rumah Sakit',
             style: TextStyle(
@@ -2191,7 +2237,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 20),
-          // Description
           Text(
             'Setelah berhasil login, gunakan fitur pencarian untuk menemukan rumah sakit terdekat atau rumah sakit pilihan Anda. Pilih rumah sakit untuk melihat detail layanan dan membuat janji.',
             style: TextStyle(
@@ -2212,7 +2257,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Illustration
           Container(
             height: 300,
             width: double.infinity,
@@ -2268,7 +2312,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
             ),
           ),
           SizedBox(height: 20),
-          // Title
           Text(
             'Langkah 4: Buat Jadwal Konsultasi',
             style: TextStyle(
@@ -2279,7 +2322,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 20),
-          // Description
           Text(
             'Pilih layanan, dokter, dan jadwal yang tersedia. Konfirmasi janji temu Anda dan dapatkan nomor antrian digital secara otomatis.',
             style: TextStyle(
@@ -2300,7 +2342,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Illustration
           Container(
             height: 300,
             width: double.infinity,
@@ -2356,7 +2397,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
             ),
           ),
           SizedBox(height: 20),
-          // Title
           Text(
             'Langkah 5: Pantau Antrian Secara Real-Time',
             style: TextStyle(
@@ -2367,7 +2407,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
             textAlign: TextAlign.center,
           ),
           SizedBox(height: 20),
-          // Description
           Text(
             'Anda dapat memantau status antrian Anda langsung dari aplikasi. Notifikasi akan dikirim saat giliran Anda mendekat, jadi tidak perlu lagi menunggu lama di rumah sakit.',
             style: TextStyle(
@@ -2383,7 +2422,6 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
   }
 }
 
-// FAQ Widget
 class FAQWidget extends StatefulWidget {
   @override
   _FAQWidgetState createState() => _FAQWidgetState();
@@ -2400,7 +2438,6 @@ class _FAQWidgetState extends State<FAQWidget> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Header
               Container(
                 padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
                 child: Row(
@@ -2422,7 +2459,6 @@ class _FAQWidgetState extends State<FAQWidget> {
                   ],
                 ),
               ),
-              // FAQ Items
               _buildFAQItem(
                 question: 'Apa itu aplikasi Digital Hospital?',
                 answer:

@@ -26,7 +26,7 @@
     <application
         android:label="Digital Hospital"
         android:name="${applicationName}"
-        android:icon="@mipmap/inotal"
+        android:icon="@mipmap/digital"
         android:allowBackup="true"
         android:theme="@style/LaunchTheme">
 
