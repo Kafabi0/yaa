@@ -481,7 +481,7 @@ class _UTDRSPatientInfoPageState extends State<UTDRSPatientInfoPage> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.teal[50],
+                    color: Colors.red[50],
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(color: Colors.red[200]!),
                   ),
@@ -913,7 +913,7 @@ class _UTDRSConfirmationPageState extends State<UTDRSConfirmationPage> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.teal[50],
+                  color: Colors.red[50],
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.red[200]!),
                 ),
@@ -986,7 +986,7 @@ class _UTDRSConfirmationPageState extends State<UTDRSConfirmationPage> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.teal[50],
+                  color: Colors.red[50],
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.red[200]!),
                 ),
