@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:inocare/screens/order.dart';
+import 'package:inocare/screens/pilihrumahsakit.dart';
 import 'package:inocare/screens/rumahsakitmember.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
@@ -246,6 +247,7 @@ class _HomePageMemberState extends State<HomePageMember> {
     );
   }
 
+  /// 🔽 Item icon + label untuk bottom nav
   Widget _buildNavItemWithLabel(IconData icon, String label) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -264,67 +266,108 @@ class _HomePageMemberState extends State<HomePageMember> {
     );
   }
 
-
+  /// 🔽 Halaman berdasarkan tab yang dipilih
   Widget _buildOtherPages() {
     switch (_currentIndex) {
       case 1: // Order
-        return const OrderPage();
+        Future.microtask(() => _navigateToHospitalAndGo(const OrderPage()));
+        return const SizedBox();
+
       case 2: // Live
-        return _buildLivePage();
+        Future.microtask(() => _navigateToHospitalAndGo(_buildLivePage()));
+        return const SizedBox();
+
       case 3: // Riwayat
-        return _buildRiwayatPage();
+        Future.microtask(() => _navigateToHospitalAndGo(_buildRiwayatPage()));
+        return const SizedBox();
+
       case 4: // Setting
         return SettingsScreen(onLogout: _handleLogout);
+
       default:
         return _buildHomePage();
     }
   }
-  Widget _buildLivePage() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.satellite_alt, size: 80, color: Colors.grey[400]),
-          SizedBox(height: 16),
-          Text(
-            'Live Tracking',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Halaman dalam pengembangan',
-            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
-          ),
-        ],
+
+  /// 🔽 Fungsi Navigasi ke Pilih Rumah Sakit
+  Future<void> _navigateToHospitalAndGo(Widget nextPage) async {
+    final selectedHospital = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const PilihRumahSakitPage()),
+    );
+
+    if (selectedHospital != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => nextPage),
+      );
+    }
+  }
+
+  /// 🔽 Halaman Home (contoh)
+  Widget _buildMainHomePage() {
+    return const Center(
+      child: Text(
+        'Home Page',
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
       ),
     );
   }
 
-  Widget _buildRiwayatPage() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.history, size: 80, color: Colors.grey[400]),
-          SizedBox(height: 16),
-          Text(
-            'Riwayat',
-            style: TextStyle(
-              fontSize: 16,
-              color: Colors.grey[600],
-              fontWeight: FontWeight.w500,
+  /// 🔽 Halaman Live Tracking
+  Widget _buildLivePage() {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Live Tracking")),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.satellite_alt, size: 80, color: Colors.grey[400]),
+            const SizedBox(height: 16),
+            Text(
+              'Live Tracking',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-          SizedBox(height: 8),
-          Text(
-            'Halaman dalam pengembangan',
-            style: TextStyle(fontSize: 14, color: Colors.grey[500]),
-          ),
-        ],
+            const SizedBox(height: 8),
+            Text(
+              'Halaman dalam pengembangan',
+              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 🔽 Halaman Riwayat
+  Widget _buildRiwayatPage() {
+    return Scaffold(
+      appBar: AppBar(title: const Text("Riwayat")),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.history, size: 80, color: Colors.grey[400]),
+            const SizedBox(height: 16),
+            Text(
+              'Riwayat',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Halaman dalam pengembangan',
+              style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+            ),
+          ],
+        ),
       ),
     );
   }

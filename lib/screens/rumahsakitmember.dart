@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:inocare/main.dart';
 import 'package:inocare/screens/detailrsmember.dart';
+import 'package:inocare/screens/home_page_member.dart';
 
 class RumahSakitMemberPage extends StatefulWidget {
   const RumahSakitMemberPage({Key? key}) : super(key: key);
@@ -8,6 +9,8 @@ class RumahSakitMemberPage extends StatefulWidget {
   @override
   State<RumahSakitMemberPage> createState() => _RumahSakitMemberPageState();
 }
+
+Hospital? _selectedHospital;
 
 class _RumahSakitMemberPageState extends State<RumahSakitMemberPage> {
   final TextEditingController _searchController = TextEditingController();
@@ -315,14 +318,20 @@ class _RumahSakitMemberPageState extends State<RumahSakitMemberPage> {
               child: Row(
                 children: [
                   GestureDetector(
-                    onTap: () => Navigator.pop(context),
+                    onTap: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => const HomePageMember()),
+                        (route) => false,
+                      );
+                    },
                     child: Container(
-                      padding: EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: Colors.white.withOpacity(0.2),
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.arrow_back,
                         color: Colors.white,
                         size: 20,
