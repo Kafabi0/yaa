@@ -70,6 +70,7 @@ dependencies:
   webview_flutter: ^4.13.0
   concentric_transition: ^1.0.3
   qr_flutter: ^4.1.0
+  percent_indicator: ^4.2.5
 
 dev_dependencies:
   flutter_test:
