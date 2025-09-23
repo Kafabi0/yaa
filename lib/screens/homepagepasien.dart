@@ -560,6 +560,11 @@ class _HomePagePasienState extends State<HomePagePasien> {
                       'Tagihan',
                       Colors.purple,
                     ),
+                    _buildQuickActionItem(
+                      Icons.monitor_heart_outlined,
+                      'Kesehatan Saya',
+                      Colors.yellow,
+                    ),
 
                     // Layanan pasien tambahan
                     if (_antrianIGD != null ||
@@ -654,6 +659,13 @@ class _HomePagePasienState extends State<HomePagePasien> {
           case 'Tagihan':
             _openBillingPage();
             break;
+
+          case 'Kesehatan Saya': 
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const KesehatanSayaSensorPage()),
+            );
+          break;
 
           case 'Hasil Pemeriksaan':
             _openHasilPemeriksaan();
@@ -1709,9 +1721,9 @@ class _HomePagePasienState extends State<HomePagePasien> {
         );
       case 3: // Riwayat
         return RiwayatRegistrasiPage();
-      case 4: // Kesehatan Saya
-        return KesehatanSayaSensorPage();
-      case 5: // Setting
+      // case 4: // Kesehatan Saya
+      //   return KesehatanSayaSensorPage();
+      case 4: // Setting
         return SettingsScreen(onLogout: _handleLogout);
       default:
         return _buildHomePage();
@@ -1814,7 +1826,6 @@ class _HomePagePasienState extends State<HomePagePasien> {
         _buildNavItemWithLabel(FontAwesomeIcons.clipboardList, 'Order'),
         _buildNavItemWithLabel(FontAwesomeIcons.satellite, 'Live'),
         _buildNavItemWithLabel(FontAwesomeIcons.clockRotateLeft, 'Riwayat'),
-        _buildNavItemWithLabel(FontAwesomeIcons.heartPulse, 'Kesehatan Saya'),
         _buildNavItemWithLabel(FontAwesomeIcons.gear, 'Setting'),
       ],
     );
