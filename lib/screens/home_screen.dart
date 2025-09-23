@@ -5,6 +5,8 @@ import 'webview_page.dart';
 import 'package:inocare/screens/order.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:inocare/services/location_service.dart';
 
 class HealthAppHomePage extends StatefulWidget {
   final VoidCallback? onLoginSuccess;
@@ -26,12 +28,177 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
   int _currentPromoIndex = 0;
   int _currentIndex = 0;
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
+  Position? _currentPosition;
+  String _currentAddress = 'Mendapatkan lokasi...';
+  bool _isLoadingLocation = true;
 
   @override
   void initState() {
     super.initState();
     _startPromoAutoSlide();
+    _getCurrentLocation();
   }
+
+   Future<void> _getCurrentLocation() async {
+    try {
+      setState(() {
+        _isLoadingLocation = true;
+        _currentAddress = 'Mendapatkan lokasi...';
+      });
+
+      Position? position = await LocationService.getCurrentPosition();
+      
+      if (position != null) {
+        setState(() {
+          _currentPosition = position;
+        });
+
+        // Dapatkan alamat dari koordinat
+        String address = await LocationService.getAddressFromCoordinates(
+          position.latitude, 
+          position.longitude
+        );
+
+        setState(() {
+          _currentAddress = _truncateAddress(address);
+          _isLoadingLocation = false;
+        });
+      } else {
+        setState(() {
+          _currentAddress = 'Lokasi tidak tersedia';
+          _isLoadingLocation = false;
+        });
+        
+        _showLocationPermissionDialog();
+      }
+    } catch (e) {
+      setState(() {
+        _currentAddress = 'Gagal mendapatkan lokasi';
+        _isLoadingLocation = false;
+      });
+    }
+  }
+
+  String _truncateAddress(String address) {
+    if (address.length > 35) {
+      return '${address.substring(0, 35)}...';
+    }
+    return address;
+  }
+
+  void _showLocationPermissionDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: Row(
+            children: [
+              Icon(Icons.location_on, color: Color(0xFFFF6B35)),
+              SizedBox(width: 8),
+              Text('Izin Lokasi'),
+            ],
+          ),
+          content: Text(
+            'Aplikasi memerlukan izin lokasi untuk menampilkan rumah sakit terdekat. Mohon aktifkan lokasi pada pengaturan.',
+            style: TextStyle(fontSize: 16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  _currentAddress = 'Lokasi dinonaktifkan';
+                });
+              },
+              child: Text('Nanti',
+              style: TextStyle(color: const Color.fromARGB(255, 0, 0, 0)),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                bool opened = await LocationService.openLocationSettings();
+                if (!opened) {
+                  await LocationService.openAppSettings();
+                }
+                // Coba ambil lokasi lagi setelah 2 detik
+                Future.delayed(Duration(seconds: 2), () {
+                  _getCurrentLocation();
+                });
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFFFF6B35),
+              ),
+              child: Text('Buka Pengaturan',
+              style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+Widget _buildLocationWidget() {
+  return GestureDetector(
+    onTap: () {
+      if (!_isLoadingLocation) {
+        _getCurrentLocation();
+      }
+    },
+    child: Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(15),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.3),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          _isLoadingLocation
+              ? SizedBox(
+                  width: 16,
+                  height: 16,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+              : Icon(Icons.location_on, color: Colors.white, size: 16),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              _currentAddress,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (!_isLoadingLocation) ...[
+            const SizedBox(width: 8),
+            Icon(
+              Icons.refresh,
+              color: Colors.white.withOpacity(0.8),
+              size: 16,
+            ),
+          ],
+        ],
+      ),
+    ),
+  );
+}
 
   void _openArticle(String url, String title) {
     Navigator.push(
@@ -425,71 +592,184 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
   }
 
   Widget _buildHeader() {
-    return SafeArea(
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFFF6B35), Color(0xFFFF8A50)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(25),
-            bottomRight: Radius.circular(25),
-          ),
+  return SafeArea(
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFFFF6B35), Color(0xFFFF8A50)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(25),
+          bottomRight: Radius.circular(25),
+        ),
+      ),
+      child: Row(
+        children: [
+          // Kiri - Greeting
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Selamat Datang',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () => _navigateToLogin(),
-                      child: Text(
-                        'Login / Register',
-                        style: TextStyle(
-                          color: Colors.white.withOpacity(0.9),
-                          fontSize: 14,
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ),
-                  ],
+                Text(
+                  'Selamat Datang',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () => _showLoginRequired('Notifikasi'),
-                      child: const Icon(
-                        Icons.notifications,
-                        color: Colors.white,
-                        size: 24,
-                      ),
+                GestureDetector(
+                  onTap: () => _navigateToLogin(),
+                  child: Text(
+                    'Login / Register',
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 12,
+                      decoration: TextDecoration.underline,
                     ),
-                    const SizedBox(width: 12),
-                    const Icon(
-                      Icons.location_on,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ],
+                  ),
                 ),
               ],
             ),
-          ],
+          ),
+          
+          // Kanan - Notifikasi + Lokasi (Stacked)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Notifikasi + Lokasi dalam satu baris
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Widget lokasi mini
+                  _buildMiniLocationWidget(),
+                  SizedBox(width: 8),
+                  // Notifikasi
+                  GestureDetector(
+                    onTap: () => _showLoginRequired('Notifikasi'),
+                    child: Container(
+                      padding: EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.notifications,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+Widget _buildMiniLocationWidget() {
+  return GestureDetector(
+    onTap: () {
+      if (!_isLoadingLocation) {
+        _getCurrentLocation();
+      }
+    },
+    child: Container(
+      constraints: BoxConstraints(maxWidth: 120), 
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.white.withOpacity(0.3), width: 0.5),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _isLoadingLocation
+              ? SizedBox(
+                  width: 12,
+                  height: 12,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 1.5,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
+              : Icon(Icons.location_on, color: Colors.white, size: 12),
+          const SizedBox(width: 3),
+          Flexible(
+            child: Text(
+              _getShortAddress(_currentAddress),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 10,
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+String _getShortAddress(String address) {
+  if (address.contains('Mendapatkan') || address.contains('Gagal')) {
+    return address.length > 25 ? '${address.substring(0, 25)}...' : address;
+  }
+  
+  // Ambil bagian penting dari alamat (kota/kecamatan)
+  List<String> parts = address.split(', ');
+  if (parts.length >= 2) {
+    String result = parts.length >= 3 ? parts[2] : parts[1];
+    return result.length > 25 ? '${result.substring(0, 25)}...' : result; 
+  }
+  
+  return address.length > 25 ? '${address.substring(0, 25)}...' : address; 
+}
+
+  double? _calculateDistance(double hospitalLat, double hospitalLng) {
+    if (_currentPosition == null) return null;
+    
+    return Geolocator.distanceBetween(
+      _currentPosition!.latitude,
+      _currentPosition!.longitude,
+      hospitalLat,
+      hospitalLng,
+    );
+  }
+
+  Widget _buildDistanceWidget(double? distance) {
+    if (distance == null) return SizedBox.shrink();
+    
+    String distanceText;
+    if (distance < 1000) {
+      distanceText = '${distance.toInt()} m';
+    } else {
+      distanceText = '${(distance / 1000).toStringAsFixed(1)} km';
+    }
+    
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: Colors.green,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        distanceText,
+        style: TextStyle(
+          color: Colors.white,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
