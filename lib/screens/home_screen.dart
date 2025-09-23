@@ -1776,7 +1776,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
           Text(
             'Aplikasi ini membantu Anda mencari rumah sakit, daftar berobat, cek antrian, dan banyak lagi!',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               color: Colors.grey[600],
               height: 1.5,
             ),
@@ -1857,7 +1857,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
           Text(
             'Lihat daftar rumah sakit terdekat sesuai lokasi Anda. Dapatkan informasi alamat, nomor telepon, dan layanan yang tersedia.',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               color: Colors.grey[600],
               height: 1.5,
             ),
@@ -1932,7 +1932,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
           Text(
             'Lihat Layanan & Info Kesehatan',
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
             ),
@@ -1942,7 +1942,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
           Text(
             'Cek layanan yang tersedia seperti rawat jalan, IGD, MCU. Pantau info penting seperti ketersediaan labu darah dan promo kesehatan.',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               color: Colors.grey[600],
               height: 1.5,
             ),
@@ -2034,7 +2034,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
           Text(
             'Daftar & Pantau Antrian',
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
             ),
@@ -2044,7 +2044,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
           Text(
             'Setelah login dan memilih rumah sakit terdekat, Anda dapat mendaftar berobat langsung melalui aplikasi. Status antrian dapat dipantau secara real-time tanpa perlu menunggu lama di lokasi.',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 12,
               color: Colors.grey[600],
               height: 1.5,
             ),
@@ -2062,7 +2062,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            height: 300,
+            height: 250,
             width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
@@ -2081,7 +2081,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.check_circle, size: 100, color: Color(0xFFFF6B35)),
-                  SizedBox(height: 20),
+                  SizedBox(height: 15),
                   Text(
                     'Siap Digunakan!',
                     style: TextStyle(
@@ -2098,7 +2098,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
           Text(
             'Mulai Sekarang!',
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Colors.black87,
             ),
@@ -2108,7 +2108,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
           Text(
             'Anda siap menggunakan aplikasi. Silakan login atau daftar untuk mulai menggunakan layanan kami.',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               color: Colors.grey[600],
               height: 1.5,
             ),
@@ -2308,7 +2308,7 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.asset(
-                  'assets/images/register1.png',
+                  'assets/images/daftar1.png',
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
@@ -2356,7 +2356,7 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
           Text(
             'Buka aplikasi dan pilih "Registrasi". Isi formulir dengan data diri yang valid, lalu buat username dan kata sandi untuk akun Anda.',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               color: Colors.grey[600],
               height: 1.5,
             ),
@@ -2393,7 +2393,7 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.asset(
-                  'assets/images/register2.png',
+                  'assets/images/daftar2.png',
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
@@ -2431,7 +2431,7 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
           Text(
             'Langkah 2: Verifikasi Akun & Login',
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Color(0xFF2196F3),
             ),
@@ -2441,7 +2441,7 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
           Text(
             'Setelah mengisi data, sistem akan mengirimkan kode verifikasi ke email atau nomor telepon Anda. Masukkan kode tersebut untuk memverifikasi akun dan login ke aplikasi.',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               color: Colors.grey[600],
               height: 1.5,
             ),
@@ -2478,7 +2478,7 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.asset(
-                  'assets/images/register3.png',
+                  'assets/images/daftar3.png',
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
@@ -2516,7 +2516,7 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
           Text(
             'Langkah 3: Cari & Pilih Rumah Sakit',
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 18,
               fontWeight: FontWeight.bold,
               color: Color(0xFF4CAF50),
             ),
@@ -2526,7 +2526,7 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
           Text(
             'Setelah berhasil login, gunakan fitur pencarian untuk menemukan rumah sakit terdekat atau rumah sakit pilihan Anda. Pilih rumah sakit untuk melihat detail layanan dan membuat janji.',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 13,
               color: Colors.grey[600],
               height: 1.5,
             ),
@@ -2563,7 +2563,7 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.asset(
-                  'assets/images/register4.png',
+                  'assets/images/daftar4.png',
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
@@ -2611,7 +2611,7 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
           Text(
             'Pilih layanan, dokter, dan jadwal yang tersedia. Konfirmasi janji temu Anda dan dapatkan nomor antrian digital secara otomatis.',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               color: Colors.grey[600],
               height: 1.5,
             ),
@@ -2629,7 +2629,7 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            height: 300,
+            height: 250,
             width: double.infinity,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),
@@ -2648,7 +2648,7 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.asset(
-                  'assets/images/register5.png',
+                  'assets/images/daftar5.png',
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
@@ -2686,7 +2686,7 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
           Text(
             'Langkah 5: Pantau Antrian Secara Real-Time',
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Color(0xFF9C27B0),
             ),
@@ -2696,7 +2696,7 @@ class _CaraMendaftarWidgetState extends State<CaraMendaftarWidget> {
           Text(
             'Anda dapat memantau status antrian Anda langsung dari aplikasi. Notifikasi akan dikirim saat giliran Anda mendekat, jadi tidak perlu lagi menunggu lama di rumah sakit.',
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               color: Colors.grey[600],
               height: 1.5,
             ),
