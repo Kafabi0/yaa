@@ -204,26 +204,6 @@ class _BloodAvailabilityPageState extends State<BloodAvailabilityPage>
           padding: EdgeInsets.symmetric(horizontal: padding),
           child: Column(
             children: [
-              Row(
-                children: [
-                  _roundedIconButton(
-                    icon: Icons.arrow_back,
-                    bgColor: Colors.white,
-                    iconColor: Colors.red,
-                    onTap: () => Navigator.of(context).maybePop(),
-                  ),
-                  const Spacer(),
-                  _roundedIconButton(
-                    icon: Icons.add,
-                    bgColor: Colors.white,
-                    iconColor: Colors.red,
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text('Tambah clicked')));
-                    },
-                  ),
-                ],
-              ),
               const SizedBox(height: 12),
               Text("Bank Darah",
                   style: TextStyle(
