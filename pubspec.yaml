@@ -76,6 +76,13 @@ dependencies:
   geocoding: ^4.0.0
   health: ^13.1.3
   pedometer: ^4.1.1
+  flutter_launcher_icons: ^0.14.4
+  
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/dhl.png"
+
 
 dev_dependencies:
   flutter_test:
