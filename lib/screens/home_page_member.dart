@@ -200,7 +200,6 @@ class _HomePageMemberState extends State<HomePageMember> {
     );
   }
 
-  /// 🔽 Item icon + label untuk bottom nav
   Widget _buildNavItemWithLabel(IconData icon, String label) {
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -219,7 +218,6 @@ class _HomePageMemberState extends State<HomePageMember> {
     );
   }
 
-  /// 🔽 Halaman berdasarkan tab yang dipilih
   Widget _buildOtherPages() {
     switch (_currentIndex) {
       case 1: // Order
@@ -234,7 +232,7 @@ class _HomePageMemberState extends State<HomePageMember> {
         Future.microtask(() => _navigateToHospitalAndGo(_buildRiwayatPage()));
         return const SizedBox();
 
-      case 4: // Setting
+      case 4: 
         return SettingsScreen(onLogout: _handleLogout);
 
       default:
@@ -242,7 +240,6 @@ class _HomePageMemberState extends State<HomePageMember> {
     }
   }
 
-  /// 🔽 Fungsi Navigasi ke Pilih Rumah Sakit
   Future<void> _navigateToHospitalAndGo(Widget nextPage) async {
     final selectedHospital = await Navigator.push(
       context,

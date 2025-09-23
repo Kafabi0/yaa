@@ -40,7 +40,6 @@ class _InputTransaksiPageState extends State<InputTransaksiPage> {
     if (!_formKey.currentState!.validate()) return;
     if (selectedPasienId == null) return;
 
-    // Format dengan Z (UTC) → aman untuk Go
     final formattedDate =
         DateTime(
           selectedDate.year,

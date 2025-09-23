@@ -10,6 +10,7 @@ import 'package:inocare/screens/hasilutdrs.dart';
 import 'package:inocare/screens/infobed.dart';
 import 'package:inocare/screens/infolabu.dart';
 import 'package:inocare/screens/jadwaloperasi.dart';
+import 'package:inocare/screens/kesehatansaya.dart';
 import 'package:inocare/screens/liveantrian.dart';
 import 'package:inocare/screens/menumakanan.dart';
 import 'package:inocare/screens/billing_page.dart';
@@ -44,7 +45,7 @@ class _HomePagePasienState extends State<HomePagePasien> {
   String? _userName;
 
   final PageController _promoPageController = PageController();
-    int _currentPromoIndex = 0;
+  int _currentPromoIndex = 0;
 
   String? _antrianIGD;
   String? _antrianRajal;
@@ -507,142 +508,207 @@ class _HomePagePasienState extends State<HomePagePasien> {
   }
 
   /// ✅ Function untuk modal bottom sheet
- void _showAllQuickActions(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-    ),
-    builder: (context) {
-      return Padding(
-        padding: const EdgeInsets.all(16),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                "Semua Menu",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 16),
+  void _showAllQuickActions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Semua Menu",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
 
-              GridView.count(
-                shrinkWrap: true,
-                physics: NeverScrollableScrollPhysics(),
-                crossAxisCount: 4,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                children: [
-                  // Registrasi
-                  _buildQuickActionItem(Icons.add_box, 'Registrasi IGD', Colors.red),
-                  _buildQuickActionItem(FontAwesomeIcons.userDoctor, 'Registrasi Rajal', Colors.blue),
-                  _buildQuickActionItem(Icons.assignment, 'Registrasi MCU', Color(0xFFFF6B35)),
-                  _buildQuickActionItem(Icons.hotel, 'Registrasi Ranap', Colors.teal),
-                  _buildQuickActionItem(Icons.receipt_long, 'Tagihan', Colors.purple),
+                GridView.count(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  crossAxisCount: 4,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  children: [
+                    // Registrasi
+                    _buildQuickActionItem(
+                      Icons.add_box,
+                      'Registrasi IGD',
+                      Colors.red,
+                    ),
+                    _buildQuickActionItem(
+                      FontAwesomeIcons.userDoctor,
+                      'Registrasi Rajal',
+                      Colors.blue,
+                    ),
+                    _buildQuickActionItem(
+                      Icons.assignment,
+                      'Registrasi MCU',
+                      Color(0xFFFF6B35),
+                    ),
+                    _buildQuickActionItem(
+                      Icons.hotel,
+                      'Registrasi Ranap',
+                      Colors.teal,
+                    ),
+                    _buildQuickActionItem(
+                      Icons.receipt_long,
+                      'Tagihan',
+                      Colors.purple,
+                    ),
 
-                  // Layanan pasien tambahan
-                  if (_antrianIGD != null || _antrianRajal != null || _antrianMCU != null || _antrianRanap != null)
-                    _buildQuickActionItem(Icons.assignment_outlined, 'Hasil Pemeriksaan', Colors.blue),
-                  if (_antrianIGD != null || _antrianRajal != null || _antrianMCU != null || _antrianRanap != null)
-                    _buildQuickActionItem(Icons.science_outlined, 'Hasil Lab', Colors.purple),
-                  if (_antrianIGD != null || _antrianRajal != null || _antrianRanap != null)
-                    _buildQuickActionItem(Icons.camera_alt_outlined, 'Hasil Radiologi', Colors.orange),
-                  _buildQuickActionItem(Icons.monitor_heart_outlined, 'Hasil UTDRS', Colors.red),
-                  if (_antrianIGD != null)
-                    _buildQuickActionItem(Icons.gavel_outlined, 'Hasil Forensik', Colors.brown),
-                  if (_antrianRanap != null)
-                    _buildQuickActionItem(Icons.restaurant_menu_outlined, 'Menu Makanan', Colors.teal),
-                  if (_antrianRanap != null || _antrianIGD != null)
-                    _buildQuickActionItem(Icons.medical_services_outlined, 'Jadwal Operasi', Color(0xFFFF6B35)),
-                ],
-              ),
-            ],
+                    // Layanan pasien tambahan
+                    if (_antrianIGD != null ||
+                        _antrianRajal != null ||
+                        _antrianMCU != null ||
+                        _antrianRanap != null)
+                      _buildQuickActionItem(
+                        Icons.assignment_outlined,
+                        'Hasil Pemeriksaan',
+                        Colors.blue,
+                      ),
+                    if (_antrianIGD != null ||
+                        _antrianRajal != null ||
+                        _antrianMCU != null ||
+                        _antrianRanap != null)
+                      _buildQuickActionItem(
+                        Icons.science_outlined,
+                        'Hasil Lab',
+                        Colors.purple,
+                      ),
+                    if (_antrianIGD != null ||
+                        _antrianRajal != null ||
+                        _antrianRanap != null)
+                      _buildQuickActionItem(
+                        Icons.camera_alt_outlined,
+                        'Hasil Radiologi',
+                        Colors.orange,
+                      ),
+                    _buildQuickActionItem(
+                      Icons.monitor_heart_outlined,
+                      'Hasil UTDRS',
+                      Colors.red,
+                    ),
+                    if (_antrianIGD != null)
+                      _buildQuickActionItem(
+                        Icons.gavel_outlined,
+                        'Hasil Forensik',
+                        Colors.brown,
+                      ),
+                    if (_antrianRanap != null)
+                      _buildQuickActionItem(
+                        Icons.restaurant_menu_outlined,
+                        'Menu Makanan',
+                        Colors.teal,
+                      ),
+                    if (_antrianRanap != null || _antrianIGD != null)
+                      _buildQuickActionItem(
+                        Icons.medical_services_outlined,
+                        'Jadwal Operasi',
+                        Color(0xFFFF6B35),
+                      ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
-
+        );
+      },
+    );
+  }
 
   Widget _buildQuickActionItem(IconData icon, String label, Color color) {
-  return GestureDetector(
-    onTap: () async {
-      switch (label) {
-        case 'Registrasi IGD':
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const RegistrasiIGDPage()))
-              .then((_) async {
-            await _refreshData();
-            final prefs = await SharedPreferences.getInstance();
-            String? nomorAntrian = prefs.getString('nomorAntrian_IGD');
-            if (nomorAntrian != null) _showRealtimeDialog('IGD', nomorAntrian);
-          });
-          break;
+    return GestureDetector(
+      onTap: () async {
+        switch (label) {
+          case 'Registrasi IGD':
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const RegistrasiIGDPage()),
+            ).then((_) async {
+              await _refreshData();
+              final prefs = await SharedPreferences.getInstance();
+              String? nomorAntrian = prefs.getString('nomorAntrian_IGD');
+              if (nomorAntrian != null)
+                _showRealtimeDialog('IGD', nomorAntrian);
+            });
+            break;
 
-        case 'Registrasi Rajal':
-          Navigator.push(context, MaterialPageRoute(builder: (_) => const RegistrasiRajalPage()))
-              .then((_) async {
-            await _refreshData();
-            final prefs = await SharedPreferences.getInstance();
-            String? nomorAntrian = prefs.getString('nomorAntrian_RAJAL');
-            if (nomorAntrian != null) _showRealtimeDialog('RAJAL', nomorAntrian);
-          });
-          break;
+          case 'Registrasi Rajal':
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const RegistrasiRajalPage()),
+            ).then((_) async {
+              await _refreshData();
+              final prefs = await SharedPreferences.getInstance();
+              String? nomorAntrian = prefs.getString('nomorAntrian_RAJAL');
+              if (nomorAntrian != null)
+                _showRealtimeDialog('RAJAL', nomorAntrian);
+            });
+            break;
 
-        case 'Tagihan':
-          _openBillingPage();
-          break;
+          case 'Tagihan':
+            _openBillingPage();
+            break;
 
-        case 'Hasil Pemeriksaan':
-          _openHasilPemeriksaan();
-          break;
+          case 'Hasil Pemeriksaan':
+            _openHasilPemeriksaan();
+            break;
 
-        case 'Hasil Lab':
-          _openHasilLab();
-          break;
+          case 'Hasil Lab':
+            _openHasilLab();
+            break;
 
-        case 'Hasil Radiologi':
-          _openHasilRadiologi();
-          break;
+          case 'Hasil Radiologi':
+            _openHasilRadiologi();
+            break;
 
-        case 'Hasil UTDRS':
-          _openHasilUTDRS();
-          break;
+          case 'Hasil UTDRS':
+            _openHasilUTDRS();
+            break;
 
-        case 'Hasil Forensik':
-          _openHasilForensik();
-          break;
+          case 'Hasil Forensik':
+            _openHasilForensik();
+            break;
 
-        case 'Menu Makanan':
-          _openMenuMakanan();
-          break;
+          case 'Menu Makanan':
+            _openMenuMakanan();
+            break;
 
-        case 'Jadwal Operasi':
-          _openJadwalOperasi();
-          break;
-      }
-    },
-    child: Column(
-      children: [
-        Container(
-          width: 60,
-          height: 60,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(30),
+          case 'Jadwal Operasi':
+            _openJadwalOperasi();
+            break;
+        }
+      },
+      child: Column(
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: color,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: Icon(icon, color: Colors.white, size: 28),
           ),
-          child: Icon(icon, color: Colors.white, size: 28),
-        ),
-        SizedBox(height: 8),
-        Text(
-          label,
-          textAlign: TextAlign.center,
-          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: Colors.black87),
-        ),
-      ],
-    ),
-  );
-}
+          SizedBox(height: 8),
+          Text(
+            label,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w500,
+              color: Colors.black87,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   // Widget _buildPatientServicesMenu() {
   //   bool hasAnyRegistration =
@@ -1147,9 +1213,7 @@ class _HomePagePasienState extends State<HomePagePasien> {
             () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (_) => const BedAvailabilityPage(), 
-                ),
+                MaterialPageRoute(builder: (_) => const BedAvailabilityPage()),
               );
             },
           ),
@@ -1639,13 +1703,15 @@ class _HomePagePasienState extends State<HomePagePasien> {
         return const OrderPage();
       case 2: // Live
         return const LiveAntrianPage(
-      nomorAntrian: "RJ40",
-      antrianSaatIni: "RJ37",
-      estimasiMenit: 20,
-    );
+          nomorAntrian: "RJ40",
+          antrianSaatIni: "RJ37",
+          estimasiMenit: 20,
+        );
       case 3: // Riwayat
         return RiwayatRegistrasiPage();
-      case 4: // Setting
+      case 4: // Kesehatan Saya
+        return KesehatanSayaSensorPage();
+      case 5: // Setting
         return SettingsScreen(onLogout: _handleLogout);
       default:
         return _buildHomePage();
@@ -1748,6 +1814,7 @@ class _HomePagePasienState extends State<HomePagePasien> {
         _buildNavItemWithLabel(FontAwesomeIcons.clipboardList, 'Order'),
         _buildNavItemWithLabel(FontAwesomeIcons.satellite, 'Live'),
         _buildNavItemWithLabel(FontAwesomeIcons.clockRotateLeft, 'Riwayat'),
+        _buildNavItemWithLabel(FontAwesomeIcons.heartPulse, 'Kesehatan Saya'),
         _buildNavItemWithLabel(FontAwesomeIcons.gear, 'Setting'),
       ],
     );

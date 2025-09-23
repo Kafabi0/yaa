@@ -57,7 +57,6 @@ class _BedAvailabilityPageState extends State<BedAvailabilityPage> {
       ),
       body: Column(
         children: [
-          // Header Stats
           Container(
             margin: const EdgeInsets.all(16),
             padding: const EdgeInsets.all(16),
