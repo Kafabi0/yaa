@@ -7,6 +7,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:inocare/services/location_service.dart';
+import 'package:inocare/models/hospital_model.dart';
+import 'package:inocare/services/hospital_service.dart'; 
+import 'package:inocare/widgets/nearest_hospital_widget.dart';
 
 class HealthAppHomePage extends StatefulWidget {
   final VoidCallback? onLoginSuccess;
@@ -810,143 +813,21 @@ String _getShortAddress(String address) {
   }
 
   Widget _buildNearestHospitalSection() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Rumah Sakit Terdekat',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => RumahSakitPublicPage(),
-                    ),
-                  );
-                },
-                child: Text(
-                  'Lihat Semua',
-                  style: TextStyle(
-                    color: Color(0xFFFF6B35),
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Container(
-            height: 240,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
-                  spreadRadius: 1,
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(16),
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: Image.asset(
-                      'assets/images/abdulmuluk.png',
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [Color(0xFF4A90E2), Color(0xFF357ABD)],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                          ),
-                          child: Center(
-                            child: Icon(
-                              Icons.local_hospital,
-                              color: Colors.white,
-                              size: 60,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.black.withOpacity(0.6),
-                            Colors.transparent,
-                          ],
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 16,
-                    left: 16,
-                    right: 16,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'RSUD Dr. H. Abdul Moeloek Provinsi Lampung',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            shadows: [
-                              Shadow(
-                                offset: Offset(1, 1),
-                                blurRadius: 3,
-                                color: Colors.black.withOpacity(0.5),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Text(
-                          'Jl. Dr. Rivai No.6, Penengahan, Kec. Tj. Karang Pusat,\nKota Bandar Lampung, Lampung 35112',
-                          style: TextStyle(
-                            color: Colors.white.withOpacity(0.9),
-                            fontSize: 12,
-                            shadows: [
-                              Shadow(
-                                offset: Offset(1, 1),
-                                blurRadius: 3,
-                                color: Colors.black.withOpacity(0.5),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  return NearestHospitalSection(
+    currentPosition: _currentPosition,
+    onSeeAllPressed: () {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RumahSakitPublicPage(),
+        ),
+      );
+    },
+    onLocationRefresh: () { // Tambah ini
+      _getCurrentLocation();
+    }
+  );
+}
 
   Widget _buildQuickAccessSection() {
     return Padding(
