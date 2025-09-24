@@ -10,6 +10,14 @@ class Hospital {
   final String phone;
   final List<String> services;
   final double? distance;
+  final bool isOpen24Hours;
+  final bool hasBloodStock;
+  final bool acceptsBPJS;
+  final bool hasIGD;
+  final bool hasMCU;
+  final Map<String, int>? bloodStock; // blood type -> quantity
+  final double rating;
+  final String operatingHours;
 
   Hospital({
     required this.id,
@@ -21,6 +29,14 @@ class Hospital {
     required this.phone,
     required this.services,
     this.distance,
+    required this.isOpen24Hours,
+    required this.hasBloodStock,
+    required this.acceptsBPJS,
+    required this.hasIGD,
+    required this.hasMCU,
+    this.bloodStock,
+    required this.rating,
+    required this.operatingHours,
   });
 
   factory Hospital.fromJson(Map<String, dynamic> json) {
@@ -34,6 +50,15 @@ class Hospital {
       phone: json['phone'] ?? '',
       services: List<String>.from(json['services'] ?? []),
       distance: json['distance']?.toDouble(),
+      isOpen24Hours: json['isOpen24Hours'] ?? false,
+      hasBloodStock: json['hasBloodStock'] ?? false,
+      acceptsBPJS: json['acceptsBPJS'] ?? false,
+      hasIGD: json['hasIGD'] ?? false,
+      hasMCU: json['hasMCU'] ?? false,
+      bloodStock: json['bloodStock'] != null ? 
+        Map<String, int>.from(json['bloodStock']) : null,
+      rating: json['rating']?.toDouble() ?? 0.0,
+      operatingHours: json['operatingHours'] ?? 'Tidak diketahui',
     );
   }
 
@@ -48,6 +73,14 @@ class Hospital {
       phone: phone,
       services: services,
       distance: distance ?? this.distance,
+      isOpen24Hours: isOpen24Hours,
+      hasBloodStock: hasBloodStock,
+      acceptsBPJS: acceptsBPJS,
+      hasIGD: hasIGD,
+      hasMCU: hasMCU,
+      bloodStock: bloodStock,
+      rating: rating,
+      operatingHours: operatingHours,
     );
   }
 }
