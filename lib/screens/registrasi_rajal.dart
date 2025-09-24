@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../main.dart';
+import 'package:inocare/services/user_prefs.dart';
+
 
 class RegistrasiRajalPage extends StatefulWidget {
   const RegistrasiRajalPage({Key? key}) : super(key: key);
@@ -104,23 +106,23 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
     final prefs = await SharedPreferences.getInstance();
     String nomor = "RJ${DateTime.now().millisecondsSinceEpoch % 10000}";
 
-    await prefs.setString('registeredName', _nameController.text.trim());
-    await prefs.setString('registeredNIK', _nikController.text.trim());
-    await prefs.setString('registeredNoKK', _noKKController.text.trim());
+    await prefs.setString('name', _nameController.text.trim());
+    await prefs.setString('nik', _nikController.text.trim());
+    await prefs.setString('familyCardNumber', _noKKController.text.trim());
     await prefs.setString(
-      'registeredTempatLahir',
+      'birthPlace',
       _tempatLahirController.text.trim(),
     );
     await prefs.setString(
-      'registeredTanggalLahir',
+      'birthDate',
       _tanggalLahirController.text.trim(),
     );
-    await prefs.setString('registeredGender', _selectedGender ?? '');
+    await prefs.setString('gender', _selectedGender ?? '');
     await prefs.setString('registeredAgama', _selectedAgama ?? '');
     await prefs.setString('registeredStatus', _selectedStatusPerkawinan ?? '');
     await prefs.setString('registeredGolDarah', _selectedGolonganDarah ?? '');
-    await prefs.setString('registeredAlamat', _alamatController.text.trim());
-    await prefs.setString('registeredNoHP', _nohpController.text.trim());
+    await prefs.setString('address', _alamatController.text.trim());
+    await prefs.setString('phone', _nohpController.text.trim());
     await prefs.setString(
       'registeredPekerjaan',
       _pekerjaanController.text.trim(),
@@ -167,23 +169,23 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
         );
 
         // 4. Tampilkan Snackbar dan navigasi
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.check_circle, color: Colors.white),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    "Registrasi berhasil! Nomor antrian: $nomorAntrian",
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: Colors.green,
-            duration: const Duration(seconds: 3),
-          ),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Row(
+        //       children: [
+        //         const Icon(Icons.check_circle, color: Colors.white),
+        //         const SizedBox(width: 8),
+        //         Expanded(
+        //           child: Text(
+        //             "Registrasi berhasil! Nomor antrian: $nomorAntrian",
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //     backgroundColor: Colors.green,
+        //     duration: const Duration(seconds: 3),
+        //   ),
+        // );
         Navigator.pop(context);
       }
     } catch (e) {
