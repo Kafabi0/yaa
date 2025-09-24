@@ -564,54 +564,76 @@ class _RumahSakitPublicPageState extends State<RumahSakitPublicPage> {
   }
 
   Widget _buildResultsHeader() {
-    return Container(
-      color: Colors.white,
-      padding: EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Icon(Icons.local_hospital, color: Color(0xFFFF6B35), size: 20),
-          SizedBox(width: 8),
-          Text(
-            '${_filteredHospitals.length} RS di $_selectedCity, $_selectedProvince',
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.black87,
-            ),
-          ),
-          Spacer(),
-          Container(
-            constraints: BoxConstraints(minHeight: 28),
-            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              border: Border.all(color: Color(0xFFFF6B35), width: 0.8),
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String>(
-                isDense: true,
-                value: _selectedSort,
-                style: TextStyle(fontSize: 11, color: Colors.black),
-                icon: Icon(Icons.keyboard_arrow_down, color: Color(0xFFFF6B35), size: 16),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedSort = newValue!;
-                  });
-                  _filterHospitals();
-                },
-                items: _sortOptions.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value, style: TextStyle(fontSize: 11)),
-                  );
-                }).toList(),
+  return Container(
+    color: Colors.white,
+    padding: EdgeInsets.all(16),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Baris pertama: Ikon dan teks informasi
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start, // Ubah agar sejajar atas
+          children: [
+            Icon(Icons.local_hospital, color: Color(0xFFFF6B35), size: 20),
+            SizedBox(width: 8),
+            // Ganti Expanded dengan Flexible untuk memungkinkan teks turun ke baris baru
+            Flexible(
+              child: Text(
+                '${_filteredHospitals.length} RS di $_selectedCity, $_selectedProvince',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
+                // Tambahkan properti berikut:
+                maxLines: 2, // Maksimal 2 baris
+                overflow: TextOverflow.visible, // Teks akan terlihat penuh
+                softWrap: true, // Teks akan membungkus ke baris baru
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
+          ],
+        ),
+        
+        SizedBox(height: 8),
+        
+        // Baris kedua: Dropdown sorting
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            Container(
+              constraints: BoxConstraints(minWidth: 80, minHeight: 28),
+              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                border: Border.all(color: Color(0xFFFF6B35), width: 0.8),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  isDense: true,
+                  value: _selectedSort,
+                  style: TextStyle(fontSize: 11, color: Colors.black),
+                  icon: Icon(Icons.keyboard_arrow_down, color: Color(0xFFFF6B35), size: 16),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedSort = newValue!;
+                    });
+                    _filterHospitals();
+                  },
+                  items: _sortOptions.map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value, style: TextStyle(fontSize: 11)),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildHospitalList() {
     if (_isLoading) {
