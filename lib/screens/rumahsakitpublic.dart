@@ -3,6 +3,7 @@ import 'package:geolocator/geolocator.dart';
 import '../models/hospital_model.dart';
 import '../services/hospital_service.dart';
 import '../services/location_service.dart';
+import '../services/map_service.dart'; // Import yang benar
 
 class RumahSakitPublicPage extends StatefulWidget {
   final Position? userPosition;
@@ -30,14 +31,54 @@ class _RumahSakitPublicPageState extends State<RumahSakitPublicPage> {
   bool _isLoading = true;
   bool _useCurrentLocation = true;
 
-  // Indonesian provinces and cities data
-  Map<String, List<String>> _provinceCities = {
-    'Jawa Barat': ['Bandung', 'Bekasi', 'Bogor', 'Cimahi', 'Cirebon', 'Depok', 'Sukabumi', 'Tasikmalaya'],
-    'DKI Jakarta': ['Jakarta Pusat', 'Jakarta Utara', 'Jakarta Barat', 'Jakarta Selatan', 'Jakarta Timur'],
-    'Jawa Tengah': ['Semarang', 'Magelang', 'Pekalongan', 'Purwokerto', 'Salatiga', 'Solo', 'Tegal'],
-    'Jawa Timur': ['Surabaya', 'Batu', 'Blitar', 'Kediri', 'Madiun', 'Malang', 'Mojokerto', 'Pasuruan'],
-    'Lampung': ['Bandar Lampung', 'Metro'],
-    'Banten': ['Serang', 'Cilegon', 'Tangerang', 'Tangerang Selatan'],
+  // Indonesian provinces and cities data with coordinates for filtering
+  Map<String, Map<String, Map<String, double>>> _provinceCitiesWithCoords = {
+    'Jawa Barat': {
+      'Bandung': {'lat': -6.9175, 'lng': 107.6191},
+      'Bekasi': {'lat': -6.2383, 'lng': 106.9756},
+      'Bogor': {'lat': -6.5971, 'lng': 106.8060},
+      'Cimahi': {'lat': -6.8721, 'lng': 107.5420},
+      'Cirebon': {'lat': -6.7063, 'lng': 108.5570},
+      'Depok': {'lat': -6.4025, 'lng': 106.7942},
+      'Sukabumi': {'lat': -6.9278, 'lng': 106.9561},
+      'Tasikmalaya': {'lat': -7.3506, 'lng': 108.2070},
+    },
+    'Jakarta': {
+      'Jakarta Pusat': {'lat': -6.1751, 'lng': 106.8650},
+      'Jakarta Utara': {'lat': -6.1384, 'lng': 106.8759},
+      'Jakarta Barat': {'lat': -6.1352, 'lng': 106.7624},
+      'Jakarta Selatan': {'lat': -6.2615, 'lng': 106.7955},
+      'Jakarta Timur': {'lat': -6.2250, 'lng': 106.9004},
+    },
+    'Jawa Tengah': {
+      'Semarang': {'lat': -6.9665, 'lng': 110.4203},
+      'Magelang': {'lat': -7.4797, 'lng': 110.2172},
+      'Pekalongan': {'lat': -6.8886, 'lng': 109.6753},
+      'Purwokerto': {'lat': -7.4197, 'lng': 109.2494},
+      'Salatiga': {'lat': -7.3318, 'lng': 110.5084},
+      'Solo': {'lat': -7.5755, 'lng': 110.8243},
+      'Tegal': {'lat': -6.8694, 'lng': 109.1402},
+    },
+    'Jawa Timur': {
+      'Surabaya': {'lat': -7.2575, 'lng': 112.7521},
+      'Batu': {'lat': -7.8737, 'lng': 112.5289},
+      'Blitar': {'lat': -8.0956, 'lng': 112.1609},
+      'Kediri': {'lat': -7.8481, 'lng': 112.0178},
+      'Madiun': {'lat': -7.6298, 'lng': 111.5239},
+      'Malang': {'lat': -7.9666, 'lng': 112.6326},
+      'Mojokerto': {'lat': -7.4642, 'lng': 112.4338},
+      'Pasuruan': {'lat': -7.6447, 'lng': 112.9079},
+    },
+    'Lampung': {
+      'Bandar Lampung': {'lat': -5.3971, 'lng': 105.2946},
+      'Metro': {'lat': -5.1130, 'lng': 105.3067},
+    },
+    'Banten': {
+      'Serang': {'lat': -6.1200, 'lng': 106.1500},
+      'Cilegon': {'lat': -6.0025, 'lng': 106.0640},
+      'Tangerang': {'lat': -6.1783, 'lng': 106.6319},
+      'Tangerang Selatan': {'lat': -6.2877, 'lng': 106.7290},
+    },
   };
 
   List<String> _sortOptions = [
@@ -70,26 +111,32 @@ class _RumahSakitPublicPageState extends State<RumahSakitPublicPage> {
   }
 
   void _setLocationFromPosition(Position position) {
-    // Simple location detection based on coordinates
-    if (position.latitude >= -6.0 && position.latitude <= -5.0) {
-      // Lampung area
-      setState(() {
-        _selectedProvince = 'Lampung';
-        _selectedCity = 'Bandar Lampung';
+    // More accurate location detection based on coordinates
+    double minDistance = double.infinity;
+    String nearestProvince = 'Jawa Barat';
+    String nearestCity = 'Bandung';
+
+    _provinceCitiesWithCoords.forEach((province, cities) {
+      cities.forEach((city, coords) {
+        double distance = Geolocator.distanceBetween(
+          position.latitude,
+          position.longitude,
+          coords['lat']!,
+          coords['lng']!,
+        ) / 1000; // Convert to km
+
+        if (distance < minDistance) {
+          minDistance = distance;
+          nearestProvince = province;
+          nearestCity = city;
+        }
       });
-    } else if (position.latitude >= -7.5 && position.latitude <= -6.0) {
-      // Jawa Barat area  
-      setState(() {
-        _selectedProvince = 'Jawa Barat';
-        _selectedCity = 'Bandung';
-      });
-    } else if (position.latitude >= -6.5 && position.latitude <= -6.0) {
-      // Jakarta area
-      setState(() {
-        _selectedProvince = 'DKI Jakarta';
-        _selectedCity = 'Jakarta Pusat';
-      });
-    }
+    });
+
+    setState(() {
+      _selectedProvince = nearestProvince;
+      _selectedCity = nearestCity;
+    });
   }
 
   Future<void> _getCurrentLocation() async {
@@ -131,27 +178,27 @@ class _RumahSakitPublicPageState extends State<RumahSakitPublicPage> {
 
   Future<void> _loadHospitals() async {
     try {
+      double targetLat, targetLng;
+      
       if (_useCurrentLocation && _currentPosition != null) {
-        // Load berdasarkan lokasi user
-        List<Hospital> hospitals = await HospitalService.getNearbyHospitals(
-          latitude: _currentPosition!.latitude,
-          longitude: _currentPosition!.longitude,
-          radiusInKm: 100.0, // radius lebih luas untuk "Lihat Semua"
-        );
-        setState(() {
-          _allHospitals = hospitals;
-        });
+        targetLat = _currentPosition!.latitude;
+        targetLng = _currentPosition!.longitude;
       } else {
-        // Load semua data dummy untuk manual selection
-        List<Hospital> hospitals = await HospitalService.getNearbyHospitals(
-          latitude: -6.914684, // Default Bandung
-          longitude: 107.665428,
-          radiusInKm: 1000.0, // radius sangat luas untuk semua data
-        );
-        setState(() {
-          _allHospitals = hospitals;
-        });
+        // Use selected city coordinates
+        var cityCoords = _provinceCitiesWithCoords[_selectedProvince]?[_selectedCity];
+        targetLat = cityCoords?['lat'] ?? -6.9175;
+        targetLng = cityCoords?['lng'] ?? 107.6191;
       }
+
+      List<Hospital> hospitals = await HospitalService.getNearbyHospitals(
+        latitude: targetLat,
+        longitude: targetLng,
+        radiusInKm: 50.0, // Radius yang reasonable untuk satu kota
+      );
+      
+      setState(() {
+        _allHospitals = hospitals;
+      });
       
       _filterHospitals();
     } catch (e) {
@@ -208,9 +255,9 @@ class _RumahSakitPublicPageState extends State<RumahSakitPublicPage> {
     });
   }
 
-  bool _hasBloodStock(Hospital hospital) {
-    // Simple check untuk blood stock - nanti bisa disesuaikan dengan model
-    return hospital.services.contains('IGD 24 Jam'); // temporary logic
+  // Get available cities for selected province
+  List<String> get _availableCities {
+    return _provinceCitiesWithCoords[_selectedProvince]?.keys.toList() ?? [];
   }
 
   @override
@@ -373,12 +420,12 @@ class _RumahSakitPublicPageState extends State<RumahSakitPublicPage> {
                           onChanged: (String? newValue) {
                             setState(() {
                               _selectedProvince = newValue!;
-                              _selectedCity = _provinceCities[_selectedProvince]![0];
+                              _selectedCity = _availableCities.first;
                               _useCurrentLocation = false;
                             });
                             _loadHospitals();
                           },
-                          items: _provinceCities.keys.map<DropdownMenuItem<String>>((String value) {
+                          items: _provinceCitiesWithCoords.keys.map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(
@@ -420,7 +467,7 @@ class _RumahSakitPublicPageState extends State<RumahSakitPublicPage> {
                             });
                             _loadHospitals();
                           },
-                          items: _provinceCities[_selectedProvince]!.map<DropdownMenuItem<String>>((String value) {
+                          items: _availableCities.map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(
@@ -843,22 +890,100 @@ class _RumahSakitPublicPageState extends State<RumahSakitPublicPage> {
                 
                 SizedBox(height: 16),
                 
-                // Action Buttons
+                // Updated Action Buttons with Maps Integration
                 Row(
                   children: [
                     Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          // Buka navigasi ke rumah sakit
+                          MapsService.openNavigation(
+                            hospital,
+                            userLat: _currentPosition?.latitude,
+                            userLng: _currentPosition?.longitude,
+                          );
+                        },
+                        icon: Icon(Icons.navigation, size: 16),
+                        label: Text('Navigasi'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFFFF6B35),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
                       child: OutlinedButton.icon(
                         onPressed: () {
-                          // TODO: Open maps
+                          // Tampilkan pilihan aplikasi maps
+                          MapsService.showMapsSelectionDialog(context, hospital);
                         },
                         icon: Icon(Icons.map, size: 16),
-                        label: Text('Maps'),
+                        label: Text('Lokasi'),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: Color(0xFFFF6B35),
                           side: BorderSide(color: Color(0xFFFF6B35)),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
                           ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                
+                // Additional Maps Options (Optional)
+                SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextButton.icon(
+                        onPressed: () {
+                          // Buka Google Maps langsung
+                          MapsService.openGoogleMaps(hospital);
+                        },
+                        icon: Icon(Icons.map, size: 14, color: Colors.blue),
+                        label: Text(
+                          'Google Maps',
+                          style: TextStyle(fontSize: 11, color: Colors.blue),
+                        ),
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: TextButton.icon(
+                        onPressed: () {
+                          // Buka Waze untuk navigasi
+                          MapsService.openWaze(hospital);
+                        },
+                        icon: Icon(Icons.navigation, size: 14, color: Colors.cyan),
+                        label: Text(
+                          'Waze',
+                          style: TextStyle(fontSize: 11, color: Colors.cyan),
+                        ),
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: TextButton.icon(
+                        onPressed: () {
+                          // Copy coordinates ke clipboard
+                          _copyCoordinates(hospital);
+                        },
+                        icon: Icon(Icons.copy, size: 14, color: Colors.grey[600]),
+                        label: Text(
+                          'Salin Koordinat',
+                          style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                        ),
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         ),
                       ),
                     ),
@@ -872,119 +997,132 @@ class _RumahSakitPublicPageState extends State<RumahSakitPublicPage> {
     );
   }
 
-  Widget _buildFeatureBadge(String label, Color color, IconData icon) {
-  return Container(
-    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-    decoration: BoxDecoration(
-      color: color.withOpacity(0.1),
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: color.withOpacity(0.3)),
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, size: 12, color: color),
-        SizedBox(width: 4),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 9,
-            color: color,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    ),
-  );
-}
+  void _copyCoordinates(Hospital hospital) {
+    // Copy koordinat ke clipboard
+    String coordinates = MapsService.getCoordinatesString(hospital);
+    // TODO: Implement clipboard copy dengan flutter/services.dart
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Koordinat ${hospital.name} disalin: $coordinates'),
+        backgroundColor: Color(0xFFFF6B35),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
 
-Widget _buildBloodStockDisplay(Map<String, int> bloodStock) {
-  return Container(
-    padding: EdgeInsets.all(8),
-    decoration: BoxDecoration(
-      color: Colors.red.withOpacity(0.05),
-      borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: Colors.red.withOpacity(0.2)),
-    ),
-    child: Column(
-      children: [
-        // First row: A+, A-, B+, B-
-        Row(
-          children: ['A+', 'A-', 'B+', 'B-'].map((type) {
-            int count = bloodStock[type] ?? 0;
-            bool available = count > 0;
-            return Expanded(
-              child: Container(
-                margin: EdgeInsets.only(right: 4),
-                padding: EdgeInsets.symmetric(vertical: 4),
-                decoration: BoxDecoration(
-                  color: available ? Colors.green.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Column(
-                  children: [
-                    Text(
-                      type,
-                      style: TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
-                        color: available ? Colors.green[700] : Colors.grey[600],
+  Widget _buildFeatureBadge(String label, Color color, IconData icon) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 12, color: color),
+          SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 9,
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBloodStockDisplay(Map<String, int> bloodStock) {
+    return Container(
+      padding: EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.red.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: Colors.red.withOpacity(0.2)),
+      ),
+      child: Column(
+        children: [
+          // First row: A+, A-, B+, B-
+          Row(
+            children: ['A+', 'A-', 'B+', 'B-'].map((type) {
+              int count = bloodStock[type] ?? 0;
+              bool available = count > 0;
+              return Expanded(
+                child: Container(
+                  margin: EdgeInsets.only(right: 4),
+                  padding: EdgeInsets.symmetric(vertical: 4),
+                  decoration: BoxDecoration(
+                    color: available ? Colors.green.withOpacity(0.1) : Colors.grey.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        type,
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                          color: available ? Colors.green[700] : Colors.grey[600],
+                        ),
                       ),
-                    ),
-                    Text(
-                      '$count',
-                      style: TextStyle(
-                        fontSize: 8,
-                        color: available ? Colors.green[700] : Colors.grey[600],
+                      Text(
+                        '$count',
+                        style: TextStyle(
+                          fontSize: 8,
+                          color: available ? Colors.green[700] : Colors.grey[600],
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }).toList(),
-        ),
-        SizedBox(height: 4),
-        // Second row: AB+, AB-, O+, O-
-        Row(
-          children: ['AB+', 'AB-', 'O+', 'O-'].map((type) {
-            int count = bloodStock[type] ?? 0;
-            bool available = count > 0;
-            return Expanded(
-              child: Container(
-                margin: EdgeInsets.only(right: 4),
-                padding: EdgeInsets.symmetric(vertical: 4),
-                decoration: BoxDecoration(
-                  color: available ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Column(
-                  children: [
-                    Text(
-                      type,
-                      style: TextStyle(
-                        fontSize: 9,
-                        fontWeight: FontWeight.bold,
-                        color: available ? Colors.green[700] : Colors.red,
+              );
+            }).toList(),
+          ),
+          SizedBox(height: 4),
+          // Second row: AB+, AB-, O+, O-
+          Row(
+            children: ['AB+', 'AB-', 'O+', 'O-'].map((type) {
+              int count = bloodStock[type] ?? 0;
+              bool available = count > 0;
+              return Expanded(
+                child: Container(
+                  margin: EdgeInsets.only(right: 4),
+                  padding: EdgeInsets.symmetric(vertical: 4),
+                  decoration: BoxDecoration(
+                    color: available ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        type,
+                        style: TextStyle(
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                          color: available ? Colors.green[700] : Colors.red,
+                        ),
                       ),
-                    ),
-                    Text(
-                      '$count',
-                      style: TextStyle(
-                        fontSize: 8,
-                        color: available ? Colors.green[700] : Colors.red,
+                      Text(
+                        '$count',
+                        style: TextStyle(
+                          fontSize: 8,
+                          color: available ? Colors.green[700] : Colors.red,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }).toList(),
-        ),
-      ],
-    ),
-  );
-}
+              );
+            }).toList(),
+          ),
+        ],
+      ),
+    );
+  }
 
   Color _getServiceColor(String service) {
     switch (service) {
