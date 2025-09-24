@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'jadwaloperasi.dart';
+import '../main.dart'; // Tambahkan baris ini untuk mengakses fungsi notifikasi
 
 class RegistrasiIGDPage extends StatefulWidget {
   const RegistrasiIGDPage({Key? key}) : super(key: key);
@@ -124,35 +125,19 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
 
       if (mounted) {
         String triaseLevel = _getTriaseLevel(_selectedTriase);
+        final prefs = await SharedPreferences.getInstance();
         String nomorAntrian =
-            "IGD${DateTime.now().millisecondsSinceEpoch % 10000}";
-
-        // Generate nomor RM (Rekam Medis) dummy
-        String noRM = "RM${DateTime.now().millisecondsSinceEpoch % 100000}";
-
-        // Tampilkan snackbar sukses
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.local_hospital, color: Colors.white),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    "Registrasi IGD berhasil!\nNomor: $nomorAntrian\nTriase: $triaseLevel",
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: _getTriaseColor(_selectedTriase),
-            duration: const Duration(seconds: 3),
-          ),
+            prefs.getString('nomorAntrian_IGD') ?? 'Tidak Ada';
+        await prefs.setString(
+          'igdWaktuRegistrasi',
+          DateTime.now().toIso8601String(),
         );
 
-        // Tunda sebentar sebelum navigasi untuk memberikan waktu user melihat notifikasi
+        // Panggil notifikasi lokal
+        await showIGDRegistrationNotification(triaseLevel, nomorAntrian);
+
         await Future.delayed(const Duration(seconds: 1));
 
-        // Navigasi ke halaman jadwal operasi
         if (mounted) {
           Navigator.pushReplacement(
             context,
@@ -162,7 +147,7 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
                     namaPasien: _namaController.text.trim(),
                     nik: _nikController.text.trim(),
                     umur: _umurController.text.trim(),
-                    noRM: noRM,
+                    noRM: "RM${DateTime.now().millisecondsSinceEpoch % 100000}",
                     unitPoli: "IGD (Instalasi Gawat Darurat)",
                     dokter: _getDokterByTriase(_selectedTriase),
                     nomorAntrian: nomorAntrian,

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:inocare/screens/order.dart';
+import 'package:inocare/screens/notifikasi.dart';
+// import 'package:inocare/screens/order.dart';
+// import 'package:inocare/screens/tiketantrian.dart';
 import 'screens/home_screen.dart';
 import 'screens/health_records_screen.dart';
 import 'screens/notifications_screen.dart';
@@ -11,6 +13,8 @@ import 'widgets/bottom_navigation_bar.dart';
 import 'screens/doctor_list.dart';
 import 'services/user_prefs.dart';
 import 'screens/splashscreen.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -29,28 +33,48 @@ Future<void> initializeNotifications() async {
 
   await flutterLocalNotificationsPlugin.initialize(
     settings,
-    onDidReceiveNotificationResponse: (NotificationResponse response) async {},
+    onDidReceiveNotificationResponse: (NotificationResponse response) {
+      Future.microtask(() {
+        navigatorKey.currentState?.pushReplacement(
+          MaterialPageRoute(builder: (_) => const NotificationsPage()),
+        );
+      });
+    },
   );
-  final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
-      flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin>();
+
+  final androidImplementation =
+      flutterLocalNotificationsPlugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
 
   if (androidImplementation != null) {
     await androidImplementation.requestNotificationsPermission();
   }
+}
 
-  // Minta izin untuk iOS
-  // final DarwinFlutterLocalNotificationsPlugin? iOSImplementation =
-  //     flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
-  //         DarwinFlutterLocalNotificationsPlugin>();
+Future<void> showIGDRegistrationNotification(
+  String triaseLevel,
+  String nomorAntrian,
+) async {
+  const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    'igd_channel_id',
+    'Notifikasi IGD',
+    channelDescription: 'Notifikasi konfirmasi pendaftaran IGD',
+    importance: Importance.max,
+    priority: Priority.high,
+  );
 
-  // if (iOSImplementation != null) {
-  //   await iOSImplementation.requestPermissions(
-  //     alert: true,
-  //     badge: true,
-  //     sound: true,
-  //   );
-  // }
+  const NotificationDetails platformChannelDetails = NotificationDetails(
+    android: androidDetails,
+  );
+
+  await flutterLocalNotificationsPlugin.show(
+    1, // ID unik, pastikan berbeda dari notifikasi lainnya
+    'Registrasi IGD Berhasil!',
+    'Nomor antrian Anda: $nomorAntrian. Level triase: $triaseLevel.',
+    platformChannelDetails,
+  );
 }
 
 Future<void> showRegistrationSuccessNotification(
@@ -84,7 +108,8 @@ void main() async {
 }
 
 class InoCareApp extends StatefulWidget {
-  const InoCareApp({super.key});
+    final String? initialPayload;
+  const InoCareApp({super.key, this.initialPayload});
 
   @override
   State<InoCareApp> createState() => _InoCareAppState();
@@ -93,8 +118,6 @@ class InoCareApp extends StatefulWidget {
 class _InoCareAppState extends State<InoCareApp> {
   // bool _notificationsEnabled = false;
   bool _loading = true;
-
-
 
   @override
   void initState() {
@@ -118,6 +141,9 @@ class _InoCareAppState extends State<InoCareApp> {
     }
 
     return MaterialApp(
+      navigatorKey:
+          navigatorKey, // 👈 wajib supaya push dari luar context bisa jalan
+
       title: 'Digital Hospital',
       debugShowCheckedModeBanner: false,
       localizationsDelegates: const [

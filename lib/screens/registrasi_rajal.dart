@@ -5,7 +5,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../main.dart';
 import 'package:inocare/services/user_prefs.dart';
 
-
 class RegistrasiRajalPage extends StatefulWidget {
   const RegistrasiRajalPage({Key? key}) : super(key: key);
 
@@ -109,14 +108,8 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
     await prefs.setString('name', _nameController.text.trim());
     await prefs.setString('nik', _nikController.text.trim());
     await prefs.setString('familyCardNumber', _noKKController.text.trim());
-    await prefs.setString(
-      'birthPlace',
-      _tempatLahirController.text.trim(),
-    );
-    await prefs.setString(
-      'birthDate',
-      _tanggalLahirController.text.trim(),
-    );
+    await prefs.setString('birthPlace', _tempatLahirController.text.trim());
+    await prefs.setString('birthDate', _tanggalLahirController.text.trim());
     await prefs.setString('gender', _selectedGender ?? '');
     await prefs.setString('registeredAgama', _selectedAgama ?? '');
     await prefs.setString('registeredStatus', _selectedStatusPerkawinan ?? '');
@@ -159,6 +152,11 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
         // 2. Ambil nomor antrian dan poli yang baru disimpan dari SharedPreferences
         final prefs = await SharedPreferences.getInstance();
         final nomorAntrian = prefs.getString('nomorAntrian_RAJAL');
+        await prefs.setString(
+          'rajalWaktuRegistrasi',
+          DateTime.now().toIso8601String(),
+        );
+
         final poli = _selectedPoli ?? '';
 
         // 3. PANGGIL FUNGSI NOTIFIKASI DI SINI
