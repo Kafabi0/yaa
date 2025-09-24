@@ -33,6 +33,7 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
   GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
   Position? _currentPosition;
   String _currentAddress = 'Mendapatkan lokasi...';
+  String _fullAddress = 'Mendapatkan lokasi...';
   bool _isLoadingLocation = true;
 
   @override
@@ -42,45 +43,49 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
     _getCurrentLocation();
   }
 
-   Future<void> _getCurrentLocation() async {
-    try {
+  Future<void> _getCurrentLocation() async {
+  try {
+    setState(() {
+      _isLoadingLocation = true;
+      _currentAddress = 'Mendapatkan lokasi...';
+      _fullAddress = 'Mendapatkan lokasi...'; 
+    });
+
+    Position? position = await LocationService.getCurrentPosition();
+    
+    if (position != null) {
       setState(() {
-        _isLoadingLocation = true;
-        _currentAddress = 'Mendapatkan lokasi...';
+        _currentPosition = position;
       });
 
-      Position? position = await LocationService.getCurrentPosition();
-      
-      if (position != null) {
-        setState(() {
-          _currentPosition = position;
-        });
+      // Dapatkan alamat dari koordinat
+      String address = await LocationService.getAddressFromCoordinates(
+        position.latitude, 
+        position.longitude
+      );
 
-        // Dapatkan alamat dari koordinat
-        String address = await LocationService.getAddressFromCoordinates(
-          position.latitude, 
-          position.longitude
-        );
-
-        setState(() {
-          _currentAddress = _truncateAddress(address);
-          _isLoadingLocation = false;
-        });
-      } else {
-        setState(() {
-          _currentAddress = 'Lokasi tidak tersedia';
-          _isLoadingLocation = false;
-        });
-        
-        _showLocationPermissionDialog();
-      }
-    } catch (e) {
       setState(() {
-        _currentAddress = 'Gagal mendapatkan lokasi';
+        _fullAddress = address; 
+        _currentAddress = _truncateAddress(address);
         _isLoadingLocation = false;
       });
+    } else {
+      setState(() {
+        _currentAddress = 'Lokasi tidak tersedia';
+        _fullAddress = 'Lokasi tidak tersedia';
+        _isLoadingLocation = false;
+      });
+      
+      _showLocationPermissionDialog();
     }
+  } catch (e) {
+    setState(() {
+      _currentAddress = 'Gagal mendapatkan lokasi';
+      _fullAddress = 'Gagal mendapatkan lokasi';
+      _isLoadingLocation = false;
+    });
   }
+}
 
   String _truncateAddress(String address) {
     if (address.length > 35) {
@@ -146,6 +151,141 @@ class _HealthAppHomePageState extends State<HealthAppHomePage> {
     );
   }
 
+  // Tambahkan method ini di dalam class _HealthAppHomePageState
+void _showFullLocationDialog() {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        elevation: 16,
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              colors: [Colors.white, Color(0xFFFFF5F5)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 50,
+                    height: 50,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(
+                        colors: [Color(0xFFFF6B35), Color(0xFFFF8A50)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    child: Icon(
+                      Icons.location_on,
+                      color: Colors.white,
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      'Lokasi Saat Ini',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey[200]!),
+                ),
+                child: Text(
+                  _fullAddress,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[800],
+                    height: 1.5,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    style: TextButton.styleFrom(
+                      foregroundColor: Color(0xFFFF6B35),
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      minimumSize: Size(60, 30),
+                    ),
+                    child: Text(
+                      'Tutup',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      _getCurrentLocation();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFFFF6B35),
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.refresh, size: 14),
+                        SizedBox(width: 4),
+                        Text(
+                          'Perbarui Lokasi',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
 Widget _buildLocationWidget() {
   return GestureDetector(
     onTap: () {
@@ -153,6 +293,7 @@ Widget _buildLocationWidget() {
         _getCurrentLocation();
       }
     },
+    onLongPress: _showFullLocationDialog, // Tambah ini
     child: Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -649,8 +790,16 @@ Widget _buildLocationWidget() {
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Widget lokasi mini
-                  _buildMiniLocationWidget(),
+                  // Widget lokasi mini dengan long press
+                  GestureDetector(
+                    onTap: () {
+                      if (!_isLoadingLocation) {
+                        _getCurrentLocation();
+                      }
+                    },
+                    onLongPress: _showFullLocationDialog, // Tambah ini
+                    child: _buildMiniLocationWidget(),
+                  ),
                   SizedBox(width: 8),
                   // Notifikasi
                   GestureDetector(
