@@ -17,7 +17,7 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 Future<void> initializeNotifications() async {
   const AndroidInitializationSettings androidSettings =
-      AndroidInitializationSettings('@mipmap/inotal');
+      AndroidInitializationSettings('@mipmap/ic_launcher');
 
   final DarwinInitializationSettings iosSettings =
       DarwinInitializationSettings();
@@ -30,6 +30,50 @@ Future<void> initializeNotifications() async {
   await flutterLocalNotificationsPlugin.initialize(
     settings,
     onDidReceiveNotificationResponse: (NotificationResponse response) async {},
+  );
+  final AndroidFlutterLocalNotificationsPlugin? androidImplementation =
+      flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>();
+
+  if (androidImplementation != null) {
+    await androidImplementation.requestNotificationsPermission();
+  }
+
+  // Minta izin untuk iOS
+  // final DarwinFlutterLocalNotificationsPlugin? iOSImplementation =
+  //     flutterLocalNotificationsPlugin.resolvePlatformSpecificImplementation<
+  //         DarwinFlutterLocalNotificationsPlugin>();
+
+  // if (iOSImplementation != null) {
+  //   await iOSImplementation.requestPermissions(
+  //     alert: true,
+  //     badge: true,
+  //     sound: true,
+  //   );
+  // }
+}
+
+Future<void> showRegistrationSuccessNotification(
+  String serviceType,
+  String nomorAntrian,
+) async {
+  const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
+    'registrasi_channel_id',
+    'Notifikasi Registrasi',
+    channelDescription: 'Notifikasi konfirmasi pendaftaran layanan rumah sakit',
+    importance: Importance.max,
+    priority: Priority.high,
+  );
+
+  const NotificationDetails platformChannelDetails = NotificationDetails(
+    android: androidDetails,
+  );
+
+  await flutterLocalNotificationsPlugin.show(
+    0,
+    'Registrasi Berhasil! ',
+    'Pendaftaran Anda untuk $serviceType berhasil. Nomor antrian Anda: $nomorAntrian.',
+    platformChannelDetails,
   );
 }
 
@@ -47,14 +91,10 @@ class InoCareApp extends StatefulWidget {
 }
 
 class _InoCareAppState extends State<InoCareApp> {
-  bool _notificationsEnabled = false;
+  // bool _notificationsEnabled = false;
   bool _loading = true;
 
-  void _toggleNotifications(bool isEnabled) {
-    setState(() {
-      _notificationsEnabled = isEnabled;
-    });
-  }
+
 
   @override
   void initState() {
@@ -99,30 +139,21 @@ class _InoCareAppState extends State<InoCareApp> {
         textTheme: GoogleFonts.openSansTextTheme(),
       ),
       home: Builder(
-        builder: (context) => SplashOnboarding(
-          onCompleted: () {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(
-                builder: (_) => HealthAppHomePage(
-                ),
-              ),
-            );
-          },
-        ),
+        builder:
+            (context) => SplashOnboarding(
+              onCompleted: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (_) => HealthAppHomePage()),
+                );
+              },
+            ),
       ),
     );
   }
 }
 
 class MainPage extends StatefulWidget {
-  final Function(bool)? onNotificationChanged;
-  final bool notificationsEnabled;
-
-  const MainPage({
-    super.key,
-    this.onNotificationChanged,
-    this.notificationsEnabled = false,
-  });
+  const MainPage({super.key});
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -153,9 +184,9 @@ class _MainPageState extends State<MainPage> {
     });
 
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Logout berhasil')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Logout berhasil')));
     }
   }
 

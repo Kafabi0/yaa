@@ -634,26 +634,14 @@ class _HomePagePasienState extends State<HomePagePasien> {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const RegistrasiIGDPage()),
-            ).then((_) async {
-              await _refreshData();
-              final prefs = await SharedPreferences.getInstance();
-              String? nomorAntrian = prefs.getString('nomorAntrian_IGD');
-              if (nomorAntrian != null)
-                _showRealtimeDialog('IGD', nomorAntrian);
-            });
+            );
             break;
 
           case 'Registrasi Rajal':
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const RegistrasiRajalPage()),
-            ).then((_) async {
-              await _refreshData();
-              final prefs = await SharedPreferences.getInstance();
-              String? nomorAntrian = prefs.getString('nomorAntrian_RAJAL');
-              if (nomorAntrian != null)
-                _showRealtimeDialog('RAJAL', nomorAntrian);
-            });
+            );
             break;
 
           case 'Tagihan':
@@ -1052,82 +1040,7 @@ class _HomePagePasienState extends State<HomePagePasien> {
   }
 
   // Fungsi untuk menampilkan notifikasi realtime
-  void _showRealtimeDialog(String jenis, String nomor) {
-    showGeneralDialog(
-      context: context,
-      barrierDismissible: true,
-      barrierLabel: "Notifikasi",
-      transitionDuration: Duration(milliseconds: 400),
-      pageBuilder: (context, anim1, anim2) {
-        return Align(
-          alignment: Alignment.bottomCenter,
-          child: Container(
-            margin: EdgeInsets.all(16),
-            padding: EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black26,
-                  blurRadius: 10,
-                  offset: Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.notifications_active,
-                  size: 40,
-                  color: Color(0xFFFF6B35),
-                ),
-                SizedBox(height: 12),
-                Text(
-                  'Registrasi $jenis Berhasil!',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Nomor antrian Anda: $nomor',
-                  style: TextStyle(fontSize: 16, color: Colors.grey[700]),
-                ),
-                SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context); // Tutup dialog
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const NotificationsPage(),
-                      ),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFFF6B35),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: Text('Lihat Semua Notifikasi'),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-      transitionBuilder: (context, anim1, anim2, child) {
-        return SlideTransition(
-          position: Tween<Offset>(
-            begin: Offset(0, 1),
-            end: Offset(0, 0),
-          ).animate(CurvedAnimation(parent: anim1, curve: Curves.easeOut)),
-          child: child,
-        );
-      },
-    );
-  }
+ 
 
   Widget _buildTodaySchedule() {
     return Container(
