@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permissions -->
+    <!-- Existing Permissions -->
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
@@ -9,6 +9,11 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>
     <uses-permission android:name="android.permission.BODY_SENSORS"/>
+
+    <!-- Additional Maps Permissions -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
 
     <!-- Storage Permissions -->
     <!-- Android < 10 -->
@@ -24,8 +29,10 @@
     <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage"/>
 
-    <!-- Optional: For Android 13+ notification if needed -->
-    <!-- <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/> -->
+    <!-- Feature requirements for Maps -->
+    <uses-feature android:name="android.hardware.location" android:required="false" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+    <uses-feature android:name="android.hardware.location.network" android:required="false" />
 
     <application
         android:label="Digital Hospital"
@@ -52,6 +59,14 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            
+            <!-- Intent filters untuk maps dan navigasi -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="geo" />
+            </intent-filter>
         </activity>
         
 
@@ -71,17 +86,22 @@
                 android:resource="@xml/file_paths"/>
         </provider>
 
+        <!-- Google Maps API Key (uncomment dan isi jika menggunakan Google Maps) -->
+        <!--
+        <meta-data android:name="com.google.android.geo.API_KEY"
+                   android:value="YOUR_GOOGLE_MAPS_API_KEY"/>
+        -->
+
     </application>
 
-    <!-- Queries: Required for Android 11+ to detect apps for Intent -->
+    <!-- Updated Queries: Required for Android 11+ to detect apps for Intent -->
     <queries>
-        <!-- For PROCESS_TEXT plugin -->
+        <!-- Existing queries -->
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
 
-        <!-- For opening URLs in browser -->
         <intent>
             <action android:name="android.intent.action.VIEW"/>
             <data android:scheme="http"/>
@@ -91,10 +111,49 @@
             <data android:scheme="https"/>
         </intent>
 
-        <!-- For Google Lens / QR scanner apps -->
         <intent>
             <action android:name="android.intent.action.VIEW"/>
             <data android:scheme="googleapp"/>
+        </intent>
+
+        <!-- Maps Applications Queries -->
+        <!-- Google Maps -->
+        <package android:name="com.google.android.apps.maps" />
+        
+        <!-- Waze -->
+        <package android:name="com.waze" />
+        
+        <!-- HERE Maps -->
+        <package android:name="com.here.app.maps" />
+        
+        <!-- Maps.me -->
+        <package android:name="com.mapswithme.maps.pro" />
+        
+        <!-- Sygic -->
+        <package android:name="com.sygic.aura" />
+        
+        <!-- Intent untuk geo schemes -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="geo" />
+        </intent>
+        
+        <!-- Intent untuk navigasi -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="google.navigation" />
+        </intent>
+        
+        <!-- Intent untuk Waze -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="waze" />
+        </intent>
+        
+        <!-- Intent untuk maps generik -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="maps" />
         </intent>
     </queries>
 
