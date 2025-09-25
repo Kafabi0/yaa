@@ -9,7 +9,7 @@ class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key, required this.onLogout});
 
   Future<void> _logout(BuildContext context) async {
-    await UserPrefs.clearAllData();
+    await UserPrefs.logout();
     onLogout();
 
     // if (context.mounted) {

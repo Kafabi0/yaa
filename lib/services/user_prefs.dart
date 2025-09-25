@@ -48,6 +48,25 @@ class UserPrefs {
     if (nik == null) return null;
     return getUser(nik);
   }
+  // ================== AMBIL SEMUA USER ==================
+static Future<List<Map<String, String>>> getAllUsers() async {
+  final prefs = await SharedPreferences.getInstance();
+  List<Map<String, String>> users = [];
+
+  for (String key in prefs.getKeys()) {
+    if (key.startsWith("user_") && key.endsWith("_nik")) {
+      final nik = prefs.getString(key);
+      if (nik != null) {
+        final email = prefs.getString('user_${nik}_email') ?? '';
+        final name = prefs.getString('user_${nik}_name') ?? '';
+        users.add({"nik": nik, "email": email, "name": name});
+      }
+    }
+  }
+
+  return users;
+}
+
 
   static Future<bool> isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
@@ -127,6 +146,67 @@ class UserPrefs {
   static Future<void> updateProfileField(String nik, String key, String value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('user_${nik}_$key', value);
+  }
+
+  // ================== MULTI USER SUPPORT ==================
+  static Future<Map<String, String?>?> getUserByEmailOrNik(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    final keys = prefs.getKeys();
+
+    for (var key in keys) {
+      if (key.startsWith('user_') && key.endsWith('_email')) {
+        final nik = key.split('_')[1];
+        final user = await getUser(nik);
+
+        if (user != null &&
+            (user['email'] == value || user['nik'] == value)) {
+          return user;
+        }
+      }
+    }
+    return null;
+  }
+
+  static Future<void> setCurrentUser(String nik) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyCurrentNik, nik);
+    await prefs.setBool(_keyIsLoggedIn, true);
+  }
+
+  // static Future<List<Map<String, String?>>> getAllUsers() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final keys = prefs.getKeys();
+
+  //   final Set<String> niks = {};
+  //   for (var key in keys) {
+  //     if (key.startsWith('user_') && key.endsWith('_email')) {
+  //       niks.add(key.split('_')[1]);
+  //     }
+  //   }
+
+  //   final users = <Map<String, String?>>[];
+  //   for (var nik in niks) {
+  //     final user = await getUser(nik);
+  //     if (user != null) users.add(user);
+  //   }
+  //   return users;
+  // }
+
+  static Future<void> removeUser(String nik) async {
+    final prefs = await SharedPreferences.getInstance();
+    final keys = prefs.getKeys();
+
+    for (var key in keys) {
+      if (key.startsWith('user_${nik}_')) {
+        await prefs.remove(key);
+      }
+    }
+
+    // Jika user yang dihapus adalah current, logout otomatis
+    final currentNik = prefs.getString(_keyCurrentNik);
+    if (currentNik == nik) {
+      await logout();
+    }
   }
 
   // ================== LOGOUT & CLEAR ==================

@@ -126,8 +126,12 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
       if (mounted) {
         String triaseLevel = _getTriaseLevel(_selectedTriase);
         final prefs = await SharedPreferences.getInstance();
+        final nik = prefs.getString('nik');
+        if (nik == null) {
+          throw Exception("User belum login, NIK tidak ditemukan.");
+        }
         String nomorAntrian =
-            prefs.getString('nomorAntrian_IGD') ?? 'Tidak Ada';
+            prefs.getString('${nik}_nomorAntrian_IGD') ?? 'Tidak Ada';
         await prefs.setString(
           'igdWaktuRegistrasi',
           DateTime.now().toIso8601String(),

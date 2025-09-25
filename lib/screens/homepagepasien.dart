@@ -83,16 +83,27 @@ class _HomePagePasienState extends State<HomePagePasien> {
   Future<void> _loadUserData() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final name = prefs.getString('registeredName');
+      final currentNik = prefs.getString('current_nik'); // user aktif
 
-      // ⬅️ tambahan: ambil antrian yang sudah disimpan saat registrasi
-      final igd = prefs.getString('nomorAntrian_IGD');
-      final rajal = prefs.getString('nomorAntrian_RAJAL');
-      final mcu = prefs.getString('nomorAntrian_MCU');
-      final ranap = prefs.getString('nomorAntrian_RANAP');
+      if (currentNik == null) {
+        setState(() {
+          _patientName = 'Guest';
+          _antrianIGD = null;
+          _antrianRajal = null;
+          _antrianMCU = null;
+          _antrianRanap = null;
+        });
+        return;
+      }
+
+      final name = prefs.getString('user_${currentNik}_name');
+      final igd = prefs.getString('user_${currentNik}_nomorAntrian_IGD');
+      final rajal = prefs.getString('user_${currentNik}_nomorAntrian_RAJAL');
+      final mcu = prefs.getString('user_${currentNik}_nomorAntrian_MCU');
+      final ranap = prefs.getString('user_${currentNik}_nomorAntrian_RANAP');
 
       setState(() {
-        _patientName = (name != null && name.isNotEmpty) ? name : 'Iskandar';
+        _patientName = (name != null && name.isNotEmpty) ? name : 'Guest';
 
         _antrianIGD = igd;
         _antrianRajal = rajal;
@@ -101,13 +112,13 @@ class _HomePagePasienState extends State<HomePagePasien> {
       });
     } catch (e) {
       setState(() {
-        _patientName = 'Iskandar';
+        _patientName = 'Guest';
       });
     }
   }
 
   Future<void> _handleLogout() async {
-    await UserPrefs.clearAllData();
+    await UserPrefs.logout();
     setState(() {
       _currentIndex = 0;
       _userName = null;

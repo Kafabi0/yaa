@@ -56,7 +56,7 @@ class _HomePageMemberState extends State<HomePageMember> {
   }
 
   Future<void> _handleLogout() async {
-    await UserPrefs.clearAllData();
+    await UserPrefs.logout();
     setState(() {
       _currentIndex = 0;
       _userName = null;

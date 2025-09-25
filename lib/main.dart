@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:inocare/screens/notifikasi.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:inocare/screens/order.dart';
 // import 'package:inocare/screens/tiketantrian.dart';
 import 'screens/home_screen.dart';
@@ -126,11 +127,19 @@ class _InoCareAppState extends State<InoCareApp> {
   }
 
   Future<void> _checkLoginStatus() async {
-    await UserPrefs.getCurrentUser();
-    setState(() {
-      _loading = false;
-    });
+  final prefs = await SharedPreferences.getInstance();
+  final nik = prefs.getString('current_nik'); // atau _keyCurrentNik
+
+  if (nik != null) {
+    final user = await UserPrefs.getUser(nik); // 👈 pakai parameter
+    print("User ditemukan: $user");
   }
+
+  setState(() {
+    _loading = false;
+  });
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -203,7 +212,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<void> _handleLogout() async {
-    await UserPrefs.clearAllData();
+    await UserPrefs.logout();
     setState(() {
       _isLoggedIn = false;
       _currentIndex = 0;

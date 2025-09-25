@@ -30,12 +30,18 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      registeredEmail = prefs.getString('registeredEmail');
-      registeredNik = prefs.getString('registeredNik');
-      registeredPassword = prefs.getString('registeredPassword');
-      registeredName = prefs.getString('registeredName');
-    });
+    final currentNik = prefs.getString(
+      'current_nik',
+    ); // ambil user yang sedang aktif
+
+    if (currentNik != null) {
+      setState(() {
+        registeredEmail = prefs.getString('user_${currentNik}_email');
+        registeredNik = prefs.getString('user_${currentNik}_nik');
+        registeredPassword = prefs.getString('user_${currentNik}_password');
+        registeredName = prefs.getString('user_${currentNik}_name');
+      });
+    }
   }
 
   @override
@@ -191,13 +197,38 @@ class _LoginPageState extends State<LoginPage> {
         borderRadius: BorderRadius.circular(25),
       ),
       child: ElevatedButton(
-        onPressed: () {
+        onPressed: () async {
           final emailOrNik = _emailController.text.trim();
           final password = _passwordController.text.trim();
 
-          if ((emailOrNik == registeredEmail || emailOrNik == registeredNik) &&
-              password == registeredPassword) {
-            // Tampilkan OTP Modal sebelum login
+          final prefs = await SharedPreferences.getInstance();
+          String? currentNik;
+
+          for (String key in prefs.getKeys()) {
+            if (key.startsWith("user_") && key.endsWith("_nik")) {
+              final nik = prefs.getString(key);
+              final email = prefs.getString('user_${nik}_email');
+              final pass = prefs.getString('user_${nik}_password');
+
+              if ((emailOrNik == nik || emailOrNik == email) &&
+                  password == pass) {
+                currentNik = nik;
+                break;
+              }
+            }
+          }
+
+          if (currentNik != null) {
+            setState(() {
+              registeredEmail = prefs.getString('user_${currentNik}_email');
+              registeredNik = currentNik;
+              registeredPassword = prefs.getString(
+                'user_${currentNik}_password',
+              );
+              registeredName = prefs.getString('user_${currentNik}_name');
+            });
+
+            // OTP sebelum login
             _showOTPModal();
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -208,6 +239,7 @@ class _LoginPageState extends State<LoginPage> {
             );
           }
         },
+
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
@@ -673,7 +705,6 @@ class _RegisterPageState extends State<RegisterPage> {
     required String hintText,
     bool isNik = false,
     bool isNumeric = false, // tambahkan ini
-
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -682,7 +713,8 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
       child: TextField(
         controller: controller,
-        keyboardType: isNumeric || isNik  ? TextInputType.number : TextInputType.text,
+        keyboardType:
+            isNumeric || isNik ? TextInputType.number : TextInputType.text,
         inputFormatters:
             isNik
                 ? [
@@ -690,8 +722,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   LengthLimitingTextInputFormatter(16),
                 ]
                 : isNumeric
-              ? [FilteringTextInputFormatter.digitsOnly]
-              : [],
+                ? [FilteringTextInputFormatter.digitsOnly]
+                : [],
         style: const TextStyle(color: Colors.black87, fontSize: 16),
         decoration: InputDecoration(
           hintText: hintText,
@@ -821,11 +853,12 @@ class _ActivationPageState extends State<ActivationPage> {
     String password,
     String name,
   ) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('registeredEmail', email);
-    await prefs.setString('registeredNik', nik);
-    await prefs.setString('registeredPassword', password);
-    await prefs.setString('registeredName', name);
+    await UserPrefs.saveUser(
+      email: email,
+      nik: nik,
+      password: password,
+      name: name,
+    );
   }
 
   @override

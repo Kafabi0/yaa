@@ -103,36 +103,69 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
 
   Future<void> _simpanData() async {
     final prefs = await SharedPreferences.getInstance();
+    final nik = prefs.getString('current_nik'); // user aktif bener
+    // user aktif
+
+    if (nik == null) {
+      throw Exception("User belum login, NIK tidak ditemukan.");
+    }
+
     String nomor = "RJ${DateTime.now().millisecondsSinceEpoch % 10000}";
 
-    await prefs.setString('rajalName', _namaController.text.trim());
-    await prefs.setString('nik', _nikController.text.trim());
-    await prefs.setString('familyCardNumber', _noKKController.text.trim());
-    await prefs.setString('birthPlace', _tempatLahirController.text.trim());
-    await prefs.setString('birthDate', _tanggalLahirController.text.trim());
-    await prefs.setString('gender', _selectedGender ?? '');
-    await prefs.setString('registeredAgama', _selectedAgama ?? '');
-    await prefs.setString('registeredStatus', _selectedStatusPerkawinan ?? '');
-    await prefs.setString('registeredGolDarah', _selectedGolonganDarah ?? '');
-    await prefs.setString('address', _alamatController.text.trim());
-    await prefs.setString('phone', _nohpController.text.trim());
+    // simpan data user dengan prefix nik
+    await prefs.setString('user_${nik}_rajalName', _namaController.text.trim());
     await prefs.setString(
-      'registeredPekerjaan',
+      'user_${nik}_familyCardNumber',
+      _noKKController.text.trim(),
+    );
+    await prefs.setString(
+      'user_${nik}_birthPlace',
+      _tempatLahirController.text.trim(),
+    );
+    await prefs.setString(
+      'user_${nik}_birthDate',
+      _tanggalLahirController.text.trim(),
+    );
+    await prefs.setString('user_${nik}_gender', _selectedGender ?? '');
+    await prefs.setString('user_${nik}_registeredAgama', _selectedAgama ?? '');
+    await prefs.setString(
+      'user_${nik}_registeredStatus',
+      _selectedStatusPerkawinan ?? '',
+    );
+    await prefs.setString(
+      'user_${nik}_registeredGolDarah',
+      _selectedGolonganDarah ?? '',
+    );
+    await prefs.setString('user_${nik}_address', _alamatController.text.trim());
+    await prefs.setString('user_${nik}_phone', _nohpController.text.trim());
+    await prefs.setString(
+      'user_${nik}_registeredPekerjaan',
       _pekerjaanController.text.trim(),
     );
     await prefs.setString(
-      'registeredNamaKeluarga',
+      'user_${nik}_registeredNamaKeluarga',
       _namaKeluargaController.text.trim(),
     );
     await prefs.setString(
-      'registeredNoHPKeluarga',
+      'user_${nik}_registeredNoHPKeluarga',
       _nohpKeluargaController.text.trim(),
     );
-    await prefs.setString('registeredAsuransi', _selectedJenisAsuransi ?? '');
-    await prefs.setString('registeredPoli', _selectedPoli ?? '');
-    await prefs.setString('registeredJadwal', _selectedJadwalKunjungan ?? '');
-    await prefs.setString('registeredKeluhan', _keluhanController.text.trim());
-    await prefs.setString('nomorAntrian_RAJAL', nomor);
+    await prefs.setString(
+      'user_${nik}_registeredAsuransi',
+      _selectedJenisAsuransi ?? '',
+    );
+    await prefs.setString('user_${nik}_registeredPoli', _selectedPoli ?? '');
+    await prefs.setString(
+      'user_${nik}_registeredJadwal',
+      _selectedJadwalKunjungan ?? '',
+    );
+    await prefs.setString(
+      'user_${nik}_registeredKeluhan',
+      _keluhanController.text.trim(),
+    );
+
+    // simpan nomor antrian unik untuk nik ini
+    await prefs.setString('user_${nik}_nomorAntrian_RAJAL', nomor);
   }
 
   void _submit() async {
@@ -151,7 +184,13 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
       if (mounted) {
         // 2. Ambil nomor antrian dan poli yang baru disimpan dari SharedPreferences
         final prefs = await SharedPreferences.getInstance();
-        final nomorAntrian = prefs.getString('nomorAntrian_RAJAL');
+        final nik = prefs.getString('current_nik'); // ✅
+        if (nik == null) {
+          throw Exception("User belum login, NIK tidak ditemukan.");
+        }
+        final nomorAntrian = prefs.getString(
+          'user_${nik}_nomorAntrian_RAJAL',
+        ); // ✅ sama
         await prefs.setString(
           'rajalWaktuRegistrasi',
           DateTime.now().toIso8601String(),
