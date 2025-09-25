@@ -5,6 +5,45 @@ class UserPrefs {
   static const _keyIsLoggedIn = 'is_logged_in';
   static const _keyCurrentNik = 'current_nik';
 
+  // ================== SELECTED HOSPITAL ==================
+static Future<void> setSelectedHospital(String nik, Map<String, dynamic> hospitalData) async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('user_${nik}_selected_hospital_name', hospitalData['name']);
+  await prefs.setString('user_${nik}_selected_hospital_address', hospitalData['address']);
+  await prefs.setString('user_${nik}_selected_hospital_phone', hospitalData['phone']);
+  await prefs.setString('user_${nik}_selected_hospital_distance', hospitalData['distance']);
+  await prefs.setDouble('user_${nik}_selected_hospital_rating', hospitalData['rating']);
+  await prefs.setInt('user_${nik}_selected_hospital_reviewCount', hospitalData['reviewCount']);
+  await prefs.setBool('user_${nik}_selected_hospital_isOpen', hospitalData['isOpen']);
+  await prefs.setString('user_${nik}_selected_hospital_imagePath', hospitalData['imagePath']);
+  await prefs.setString('user_${nik}_selected_hospital_operatingHours', hospitalData['operatingHours']);
+  await prefs.setString('user_${nik}_selected_hospital_type', hospitalData['type']);
+  await prefs.setString('user_${nik}_selected_hospital_services', hospitalData['services'].join(','));
+  await prefs.setString('user_${nik}_selected_hospital_specialties', hospitalData['specialties'].join(','));
+}
+
+static Future<Map<String, dynamic>?> getSelectedHospital(String nik) async {
+  final prefs = await SharedPreferences.getInstance();
+  
+  final name = prefs.getString('user_${nik}_selected_hospital_name');
+  if (name == null) return null;
+  
+  return {
+    'name': name,
+    'address': prefs.getString('user_${nik}_selected_hospital_address') ?? '',
+    'phone': prefs.getString('user_${nik}_selected_hospital_phone') ?? '',
+    'distance': prefs.getString('user_${nik}_selected_hospital_distance') ?? '',
+    'rating': prefs.getDouble('user_${nik}_selected_hospital_rating') ?? 0.0,
+    'reviewCount': prefs.getInt('user_${nik}_selected_hospital_reviewCount') ?? 0,
+    'isOpen': prefs.getBool('user_${nik}_selected_hospital_isOpen') ?? false,
+    'imagePath': prefs.getString('user_${nik}_selected_hospital_imagePath') ?? '',
+    'operatingHours': prefs.getString('user_${nik}_selected_hospital_operatingHours') ?? '',
+    'type': prefs.getString('user_${nik}_selected_hospital_type') ?? '',
+    'services': prefs.getString('user_${nik}_selected_hospital_services')?.split(',') ?? [],
+    'specialties': prefs.getString('user_${nik}_selected_hospital_specialties')?.split(',') ?? [],
+  };
+}
+
   // ================== SAVE & GET USER BASIC DATA ==================
   static Future<void> saveUser({
     required String email,

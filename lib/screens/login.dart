@@ -4,6 +4,8 @@ import 'package:inocare/screens/home_page_member.dart';
 import 'package:inocare/services/user_prefs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
+import 'package:inocare/screens/rumahsakitmember.dart';
+import 'package:inocare/screens/homepagepasien.dart';
 
 // =================================== LOGIN ===================================
 class LoginPage extends StatefulWidget {
@@ -27,6 +29,28 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     _loadUserData();
   }
+
+  Map<String, BloodStock> _getDefaultBloodStock() {
+  return {
+    'A+': BloodStock(type: 'A+', available: true, count: 10),
+    'A-': BloodStock(type: 'A-', available: true, count: 3),
+    'B+': BloodStock(type: 'B+', available: true, count: 8),
+    'B-': BloodStock(type: 'B-', available: false, count: 0),
+    'AB+': BloodStock(type: 'AB+', available: false, count: 0),
+    'AB-': BloodStock(type: 'AB-', available: true, count: 2),
+    'O+': BloodStock(type: 'O+', available: true, count: 15),
+    'O-': BloodStock(type: 'O-', available: true, count: 5),
+  };
+}
+
+Map<String, dynamic> _getDefaultFacilities() {
+  return {
+    'kamarVip': 10, 
+    'igd': 5, 
+    'dokter': 25, 
+    'antrian': 'Sedang'
+  };
+}
 
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -53,29 +77,60 @@ class _LoginPageState extends State<LoginPage> {
 
   // Method untuk menampilkan OTP Modal
   void _showOTPModal() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return OTPModal(
-          onOTPVerified: () async {
-            // SIMPAN STATUS LOGIN KE UserPrefs setelah OTP berhasil
-            await UserPrefs.saveUser(
-              email: registeredEmail!,
-              nik: registeredNik!,
-              password: registeredPassword!,
-              name: registeredName!,
-            );
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return OTPModal(
+        onOTPVerified: () async {
+          // SIMPAN STATUS LOGIN KE UserPrefs setelah OTP berhasil
+          await UserPrefs.saveUser(
+            email: registeredEmail!,
+            nik: registeredNik!,
+            password: registeredPassword!,
+            name: registeredName!,
+          );
 
+          // CEK APAKAH USER SUDAH PERNAH PILIH RUMAH SAKIT
+          final selectedHospitalData = await UserPrefs.getSelectedHospital(registeredNik!);
+          
+          if (selectedHospitalData != null) {
+            // Jika sudah pernah pilih, buat objek Hospital dan langsung ke HomePagePasien
+            final savedHospital = Hospital(
+              name: selectedHospitalData['name'],
+              address: selectedHospitalData['address'],
+              phone: selectedHospitalData['phone'],
+              distance: selectedHospitalData['distance'],
+              rating: selectedHospitalData['rating'],
+              reviewCount: selectedHospitalData['reviewCount'],
+              isOpen: selectedHospitalData['isOpen'],
+              services: List<String>.from(selectedHospitalData['services']),
+              imagePath: selectedHospitalData['imagePath'],
+              operatingHours: selectedHospitalData['operatingHours'],
+              type: selectedHospitalData['type'],
+              bloodStock: _getDefaultBloodStock(),
+              facilities: _getDefaultFacilities(),
+              specialties: List<String>.from(selectedHospitalData['specialties']),
+            );
+            
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => HomePagePasien(selectedHospital: savedHospital),
+              ),
+            );
+          } else {
+            // Jika belum pernah pilih, ke HomePageMember
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => HomePageMember()),
             );
-          },
-        );
-      },
-    );
-  }
+          }
+        },
+      );
+    },
+  );
+}
 
   @override
   Widget build(BuildContext context) {

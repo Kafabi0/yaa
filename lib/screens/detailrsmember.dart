@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:inocare/screens/detailjadwaldokter.dart';
 import 'package:inocare/screens/homepagepasien.dart';
 import 'rumahsakitmember.dart';
+import 'package:inocare/services/user_prefs.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HospitalDetailPage extends StatefulWidget {
   final Hospital hospital;
@@ -896,14 +898,35 @@ class _HospitalDetailPageState extends State<HospitalDetailPage> {
       margin: EdgeInsets.all(16),
       width: double.infinity,
       child: ElevatedButton.icon(
-        onPressed: () {
+        onPressed: () async {
+          // Simpan rumah sakit terpilih ke SharedPreferences
+          final prefs = await SharedPreferences.getInstance();
+          final currentNik = prefs.getString('current_nik');
+          
+          if (currentNik != null) {
+            await UserPrefs.setSelectedHospital(currentNik, {
+              'name': widget.hospital.name,
+              'address': widget.hospital.address,
+              'phone': widget.hospital.phone,
+              'distance': widget.hospital.distance,
+              'rating': widget.hospital.rating,
+              'reviewCount': widget.hospital.reviewCount,
+              'isOpen': widget.hospital.isOpen,
+              'imagePath': widget.hospital.imagePath,
+              'operatingHours': widget.hospital.operatingHours,
+              'type': widget.hospital.type,
+              'services': widget.hospital.services,
+              'specialties': widget.hospital.specialties,
+            });
+          }
+
           // Navigasi ke HomePage Pasien
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
               builder: (context) => HomePagePasien(selectedHospital: widget.hospital),
             ),
-            (route) => false, // Hapus semua route sebelumnya
+            (route) => false,
           );
         },
         icon: Icon(Icons.check_circle, color: Colors.white, size: 20),
