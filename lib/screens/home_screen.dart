@@ -10,6 +10,7 @@ import 'package:inocare/services/location_service.dart';
 import 'package:inocare/models/hospital_model.dart';
 import 'package:inocare/services/hospital_service.dart'; 
 import 'package:inocare/widgets/nearest_hospital_widget.dart';
+import 'package:inocare/screens/artikel_semua_screen.dart';
 
 class HealthAppHomePage extends StatefulWidget {
   final VoidCallback? onLoginSuccess;
@@ -1311,22 +1312,60 @@ String _getShortAddress(String address) {
   }
 
   Widget _buildHealthArticlesSection() {
-    return Padding(
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Baca 100+ Artikel\nKesehatan',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
+  return Padding(
+    padding: const EdgeInsets.all(20),
+    child: Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Baca 100+ Artikel\nKesehatan',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
               ),
-              Container(
+            ),
+            GestureDetector(
+              onTap: () {
+                // Navigator dengan custom slide transition
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) => AllHealthArticlesPage(),
+                    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                      const begin = Offset(1.0, 0.0);
+                      const end = Offset.zero;
+                      const curve = Curves.easeInOutCubic;
+
+                      var tween = Tween(begin: begin, end: end).chain(
+                        CurveTween(curve: curve),
+                      );
+                      var offsetAnimation = animation.drive(tween);
+
+                      // Tambahkan fade effect untuk transisi yang lebih smooth
+                      var fadeAnimation = Tween<double>(
+                        begin: 0.0,
+                        end: 1.0,
+                      ).animate(CurvedAnimation(
+                        parent: animation,
+                        curve: Curves.easeIn,
+                      ));
+
+                      return SlideTransition(
+                        position: offsetAnimation,
+                        child: FadeTransition(
+                          opacity: fadeAnimation,
+                          child: child,
+                        ),
+                      );
+                    },
+                    transitionDuration: Duration(milliseconds: 350),
+                  ),
+                );
+              },
+              child: Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
                   vertical: 8,
@@ -1334,52 +1373,68 @@ String _getShortAddress(String address) {
                 decoration: BoxDecoration(
                   color: Color(0xFFFF6B35),
                   borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Color(0xFFFF6B35).withOpacity(0.3),
+                      blurRadius: 8,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
                 ),
-                child: Text(
-                  'Lihat Semua',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Lihat Semua',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(
+                      Icons.arrow_forward_ios,
+                      color: Colors.white,
+                      size: 12,
+                    ),
+                  ],
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          _buildArticleCard(
-            category: 'Kesehatan Ginjal',
-            title: '5 Cara Merawat Ginjal agar Sehat & Cegah Penyakit Ginjal',
-            date: 'Rabu, 3 September 2025',
-            imagePath: 'assets/images/ginjal.jpg',
-            url:
-                'https://www.biofarma.co.id/id/announcement/detail/5-cara-merawat-ginjal-agar-sehat-cegah-penyakit-ginjal',
-            gradient: [Color(0xFF87CEEB), Color(0xFFB0E0E6)],
-          ),
-          const SizedBox(height: 12),
-          _buildArticleCard(
-            category: 'Nutrisi',
-            title: '9 manfaat kolang kaling yang perlu kamu ketahui',
-            date: 'Senin, 30 Juni 2025',
-            imagePath: 'assets/images/olang.jpg',
-            gradient: [Color(0xFF98FB98), Color(0xFF90EE90)],
-            url:
-                'https://www.biofarma.co.id/id/announcement/detail/9-manfaat-kolang-kaling-yang-perlu-kamu-ketahui',
-          ),
-          const SizedBox(height: 12),
-          _buildArticleCard(
-            category: 'Pencernaan',
-            title: 'Kenali Jenis Makanan Penyebab GERD',
-            date: 'Jumat, 12 Juni 2025',
-            imagePath: 'assets/images/gerd.png',
-            gradient: [Color(0xFFFFA07A), Color(0xFFFF7F50)],
-            url:
-                'https://www.biofarma.co.id/id/announcement/detail/kenali-jenis-makanan-penyebab-gerd',
-          ),
-        ],
-      ),
-    );
-  }
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        _buildArticleCard(
+          category: 'Kesehatan Ginjal',
+          title: '5 Cara Merawat Ginjal agar Sehat & Cegah Penyakit Ginjal',
+          date: 'Rabu, 3 September 2025',
+          imagePath: 'assets/images/ginjal.jpg',
+          url: 'https://www.biofarma.co.id/id/announcement/detail/5-cara-merawat-ginjal-agar-sehat-cegah-penyakit-ginjal',
+          gradient: [Color(0xFF87CEEB), Color(0xFFB0E0E6)],
+        ),
+        const SizedBox(height: 12),
+        _buildArticleCard(
+          category: 'Nutrisi',
+          title: '9 manfaat kolang kaling yang perlu kamu ketahui',
+          date: 'Senin, 30 Juni 2025',
+          imagePath: 'assets/images/olang.jpg',
+          gradient: [Color(0xFF98FB98), Color(0xFF90EE90)],
+          url: 'https://www.biofarma.co.id/id/announcement/detail/9-manfaat-kolang-kaling-yang-perlu-kamu-ketahui',
+        ),
+        const SizedBox(height: 12),
+        _buildArticleCard(
+          category: 'Pencernaan',
+          title: 'Kenali Jenis Makanan Penyebab GERD',
+          date: 'Jumat, 12 Juni 2025',
+          imagePath: 'assets/images/gerd.png',
+          gradient: [Color(0xFFFFA07A), Color(0xFFFF7F50)],
+          url: 'https://www.biofarma.co.id/id/announcement/detail/kenali-jenis-makanan-penyebab-gerd',
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildArticleCard({
     required String category,
