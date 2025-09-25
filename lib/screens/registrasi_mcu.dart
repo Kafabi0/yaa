@@ -19,13 +19,19 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
   final TextEditingController _nohpController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _pekerjaanController = TextEditingController();
-  final TextEditingController _namaPerusahaanController = TextEditingController();
-  final TextEditingController _alamatPerusahaanController = TextEditingController();
-  final TextEditingController _riwayatPenyakitController = TextEditingController();
-  final TextEditingController _obatDikonsumsiController = TextEditingController();
+  final TextEditingController _namaPerusahaanController =
+      TextEditingController();
+  final TextEditingController _alamatPerusahaanController =
+      TextEditingController();
+  final TextEditingController _riwayatPenyakitController =
+      TextEditingController();
+  final TextEditingController _obatDikonsumsiController =
+      TextEditingController();
   final TextEditingController _keluhanController = TextEditingController();
-  final TextEditingController _kontakDaruratController = TextEditingController();
-  final TextEditingController _nohpKontakDaruratController = TextEditingController();
+  final TextEditingController _kontakDaruratController =
+      TextEditingController();
+  final TextEditingController _nohpKontakDaruratController =
+      TextEditingController();
 
   String? _selectedGender;
   String? _selectedAgama;
@@ -44,10 +50,22 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
   String? _jenisOperasi;
 
   final List<String> _genderOptions = ['Laki-laki', 'Perempuan'];
-  final List<String> _agamaOptions = ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu'];
-  final List<String> _statusPerkawinanOptions = ['Belum Menikah', 'Menikah', 'Cerai Hidup', 'Cerai Mati'];
+  final List<String> _agamaOptions = [
+    'Islam',
+    'Kristen',
+    'Katolik',
+    'Hindu',
+    'Buddha',
+    'Konghucu',
+  ];
+  final List<String> _statusPerkawinanOptions = [
+    'Belum Menikah',
+    'Menikah',
+    'Cerai Hidup',
+    'Cerai Mati',
+  ];
   final List<String> _golonganDarahOptions = ['A', 'B', 'AB', 'O'];
-  
+
   final Map<String, Map<String, dynamic>> _paketMCUOptions = {
     'MCU Basic': {
       'harga': 'Rp 500.000',
@@ -111,7 +129,7 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
     'Pre-Employment',
     'Annual Check-up',
     'Follow-up Penyakit',
-    'Lainnya'
+    'Lainnya',
   ];
 
   final List<String> _waktuPemeriksaanOptions = [
@@ -134,40 +152,94 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
 
   Future<void> _simpanData() async {
     final prefs = await SharedPreferences.getInstance();
+    final nik = prefs.getString('current_nik'); // user aktif bener
+    // user aktif
+
+    if (nik == null) {
+      throw Exception("User belum login, NIK tidak ditemukan.");
+    }
     String nomor = "MCU${DateTime.now().millisecondsSinceEpoch % 10000}";
-    
-    await prefs.setString('mcuName', _namaController.text.trim());
-    await prefs.setString('mcuNIK', _nikController.text.trim());
-    await prefs.setString('mcuTempatLahir', _tempatLahirController.text.trim());
-    await prefs.setString('mcuTanggalLahir', _tanggalLahirController.text.trim());
-    await prefs.setString('mcuGender', _selectedGender ?? '');
-    await prefs.setString('mcuAgama', _selectedAgama ?? '');
-    await prefs.setString('mcuStatus', _selectedStatusPerkawinan ?? '');
-    await prefs.setString('mcuGolDarah', _selectedGolonganDarah ?? '');
-    await prefs.setString('mcuAlamat', _alamatController.text.trim());
-    await prefs.setString('mcuNoHP', _nohpController.text.trim());
-    await prefs.setString('mcuEmail', _emailController.text.trim());
-    await prefs.setString('mcuPekerjaan', _pekerjaanController.text.trim());
-    await prefs.setString('mcuNamaPerusahaan', _namaPerusahaanController.text.trim());
-    await prefs.setString('mcuAlamatPerusahaan', _alamatPerusahaanController.text.trim());
-    await prefs.setString('mcuPaket', _selectedPaketMCU ?? '');
-    await prefs.setString('mcuTujuan', _selectedTujuanMCU ?? '');
-    await prefs.setString('mcuWaktu', _selectedWaktuPemeriksaan ?? '');
-    await prefs.setString('mcuPembayaran', _selectedJenisPembayaran ?? '');
-    await prefs.setString('mcuRiwayatPenyakit', _riwayatPenyakitController.text.trim());
-    await prefs.setString('mcuObatDikonsumsi', _obatDikonsumsiController.text.trim());
-    await prefs.setString('mcuKeluhan', _keluhanController.text.trim());
-    await prefs.setBool('mcuPuasa', _isPuasa);
-    await prefs.setBool('mcuRiwayatOperasi', _riwayatOperasi);
-    await prefs.setBool('mcuRiwayatAlergi', _riwayatAlergi);
-    await prefs.setBool('mcuMerokok', _merokok);
-    await prefs.setBool('mcuAlkohol', _alkohol);
-    await prefs.setString('mcuJenisAlergi', _jenisAlergi ?? '');
-    await prefs.setString('mcuJenisOperasi', _jenisOperasi ?? '');
-    await prefs.setString('mcuKontakDarurat', _kontakDaruratController.text.trim());
-    await prefs.setString('mcuNoHPKontakDarurat', _nohpKontakDaruratController.text.trim());
-    await prefs.setString('nomorAntrian_MCU', nomor);
-    await prefs.setString('mcuWaktuRegistrasi', DateTime.now().toIso8601String());
+
+    await prefs.setString('user_${nik}_mcuName', _namaController.text.trim());
+    await prefs.setString('user_${nik}_mcuNIK', _nikController.text.trim());
+    await prefs.setString(
+      'user_${nik}_mcuTempatLahir',
+      _tempatLahirController.text.trim(),
+    );
+    await prefs.setString(
+      'user_${nik}_mcuTanggalLahir',
+      _tanggalLahirController.text.trim(),
+    );
+    await prefs.setString('user_${nik}_mcuGender', _selectedGender ?? '');
+    await prefs.setString('user_${nik}_mcuAgama', _selectedAgama ?? '');
+    await prefs.setString(
+      'user_${nik}_mcuStatus',
+      _selectedStatusPerkawinan ?? '',
+    );
+    await prefs.setString(
+      'user_${nik}_mcuGolDarah',
+      _selectedGolonganDarah ?? '',
+    );
+    await prefs.setString(
+      'user_${nik}_mcuAlamat',
+      _alamatController.text.trim(),
+    );
+    await prefs.setString('user_${nik}_mcuNoHP', _nohpController.text.trim());
+    await prefs.setString('user_${nik}_mcuEmail', _emailController.text.trim());
+    await prefs.setString(
+      'user_${nik}_mcuPekerjaan',
+      _pekerjaanController.text.trim(),
+    );
+    await prefs.setString(
+      'user_${nik}_mcuNamaPerusahaan',
+      _namaPerusahaanController.text.trim(),
+    );
+    await prefs.setString(
+      'user_${nik}_mcuAlamatPerusahaan',
+      _alamatPerusahaanController.text.trim(),
+    );
+    await prefs.setString('user_${nik}_mcuPaket', _selectedPaketMCU ?? '');
+    await prefs.setString('user_${nik}_mcuTujuan', _selectedTujuanMCU ?? '');
+    await prefs.setString(
+      'user_${nik}_mcuWaktu',
+      _selectedWaktuPemeriksaan ?? '',
+    );
+    await prefs.setString(
+      'user_${nik}_mcuPembayaran',
+      _selectedJenisPembayaran ?? '',
+    );
+    await prefs.setString(
+      'user_${nik}_mcuRiwayatPenyakit',
+      _riwayatPenyakitController.text.trim(),
+    );
+    await prefs.setString(
+      'user_${nik}_mcuObatDikonsumsi',
+      _obatDikonsumsiController.text.trim(),
+    );
+    await prefs.setString(
+      'user_${nik}_mcuKeluhan',
+      _keluhanController.text.trim(),
+    );
+    await prefs.setBool('user_${nik}_mcuPuasa', _isPuasa);
+    await prefs.setBool('user_${nik}_mcuRiwayatOperasi', _riwayatOperasi);
+    await prefs.setBool('user_${nik}_mcuRiwayatAlergi', _riwayatAlergi);
+    await prefs.setBool('user_${nik}_mcuMerokok', _merokok);
+    await prefs.setBool('user_${nik}_mcuAlkohol', _alkohol);
+    await prefs.setString('user_${nik}_mcuJenisAlergi', _jenisAlergi ?? '');
+    await prefs.setString('user_${nik}_mcuJenisOperasi', _jenisOperasi ?? '');
+    await prefs.setString(
+      'user_${nik}_mcuKontakDarurat',
+      _kontakDaruratController.text.trim(),
+    );
+    await prefs.setString(
+      'user_${nik}_mcuNoHPKontakDarurat',
+      _nohpKontakDaruratController.text.trim(),
+    );
+    await prefs.setString('user_${nik}_nomorAntrian_MCU', nomor);
+    await prefs.setString(
+      'mcuWaktuRegistrasi',
+      DateTime.now().toIso8601String(),
+    );
   }
 
   void _submit() async {
@@ -181,12 +253,18 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
 
     try {
       await _simpanData();
-      
+
       if (mounted) {
-        String paketInfo = _selectedPaketMCU != null 
-            ? "${_selectedPaketMCU} - ${_paketMCUOptions[_selectedPaketMCU!]!['harga']}" 
-            : "";
-        
+        final prefs = await SharedPreferences.getInstance();
+        final nik = prefs.getString('current_nik'); // ✅
+        if (nik == null) {
+          throw Exception("User belum login, NIK tidak ditemukan.");
+        }
+        String paketInfo =
+            _selectedPaketMCU != null
+                ? "${_selectedPaketMCU} - ${_paketMCUOptions[_selectedPaketMCU!]!['harga']}"
+                : "";
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
@@ -194,7 +272,9 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
                 const Icon(Icons.health_and_safety, color: Colors.white),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text("Registrasi MCU berhasil!\nNomor: MCU${DateTime.now().millisecondsSinceEpoch % 10000}\nPaket: $paketInfo"),
+                  child: Text(
+                    "Registrasi MCU berhasil!\nNomor: MCU${DateTime.now().millisecondsSinceEpoch % 10000}\nPaket: $paketInfo",
+                  ),
                 ),
               ],
             ),
@@ -258,12 +338,16 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
           maxLines: maxLines,
-          validator: validator ?? (isRequired ? (value) {
-            if (value == null || value.trim().isEmpty) {
-              return "$label harus diisi";
-            }
-            return null;
-          } : null),
+          validator:
+              validator ??
+              (isRequired
+                  ? (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return "$label harus diisi";
+                    }
+                    return null;
+                  }
+                  : null),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(color: Colors.grey[400]),
@@ -285,7 +369,10 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
             ),
             filled: true,
             fillColor: Colors.grey[50],
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -326,12 +413,16 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
         DropdownButtonFormField<String>(
           value: value,
           onChanged: onChanged,
-          validator: validator ?? (isRequired ? (value) {
-            if (value == null || value.isEmpty) {
-              return "$label harus dipilih";
-            }
-            return null;
-          } : null),
+          validator:
+              validator ??
+              (isRequired
+                  ? (value) {
+                    if (value == null || value.isEmpty) {
+                      return "$label harus dipilih";
+                    }
+                    return null;
+                  }
+                  : null),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(color: Colors.grey[400]),
@@ -353,14 +444,15 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
             ),
             filled: true,
             fillColor: Colors.grey[50],
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
           ),
-          items: items.map((String item) {
-            return DropdownMenuItem<String>(
-              value: item,
-              child: Text(item),
-            );
-          }).toList(),
+          items:
+              items.map((String item) {
+                return DropdownMenuItem<String>(value: item, child: Text(item));
+              }).toList(),
         ),
         const SizedBox(height: 16),
       ],
@@ -369,7 +461,7 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
 
   Widget _buildPaketMCUCard(String paketName, Map<String, dynamic> paketData) {
     final bool isSelected = _selectedPaketMCU == paketName;
-    
+
     return GestureDetector(
       onTap: () => setState(() => _selectedPaketMCU = paketName),
       child: Container(
@@ -381,7 +473,8 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
             width: isSelected ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(12),
-          color: isSelected ? paketData['color'].withOpacity(0.05) : Colors.white,
+          color:
+              isSelected ? paketData['color'].withOpacity(0.05) : Colors.white,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -391,7 +484,8 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
                 Radio<String>(
                   value: paketName,
                   groupValue: _selectedPaketMCU,
-                  onChanged: (value) => setState(() => _selectedPaketMCU = value),
+                  onChanged:
+                      (value) => setState(() => _selectedPaketMCU = value),
                   activeColor: paketData['color'],
                 ),
                 Expanded(
@@ -425,21 +519,25 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
               style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 4),
-            ...paketData['pemeriksaan'].map<Widget>((item) => Padding(
-              padding: const EdgeInsets.only(left: 8, bottom: 2),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("• ", style: TextStyle(fontSize: 12)),
-                  Expanded(
-                    child: Text(
-                      item,
-                      style: const TextStyle(fontSize: 12),
+            ...paketData['pemeriksaan']
+                .map<Widget>(
+                  (item) => Padding(
+                    padding: const EdgeInsets.only(left: 8, bottom: 2),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("• ", style: TextStyle(fontSize: 12)),
+                        Expanded(
+                          child: Text(
+                            item,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            )).toList(),
+                )
+                .toList(),
           ],
         ),
       ),
@@ -492,7 +590,10 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
               children: [
                 Icon(Icons.health_and_safety, color: Colors.white, size: 16),
                 SizedBox(width: 4),
-                Text("MCU", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                Text(
+                  "MCU",
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
               ],
             ),
           ),
@@ -521,7 +622,10 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
                     const Expanded(
                       child: Text(
                         "Untuk pemeriksaan lab, pastikan puasa minimal 10-12 jam sebelum datang",
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
@@ -583,7 +687,8 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
                       hint: "Pilih jenis kelamin",
                       value: _selectedGender,
                       items: _genderOptions,
-                      onChanged: (value) => setState(() => _selectedGender = value),
+                      onChanged:
+                          (value) => setState(() => _selectedGender = value),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -593,7 +698,9 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
                       hint: "Pilih golongan darah",
                       value: _selectedGolonganDarah,
                       items: _golonganDarahOptions,
-                      onChanged: (value) => setState(() => _selectedGolonganDarah = value),
+                      onChanged:
+                          (value) =>
+                              setState(() => _selectedGolonganDarah = value),
                       isRequired: false,
                     ),
                   ),
@@ -611,7 +718,9 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
                 hint: "Pilih status perkawinan",
                 value: _selectedStatusPerkawinan,
                 items: _statusPerkawinanOptions,
-                onChanged: (value) => setState(() => _selectedStatusPerkawinan = value),
+                onChanged:
+                    (value) =>
+                        setState(() => _selectedStatusPerkawinan = value),
               ),
 
               // Data Kontak
@@ -643,7 +752,9 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
                         if (value == null || value.trim().isEmpty) {
                           return "Email harus diisi";
                         }
-                        if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+                        if (!RegExp(
+                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                        ).hasMatch(value)) {
                           return "Format email tidak valid";
                         }
                         return null;
@@ -677,9 +788,10 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
               // Paket MCU
               _buildSectionTitle("🏥 Pilih Paket Medical Check-Up"),
               Column(
-                children: _paketMCUOptions.entries.map((entry) {
-                  return _buildPaketMCUCard(entry.key, entry.value);
-                }).toList(),
+                children:
+                    _paketMCUOptions.entries.map((entry) {
+                      return _buildPaketMCUCard(entry.key, entry.value);
+                    }).toList(),
               ),
               if (_selectedPaketMCU == null)
                 Container(
@@ -703,21 +815,25 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
                 hint: "Pilih tujuan pemeriksaan",
                 value: _selectedTujuanMCU,
                 items: _tujuanMCUOptions,
-                onChanged: (value) => setState(() => _selectedTujuanMCU = value),
+                onChanged:
+                    (value) => setState(() => _selectedTujuanMCU = value),
               ),
               _buildDropdownField(
                 label: "Waktu Pemeriksaan",
                 hint: "Pilih waktu yang diinginkan",
                 value: _selectedWaktuPemeriksaan,
                 items: _waktuPemeriksaanOptions,
-                onChanged: (value) => setState(() => _selectedWaktuPemeriksaan = value),
+                onChanged:
+                    (value) =>
+                        setState(() => _selectedWaktuPemeriksaan = value),
               ),
               _buildDropdownField(
                 label: "Jenis Pembayaran",
                 hint: "Pilih metode pembayaran",
                 value: _selectedJenisPembayaran,
                 items: _jenisPembayaranOptions,
-                onChanged: (value) => setState(() => _selectedJenisPembayaran = value),
+                onChanged:
+                    (value) => setState(() => _selectedJenisPembayaran = value),
               ),
 
               // Riwayat Kesehatan
@@ -757,37 +873,56 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
                   children: [
                     const Text(
                       "Gaya Hidup & Kebiasaan",
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     CheckboxListTile(
                       value: _isPuasa,
-                      onChanged: (value) => setState(() => _isPuasa = value ?? false),
-                      title: const Text("Saya akan datang dalam kondisi puasa", style: TextStyle(fontSize: 13)),
+                      onChanged:
+                          (value) => setState(() => _isPuasa = value ?? false),
+                      title: const Text(
+                        "Saya akan datang dalam kondisi puasa",
+                        style: TextStyle(fontSize: 13),
+                      ),
                       activeColor: const Color(0xFFFF6B35),
                       contentPadding: EdgeInsets.zero,
                     ),
                     CheckboxListTile(
                       value: _merokok,
-                      onChanged: (value) => setState(() => _merokok = value ?? false),
-                      title: const Text("Merokok", style: TextStyle(fontSize: 13)),
+                      onChanged:
+                          (value) => setState(() => _merokok = value ?? false),
+                      title: const Text(
+                        "Merokok",
+                        style: TextStyle(fontSize: 13),
+                      ),
                       activeColor: const Color(0xFFFF6B35),
                       contentPadding: EdgeInsets.zero,
                     ),
                     CheckboxListTile(
                       value: _alkohol,
-                      onChanged: (value) => setState(() => _alkohol = value ?? false),
-                      title: const Text("Konsumsi alkohol", style: TextStyle(fontSize: 13)),
+                      onChanged:
+                          (value) => setState(() => _alkohol = value ?? false),
+                      title: const Text(
+                        "Konsumsi alkohol",
+                        style: TextStyle(fontSize: 13),
+                      ),
                       activeColor: const Color(0xFFFF6B35),
                       contentPadding: EdgeInsets.zero,
                     ),
                     CheckboxListTile(
                       value: _riwayatOperasi,
-                      onChanged: (value) => setState(() {
-                        _riwayatOperasi = value ?? false;
-                        if (!_riwayatOperasi) _jenisOperasi = null;
-                      }),
-                      title: const Text("Pernah menjalani operasi", style: TextStyle(fontSize: 13)),
+                      onChanged:
+                          (value) => setState(() {
+                            _riwayatOperasi = value ?? false;
+                            if (!_riwayatOperasi) _jenisOperasi = null;
+                          }),
+                      title: const Text(
+                        "Pernah menjalani operasi",
+                        style: TextStyle(fontSize: 13),
+                      ),
                       activeColor: const Color(0xFFFF6B35),
                       contentPadding: EdgeInsets.zero,
                     ),
@@ -797,18 +932,27 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
                         onChanged: (value) => _jenisOperasi = value,
                         decoration: InputDecoration(
                           hintText: "Jenis operasi yang pernah dijalani",
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                         ),
                       ),
                     ],
                     CheckboxListTile(
                       value: _riwayatAlergi,
-                      onChanged: (value) => setState(() {
-                        _riwayatAlergi = value ?? false;
-                        if (!_riwayatAlergi) _jenisAlergi = null;
-                      }),
-                      title: const Text("Memiliki riwayat alergi", style: TextStyle(fontSize: 13)),
+                      onChanged:
+                          (value) => setState(() {
+                            _riwayatAlergi = value ?? false;
+                            if (!_riwayatAlergi) _jenisAlergi = null;
+                          }),
+                      title: const Text(
+                        "Memiliki riwayat alergi",
+                        style: TextStyle(fontSize: 13),
+                      ),
                       activeColor: const Color(0xFFFF6B35),
                       contentPadding: EdgeInsets.zero,
                     ),
@@ -818,8 +962,13 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
                         onChanged: (value) => _jenisAlergi = value,
                         decoration: InputDecoration(
                           hintText: "Jenis alergi (makanan, obat, dll)",
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                         ),
                       ),
                     ],
@@ -843,7 +992,7 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
               ),
 
               const SizedBox(height: 24),
-              
+
               // Submit Button
               Container(
                 width: double.infinity,
@@ -864,18 +1013,23 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
                   ],
                 ),
                 child: ElevatedButton(
-                  onPressed: _isLoading ? null : () {
-                    if (_selectedPaketMCU == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Silakan pilih paket MCU terlebih dahulu"),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                      return;
-                    }
-                    _submit();
-                  },
+                  onPressed:
+                      _isLoading
+                          ? null
+                          : () {
+                            if (_selectedPaketMCU == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "Silakan pilih paket MCU terlebih dahulu",
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              return;
+                            }
+                            _submit();
+                          },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
                     shadowColor: Colors.transparent,
@@ -883,49 +1037,55 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: _isLoading
-                      ? const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  child:
+                      _isLoading
+                          ? const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 12),
-                            Text(
-                              "Memproses...",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
+                              SizedBox(width: 12),
+                              Text(
+                                "Memproses...",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          )
+                          : const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.health_and_safety,
                                 color: Colors.white,
                               ),
-                            ),
-                          ],
-                        )
-                      : const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.health_and_safety, color: Colors.white),
-                            SizedBox(width: 8),
-                            Text(
-                              "DAFTAR MCU SEKARANG",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                              SizedBox(width: 8),
+                              Text(
+                                "DAFTAR MCU SEKARANG",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Info Panel
               Container(
                 padding: const EdgeInsets.all(16),
@@ -943,7 +1103,10 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
                         const Expanded(
                           child: Text(
                             "PERSIAPAN SEBELUM MCU:",
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -1044,7 +1207,10 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
                         const Expanded(
                           child: Text(
                             "INFORMASI LEBIH LANJUT:",
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -1054,7 +1220,10 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
                       children: [
                         Icon(Icons.call, size: 16, color: Colors.blue),
                         SizedBox(width: 8),
-                        Text("Telepon: (021) 555-0123", style: TextStyle(fontSize: 11)),
+                        Text(
+                          "Telepon: (021) 555-0123",
+                          style: TextStyle(fontSize: 11),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -1062,7 +1231,10 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
                       children: [
                         Icon(Icons.message, size: 16, color: Colors.blue),
                         SizedBox(width: 8),
-                        Text("WhatsApp: +62 812-3456-7890", style: TextStyle(fontSize: 11)),
+                        Text(
+                          "WhatsApp: +62 812-3456-7890",
+                          style: TextStyle(fontSize: 11),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -1070,7 +1242,10 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
                       children: [
                         Icon(Icons.email, size: 16, color: Colors.blue),
                         SizedBox(width: 8),
-                        Text("Email: mcu@rumahsakit.com", style: TextStyle(fontSize: 11)),
+                        Text(
+                          "Email: mcu@rumahsakit.com",
+                          style: TextStyle(fontSize: 11),
+                        ),
                       ],
                     ),
                   ],

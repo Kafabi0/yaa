@@ -69,42 +69,48 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
 
   Future<void> _simpanData() async {
     final prefs = await SharedPreferences.getInstance();
+    final nik = prefs.getString('current_nik'); // user aktif bener
+    // user aktif
+
+    if (nik == null) {
+      throw Exception("User belum login, NIK tidak ditemukan.");
+    }
     String nomor = "IGD${DateTime.now().millisecondsSinceEpoch % 10000}";
 
-    await prefs.setString('igdName', _namaController.text.trim());
-    await prefs.setString('igdNIK', _nikController.text.trim());
-    await prefs.setString('igdUmur', _umurController.text.trim());
-    await prefs.setString('igdGender', _selectedGender ?? '');
-    await prefs.setString('igdAlamat', _alamatController.text.trim());
-    await prefs.setString('igdNoHP', _nohpController.text.trim());
-    await prefs.setString('igdKeluhan', _keluhanController.text.trim());
-    await prefs.setString('igdTriase', _selectedTriase ?? '');
-    await prefs.setString('igdCaraDatang', _selectedCaraDatang ?? '');
-    await prefs.setString('igdAsuransi', _selectedJenisAsuransi ?? '');
-    await prefs.setString('igdKesadaran', _selectedKesadaran ?? '');
+    await prefs.setString('user_${nik}_igdName', _namaController.text.trim());
+    await prefs.setString('user_${nik}_igdNIK', _nikController.text.trim());
+    await prefs.setString('user_${nik}_igdUmur', _umurController.text.trim());
+    await prefs.setString('user_${nik}_igdGender', _selectedGender ?? '');
+    await prefs.setString('user_${nik}_igdAlamat', _alamatController.text.trim());
+    await prefs.setString('user_${nik}_igdNoHP', _nohpController.text.trim());
+    await prefs.setString('user_${nik}_igdKeluhan', _keluhanController.text.trim());
+    await prefs.setString('user_${nik}_igdTriase', _selectedTriase ?? '');
+    await prefs.setString('user_${nik}_igdCaraDatang', _selectedCaraDatang ?? '');
+    await prefs.setString('user_${nik}_igdAsuransi', _selectedJenisAsuransi ?? '');
+    await prefs.setString('user_${nik}_igdKesadaran', _selectedKesadaran ?? '');
     await prefs.setString(
-      'igdRiwayatPenyakit',
+      'user_${nik}_igdRiwayatPenyakit',
       _riwayatPenyakitController.text.trim(),
     );
     await prefs.setString(
-      'igdObatDikonsumsi',
+      'user_${nik}_igdObatDikonsumsi',
       _obatDikonsumsiController.text.trim(),
     );
-    await prefs.setBool('igdRiwayatAlergi', _riwayatAlergi);
-    await prefs.setString('igdJenisAlergi', _jenisAlergi ?? '');
+    await prefs.setBool('user_${nik}_igdRiwayatAlergi', _riwayatAlergi);
+    await prefs.setString('user_${nik}_igdJenisAlergi', _jenisAlergi ?? '');
     await prefs.setString(
-      'igdNamaKeluarga',
+      'user_${nik}_igdNamaKeluarga',
       _namaKeluargaController.text.trim(),
     );
     await prefs.setString(
-      'igdNoHPKeluarga',
+      'user_${nik}_igdNoHPKeluarga',
       _nohpKeluargaController.text.trim(),
     );
     await prefs.setString(
-      'igdHubunganKeluarga',
+      'user_${nik}_igdHubunganKeluarga',
       _hubunganKeluargaController.text.trim(),
     );
-    await prefs.setString('nomorAntrian_IGD', nomor);
+    await prefs.setString('user_${nik}_nomorAntrian_IGD', nomor);
     await prefs.setString(
       'igdWaktuRegistrasi',
       DateTime.now().toIso8601String(),
@@ -126,12 +132,14 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
       if (mounted) {
         String triaseLevel = _getTriaseLevel(_selectedTriase);
         final prefs = await SharedPreferences.getInstance();
-        final nik = prefs.getString('nik');
-        if (nik == null) {
-          throw Exception("User belum login, NIK tidak ditemukan.");
-        }
+        final nik = prefs.getString('current_nik'); // user aktif bener
+    // user aktif
+
+    if (nik == null) {
+      throw Exception("User belum login, NIK tidak ditemukan.");
+    }
         String nomorAntrian =
-            prefs.getString('${nik}_nomorAntrian_IGD') ?? 'Tidak Ada';
+            prefs.getString('user_${nik}_nomorAntrian_IGD') ?? 'Tidak Ada';
         await prefs.setString(
           'igdWaktuRegistrasi',
           DateTime.now().toIso8601String(),

@@ -13,36 +13,42 @@ class _RiwayatRegistrasiPageState extends State<RiwayatRegistrasiPage> {
 
   Future<void> _loadData() async {
     final prefs = await SharedPreferences.getInstance();
+    final nik = prefs.getString('current_nik'); // user aktif bener
+    // user aktif
+
+    if (nik == null) {
+      throw Exception("User belum login, NIK tidak ditemukan.");
+    }
 
     setState(() {
       _allData = {
         "MCU": {
-          "Nomor Antrian": prefs.getString('nomorAntrian_MCU') ?? "-",
-          "Nama": prefs.getString('mcuName') ?? "-",
-          "Paket": prefs.getString('mcuPaket') ?? "-",
-          "Tujuan": prefs.getString('mcuTujuan') ?? "-",
-          "Waktu Registrasi": prefs.getString('mcuWaktuRegistrasi') ?? "-",
+          "Nomor Antrian": prefs.getString('user_${nik}_nomorAntrian_MCU') ?? "-",
+          "Nama": prefs.getString('user_${nik}_mcuName') ?? "-",
+          "Paket": prefs.getString('user_${nik}_mcuPaket') ?? "-",
+          "Tujuan": prefs.getString('user_${nik}_mcuTujuan') ?? "-",
+          "Waktu Registrasi": prefs.getString('user_${nik}_mcuWaktuRegistrasi') ?? "-",
         },
         "IGD": {
-          "Nomor Antrian": prefs.getString('nomorAntrian_IGD') ?? "-",
-          "Nama": prefs.getString('igdName') ?? "-",
-          "Keluhan": prefs.getString('igdKeluhan') ?? "-",
-          "Triase": prefs.getString('igdTriase') ?? "-",
-          "Waktu Registrasi": prefs.getString('igdWaktuRegistrasi') ?? "-",
+          "Nomor Antrian": prefs.getString('user_${nik}_nomorAntrian_IGD') ?? "-",
+          "Nama": prefs.getString('user_${nik}_igdName') ?? "-",
+          "Keluhan": prefs.getString('user_${nik}_igdKeluhan') ?? "-",
+          "Triase": prefs.getString('user_${nik}_igdTriase') ?? "-",
+          "Waktu Registrasi": prefs.getString('user_${nik}_igdWaktuRegistrasi') ?? "-",
         },
         "Rawat Jalan": {
-          "Nomor Antrian": prefs.getString('nomorAntrian_RAJAL') ?? "-",
-          "Nama": prefs.getString('rajalName') ?? "-",
-          "Poli": prefs.getString('registeredPoli') ?? "-",
-          "Jadwal": prefs.getString('registeredJadwal') ?? "-",
-          "Keluhan": prefs.getString('registeredKeluhan') ?? "-",
+          "Nomor Antrian": prefs.getString('user_${nik}_nomorAntrian_RAJAL') ?? "-",
+          "Nama": prefs.getString('user_${nik}_rajalName') ?? "-",
+          "Poli": prefs.getString('user_${nik}_registeredPoli') ?? "-",
+          "Jadwal": prefs.getString('user_${nik}_registeredJadwal') ?? "-",
+          "Keluhan": prefs.getString('user_${nik}_registeredKeluhan') ?? "-",
         },
         "Rawat Inap": {
-          "Nomor Antrian": prefs.getString('nomorAntrian_RANAP') ?? "-",
-          "Nama": prefs.getString('ranapName') ?? "-",
-          "Kelas": prefs.getString('ranapKelas') ?? "-",
-          "Ruangan": prefs.getString('ranapRuangan') ?? "-",
-          "Waktu Registrasi": prefs.getString('ranapWaktuRegistrasi') ?? "-",
+          "Nomor Antrian": prefs.getString('user_${nik}_nomorAntrian_RANAP') ?? "-",
+          "Nama": prefs.getString('user_${nik}_ranapName') ?? "-",
+          "Kelas": prefs.getString('user_${nik}_ranapKelas') ?? "-",
+          "Ruangan": prefs.getString('user_${nik}_ranapRuangan') ?? "-",
+          "Waktu Registrasi": prefs.getString('user_${nik}_ranapWaktuRegistrasi') ?? "-",
         },
       };
     });

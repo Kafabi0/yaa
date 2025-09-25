@@ -184,43 +184,49 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
 
   Future<void> _simpanData() async {
     final prefs = await SharedPreferences.getInstance();
+    final nik = prefs.getString('current_nik'); // user aktif bener
+    // user aktif
+
+    if (nik == null) {
+      throw Exception("User belum login, NIK tidak ditemukan.");
+    }
     String nomor = "RNP${DateTime.now().millisecondsSinceEpoch % 10000}";
     
-    await prefs.setString('ranapName', _namaController.text.trim());
-    await prefs.setString('ranapNIK', _nikController.text.trim());
-    await prefs.setString('ranapNoKK', _noKKController.text.trim());
-    await prefs.setString('ranapTempatLahir', _tempatLahirController.text.trim());
-    await prefs.setString('ranapTanggalLahir', _tanggalLahirController.text.trim());
-    await prefs.setString('ranapGender', _selectedGender ?? '');
-    await prefs.setString('ranapAgama', _selectedAgama ?? '');
-    await prefs.setString('ranapStatus', _selectedStatusPerkawinan ?? '');
-    await prefs.setString('ranapGolDarah', _selectedGolonganDarah ?? '');
-    await prefs.setString('ranapAlamat', _alamatController.text.trim());
-    await prefs.setString('ranapNoHP', _nohpController.text.trim());
-    await prefs.setString('ranapPekerjaan', _pekerjaanController.text.trim());
-    await prefs.setString('ranapKelas', _selectedKelasPerawatan ?? '');
-    await prefs.setString('ranapTipeKamar', _selectedTipeKamar ?? '');
-    await prefs.setString('ranapAsuransi', _selectedJenisAsuransi ?? '');
-    await prefs.setString('ranapDokter', _selectedDokterPenanggungJawab ?? '');
-    await prefs.setString('ranapRuangan', _selectedRuangan ?? '');
-    await prefs.setString('ranapCaraMasuk', _selectedCaraMasuk ?? '');
-    await prefs.setString('ranapDiagnosis', _diagnosisController.text.trim());
-    await prefs.setString('ranapKeluhan', _keluhanController.text.trim());
-    await prefs.setString('ranapRiwayatPenyakit', _riwayatPenyakitController.text.trim());
-    await prefs.setString('ranapObatDikonsumsi', _obatDikonsumsiController.text.trim());
-    await prefs.setBool('ranapRiwayatAlergi', _riwayatAlergi);
-    await prefs.setBool('ranapRiwayatOperasi', _riwayatOperasi);
-    await prefs.setString('ranapJenisAlergi', _jenisAlergi ?? '');
-    await prefs.setString('ranapJenisOperasi', _jenisOperasi ?? '');
-    await prefs.setString('ranapNamaKeluarga', _namaKeluargaController.text.trim());
-    await prefs.setString('ranapNoHPKeluarga', _nohpKeluargaController.text.trim());
-    await prefs.setString('ranapAlamatKeluarga', _alamatKeluargaController.text.trim());
-    await prefs.setString('ranapHubunganKeluarga', _selectedHubunganKeluarga ?? '');
-    await prefs.setString('ranapNamaWali', _namaWaliController.text.trim());
-    await prefs.setString('ranapNoHPWali', _nohpWaliController.text.trim());
-    await prefs.setString('ranapHubunganWali', _selectedHubunganWali ?? '');
-    await prefs.setString('ranapPenanggungJawab', _penanggungJawabController.text.trim());
-    await prefs.setString('nomorAntrian_RANAP', nomor);
+    await prefs.setString('user_${nik}_ranapName', _namaController.text.trim());
+    await prefs.setString('user_${nik}_ranapNIK', _nikController.text.trim());
+    await prefs.setString('user_${nik}_ranapNoKK', _noKKController.text.trim());
+    await prefs.setString('user_${nik}_ranapTempatLahir', _tempatLahirController.text.trim());
+    await prefs.setString('user_${nik}_ranapTanggalLahir', _tanggalLahirController.text.trim());
+    await prefs.setString('user_${nik}_ranapGender', _selectedGender ?? '');
+    await prefs.setString('user_${nik}_ranapAgama', _selectedAgama ?? '');
+    await prefs.setString('user_${nik}_ranapStatus', _selectedStatusPerkawinan ?? '');
+    await prefs.setString('user_${nik}_ranapGolDarah', _selectedGolonganDarah ?? '');
+    await prefs.setString('user_${nik}_ranapAlamat', _alamatController.text.trim());
+    await prefs.setString('user_${nik}_ranapNoHP', _nohpController.text.trim());
+    await prefs.setString('user_${nik}_ranapPekerjaan', _pekerjaanController.text.trim());
+    await prefs.setString('user_${nik}_ranapKelas', _selectedKelasPerawatan ?? '');
+    await prefs.setString('user_${nik}_ranapTipeKamar', _selectedTipeKamar ?? '');
+    await prefs.setString('user_${nik}_ranapAsuransi', _selectedJenisAsuransi ?? '');
+    await prefs.setString('user_${nik}_ranapDokter', _selectedDokterPenanggungJawab ?? '');
+    await prefs.setString('user_${nik}_ranapRuangan', _selectedRuangan ?? '');
+    await prefs.setString('user_${nik}_ranapCaraMasuk', _selectedCaraMasuk ?? '');
+    await prefs.setString('user_${nik}_ranapDiagnosis', _diagnosisController.text.trim());
+    await prefs.setString('user_${nik}_ranapKeluhan', _keluhanController.text.trim());
+    await prefs.setString('user_${nik}_ranapRiwayatPenyakit', _riwayatPenyakitController.text.trim());
+    await prefs.setString('user_${nik}_ranapObatDikonsumsi', _obatDikonsumsiController.text.trim());
+    await prefs.setBool('user_${nik}_ranapRiwayatAlergi', _riwayatAlergi);
+    await prefs.setBool('user_${nik}_ranapRiwayatOperasi', _riwayatOperasi);
+    await prefs.setString('user_${nik}_ranapJenisAlergi', _jenisAlergi ?? '');
+    await prefs.setString('user_${nik}_ranapJenisOperasi', _jenisOperasi ?? '');
+    await prefs.setString('user_${nik}_ranapNamaKeluarga', _namaKeluargaController.text.trim());
+    await prefs.setString('user_${nik}_ranapNoHPKeluarga', _nohpKeluargaController.text.trim());
+    await prefs.setString('user_${nik}_ranapAlamatKeluarga', _alamatKeluargaController.text.trim());
+    await prefs.setString('user_${nik}_ranapHubunganKeluarga', _selectedHubunganKeluarga ?? '');
+    await prefs.setString('user_${nik}_ranapNamaWali', _namaWaliController.text.trim());
+    await prefs.setString('user_${nik}_ranapNoHPWali', _nohpWaliController.text.trim());
+    await prefs.setString('user_${nik}_ranapHubunganWali', _selectedHubunganWali ?? '');
+    await prefs.setString('user_${nik}_ranapPenanggungJawab', _penanggungJawabController.text.trim());
+    await prefs.setString('user_${nik}_nomorAntrian_RANAP', nomor);
     await prefs.setString('ranapWaktuRegistrasi', DateTime.now().toIso8601String());
   }
 
@@ -237,6 +243,11 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
       await _simpanData();
       
       if (mounted) {
+        final prefs = await SharedPreferences.getInstance();
+        final nik = prefs.getString('current_nik'); // ✅
+        if (nik == null) {
+          throw Exception("User belum login, NIK tidak ditemukan.");
+        }
         String kelasInfo = _selectedKelasPerawatan != null 
             ? "${_selectedKelasPerawatan} - ${_kelasPerawatanOptions[_selectedKelasPerawatan!]!['harga']}" 
             : "";
