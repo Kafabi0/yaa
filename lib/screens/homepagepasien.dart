@@ -558,11 +558,11 @@ class _HomePagePasienState extends State<HomePagePasien> {
                     if (_antrianIGD != null ||
                         _antrianRajal != null ||
                         _antrianRanap != null)
-                    _buildQuickActionItem(
-                      Icons.receipt_long,
-                      'Tagihan',
-                      Colors.purple,
-                    ),
+                      _buildQuickActionItem(
+                        Icons.receipt_long,
+                        'Tagihan',
+                        Colors.purple,
+                      ),
                     _buildQuickActionItem(
                       Icons.monitor_heart_outlined,
                       'Kesehatan Saya',
@@ -599,11 +599,11 @@ class _HomePagePasienState extends State<HomePagePasien> {
                     if (_antrianIGD != null ||
                         _antrianRajal != null ||
                         _antrianRanap != null)
-                    _buildQuickActionItem(
-                      Icons.monitor_heart_outlined,
-                      'Hasil UTDRS',
-                      Colors.red,
-                    ),
+                      _buildQuickActionItem(
+                        Icons.monitor_heart_outlined,
+                        'Hasil UTDRS',
+                        Colors.red,
+                      ),
                     if (_antrianIGD != null)
                       _buildQuickActionItem(
                         Icons.gavel_outlined,
@@ -640,38 +640,42 @@ class _HomePagePasienState extends State<HomePagePasien> {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const RegistrasiIGDPage()),
-            );
+            ).then((_) => _refreshData());
             break;
 
           case 'Registrasi Rajal':
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const RegistrasiRajalPage()),
-            );
+            ).then((_) => _refreshData());
             break;
+
           case 'Registrasi MCU':
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const RegistrasiMCUPage()),
-            );
+            ).then((_) => _refreshData());
             break;
+
           case 'Registrasi Ranap':
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const RegistrasiRanapPage()),
-            );
+            ).then((_) => _refreshData());
             break;
 
           case 'Tagihan':
             _openBillingPage();
             break;
 
-          case 'Kesehatan Saya': 
+          case 'Kesehatan Saya':
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const KesehatanSayaSensorPage()),
+              MaterialPageRoute(
+                builder: (_) => const KesehatanSayaSensorPage(),
+              ),
             );
-          break;
+            break;
 
           case 'Hasil Pemeriksaan':
             _openHasilPemeriksaan();
@@ -1058,7 +1062,6 @@ class _HomePagePasienState extends State<HomePagePasien> {
   }
 
   // Fungsi untuk menampilkan notifikasi realtime
- 
 
   Widget _buildTodaySchedule() {
     return Container(
