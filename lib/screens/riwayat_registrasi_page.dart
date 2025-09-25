@@ -32,7 +32,7 @@ class _RiwayatRegistrasiPageState extends State<RiwayatRegistrasiPage> {
         },
         "Rawat Jalan": {
           "Nomor Antrian": prefs.getString('nomorAntrian_RAJAL') ?? "-",
-          "Nama": prefs.getString('registeredName') ?? "-",
+          "Nama": prefs.getString('rajalName') ?? "-",
           "Poli": prefs.getString('registeredPoli') ?? "-",
           "Jadwal": prefs.getString('registeredJadwal') ?? "-",
           "Keluhan": prefs.getString('registeredKeluhan') ?? "-",

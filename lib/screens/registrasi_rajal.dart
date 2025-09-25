@@ -14,7 +14,7 @@ class RegistrasiRajalPage extends StatefulWidget {
 
 class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _namaController = TextEditingController();
   final TextEditingController _nikController = TextEditingController();
   final TextEditingController _noKKController = TextEditingController();
   final TextEditingController _tempatLahirController = TextEditingController();
@@ -105,7 +105,7 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
     final prefs = await SharedPreferences.getInstance();
     String nomor = "RJ${DateTime.now().millisecondsSinceEpoch % 10000}";
 
-    await prefs.setString('name', _nameController.text.trim());
+    await prefs.setString('rajalName', _namaController.text.trim());
     await prefs.setString('nik', _nikController.text.trim());
     await prefs.setString('familyCardNumber', _noKKController.text.trim());
     await prefs.setString('birthPlace', _tempatLahirController.text.trim());
@@ -371,7 +371,7 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
               // Data Pribadi
               _buildSectionTitle("📋 Data Pribadi"),
               _buildTextField(
-                controller: _nameController,
+                controller: _namaController,
                 label: "Nama Lengkap *",
                 hint: "Masukkan nama sesuai KTP",
                 validator: (value) {
@@ -735,7 +735,7 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _namaController.dispose();
     _nikController.dispose();
     _noKKController.dispose();
     _tempatLahirController.dispose();
