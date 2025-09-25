@@ -126,7 +126,7 @@ class _InoCareAppState extends State<InoCareApp> {
   }
 
   Future<void> _checkLoginStatus() async {
-    await UserPrefs.getUser();
+    await UserPrefs.getCurrentUser();
     setState(() {
       _loading = false;
     });
@@ -203,7 +203,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<void> _handleLogout() async {
-    await UserPrefs.clearUser();
+    await UserPrefs.clearAllData();
     setState(() {
       _isLoggedIn = false;
       _currentIndex = 0;

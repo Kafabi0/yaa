@@ -21,32 +21,41 @@ class _ProfilePagePasienState extends State<ProfilePagePasien> {
   }
 
   Future<void> _loadUserData() async {
-    final user = await UserPrefs.getUser();
-    final profileData = await UserPrefs.getProfileData();
+  final user = await UserPrefs.getCurrentUser(); // ambil data user aktif
+
+  if (user != null) {
+    final nik = user['nik'] ?? ''; 
+    final profileData = await UserPrefs.getProfileData(nik); // pake nik
 
     if (mounted) {
       setState(() {
         userData = user;
         additionalData = {
-          'phone': profileData['phone'] ?? '081234567890',
-          'bpjs': profileData['bpjs'] ?? '0001234567890',
-          'address':
-              profileData['address'] ?? 'Jl. Contoh Alamat No. 123, RT/RW 01/02',
-          'province': profileData['province'] ?? 'Lampung',
-          'district': profileData['district'] ?? 'Tanjung Karang Pusat',
-          'regency': profileData['regency'] ?? 'Bandar Lampung',
-          'village': profileData['village'] ?? 'Penengahan',
-          'rt': profileData['rt'] ?? '01',
-          'rw': profileData['rw'] ?? '02',
-          'birthDate': profileData['birthDate'] ?? '01 Januari 1990',
-          'familyCardNumber':
-              profileData['familyCardNumber'] ?? '1234567890123456',
-          'gender': profileData['gender'] ?? 'Laki-laki',
+          'phone': profileData['phone'] ?? '',
+          'bpjs': profileData['bpjs'] ?? '',
+          'address': profileData['address'] ?? '',
+          'province': profileData['province'] ?? '',
+          'district': profileData['district'] ?? '',
+          'regency': profileData['regency'] ?? '',
+          'village': profileData['village'] ?? '',
+          'rt': profileData['rt'] ?? '',
+          'rw': profileData['rw'] ?? '',
+          'birthDate': profileData['birthDate'] ?? '',
+          'familyCardNumber': profileData['familyCardNumber'] ?? '',
+          'gender': profileData['gender'] ?? '',
         };
         isLoading = false;
       });
     }
+  } else {
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
+}
+
 
   Future<void> _saveAdditionalData() async {
     final prefs = await SharedPreferences.getInstance();

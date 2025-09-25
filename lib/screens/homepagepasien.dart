@@ -107,7 +107,7 @@ class _HomePagePasienState extends State<HomePagePasien> {
   }
 
   Future<void> _handleLogout() async {
-    await UserPrefs.clearUser();
+    await UserPrefs.clearAllData();
     setState(() {
       _currentIndex = 0;
       _userName = null;
@@ -555,6 +555,9 @@ class _HomePagePasienState extends State<HomePagePasien> {
                       'Registrasi Ranap',
                       Colors.teal,
                     ),
+                    if (_antrianIGD != null ||
+                        _antrianRajal != null ||
+                        _antrianRanap != null)
                     _buildQuickActionItem(
                       Icons.receipt_long,
                       'Tagihan',
@@ -593,6 +596,9 @@ class _HomePagePasienState extends State<HomePagePasien> {
                         'Hasil Radiologi',
                         Colors.orange,
                       ),
+                    if (_antrianIGD != null ||
+                        _antrianRajal != null ||
+                        _antrianRanap != null)
                     _buildQuickActionItem(
                       Icons.monitor_heart_outlined,
                       'Hasil UTDRS',
@@ -641,6 +647,18 @@ class _HomePagePasienState extends State<HomePagePasien> {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const RegistrasiRajalPage()),
+            );
+            break;
+          case 'Registrasi MCU':
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const RegistrasiMCUPage()),
+            );
+            break;
+          case 'Registrasi Ranap':
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const RegistrasiRanapPage()),
             );
             break;
 

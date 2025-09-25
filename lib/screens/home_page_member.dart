@@ -40,7 +40,7 @@ class _HomePageMemberState extends State<HomePageMember> {
   }
 
   Future<void> _loadUserData() async {
-    final user = await UserPrefs.getUser();
+    final user = await UserPrefs.getCurrentUser();
     if (mounted && user != null) {
       setState(() {
         _userName = user['name'];
@@ -56,7 +56,7 @@ class _HomePageMemberState extends State<HomePageMember> {
   }
 
   Future<void> _handleLogout() async {
-    await UserPrefs.clearUser();
+    await UserPrefs.clearAllData();
     setState(() {
       _currentIndex = 0;
       _userName = null;

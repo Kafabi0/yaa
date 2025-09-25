@@ -20,9 +20,15 @@ class _ProfilePageState extends State<ProfilePage> {
     _loadUserData();
   }
 
-  Future<void> _loadUserData() async {
-    final user = await UserPrefs.getUser();
-    final profileData = await UserPrefs.getProfileData();
+Future<void> _loadUserData() async {
+  final user = await UserPrefs.getCurrentUser();
+
+  if (user != null) {
+    final nik = user['nik']!; // ambil NIK dari user aktif
+    final profileData = await UserPrefs.getProfileData(nik);
+
+    print("User: $user");
+    print("Profile: $profileData");
 
     if (mounted) {
       setState(() {
@@ -30,8 +36,7 @@ class _ProfilePageState extends State<ProfilePage> {
         additionalData = {
           'phone': profileData['phone'] ?? '081234567890',
           'bpjs': profileData['bpjs'] ?? '0001234567890',
-          'address':
-              profileData['address'] ?? 'Jl. Contoh Alamat No. 123, RT/RW 01/02',
+          'address': profileData['address'] ?? 'Jl. Contoh Alamat No. 123, RT/RW 01/02',
           'province': profileData['province'] ?? 'Lampung',
           'district': profileData['district'] ?? 'Tanjung Karang Pusat',
           'regency': profileData['regency'] ?? 'Bandar Lampung',
@@ -39,14 +44,21 @@ class _ProfilePageState extends State<ProfilePage> {
           'rt': profileData['rt'] ?? '01',
           'rw': profileData['rw'] ?? '02',
           'birthDate': profileData['birthDate'] ?? '01 Januari 1990',
-          'familyCardNumber':
-              profileData['familyCardNumber'] ?? '1234567890123456',
+          'familyCardNumber': profileData['familyCardNumber'] ?? '1234567890123456',
           'gender': profileData['gender'] ?? 'Laki-laki',
         };
         isLoading = false;
       });
     }
+  } else {
+    if (mounted) {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
+}
+
 
   Future<void> _saveAdditionalData() async {
     final prefs = await SharedPreferences.getInstance();
