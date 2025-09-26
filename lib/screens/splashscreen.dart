@@ -20,14 +20,14 @@ class SplashOnboarding extends StatelessWidget {
       ),
 
       PageData(
-        icon: const Icon(Icons.health_and_safety, size: 80),
+        icon: const Icon(Icons.health_and_safety, size: 80,color: Colors.white),
         title: "Akses cepat layanan kesehatan",
         bgColor: Colors.white,
         textColor: Colors.orange,
       ),
       PageData(
-        icon: const Icon(Icons.people, size: 80),
-        title: "Dokter & Rumah Sakit pilihan anda",
+        icon: const Icon(Icons.people, size: 80,color:Colors.amber),
+        title: "Dokter & Rumah Sakit \npilihan anda",
         bgColor: Colors.orange,
         textColor: Colors.white,
       ),

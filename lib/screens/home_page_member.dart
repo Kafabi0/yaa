@@ -97,7 +97,15 @@ class _HomePageMemberState extends State<HomePageMember> {
   }
 
   Widget _buildHeader() {
-    return SafeArea(
+    return Container(
+      decoration: BoxDecoration(
+        color: Color(0xFFFF6B35),
+        borderRadius: BorderRadius.only(
+          bottomLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
+      ),
+    child:  SafeArea(
       child: Container(
         padding: const EdgeInsets.all(20),
         decoration: const BoxDecoration(
@@ -171,7 +179,8 @@ class _HomePageMemberState extends State<HomePageMember> {
           ],
         ),
       ),
-    );
+    ),
+    );  
   }
 
   Widget _buildBottomNavigation() {
