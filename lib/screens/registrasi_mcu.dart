@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:inocare/screens/qr_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class RegistrasiMCUPage extends StatefulWidget {
   const RegistrasiMCUPage({Key? key}) : super(key: key);
@@ -48,6 +50,33 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
   bool _alkohol = false;
   String? _jenisAlergi;
   String? _jenisOperasi;
+
+  // Tambahkan di dalam class _RegistrasiMCUPageState
+  Future<void> showRegistrationSuccessNotification(
+    String nomorAntrian,
+    String paket,
+    String waktu,
+  ) async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'registrasi_mcu_channel',
+          'Registrasi MCU',
+          channelDescription: 'Notifikasi konfirmasi pendaftaran MCU',
+          importance: Importance.max,
+          priority: Priority.high,
+        );
+
+    const NotificationDetails platformChannelDetails = NotificationDetails(
+      android: androidDetails,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      3, // ID unik berbeda dari rajal (1) & ranap (2)
+      'Registrasi MCU Berhasil! ',
+      'Nomor registrasi Anda: $nomorAntrian\nPaket: $paket\nWaktu: $waktu',
+      platformChannelDetails,
+    );
+  }
 
   final List<String> _genderOptions = ['Laki-laki', 'Perempuan'];
   final List<String> _agamaOptions = [
@@ -256,32 +285,45 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
 
       if (mounted) {
         final prefs = await SharedPreferences.getInstance();
-        final nik = prefs.getString('current_nik'); // ✅
+        final nik = prefs.getString('current_nik');
         if (nik == null) {
           throw Exception("User belum login, NIK tidak ditemukan.");
         }
-        String paketInfo =
+
+        final nomorAntrian =
+            prefs.getString('user_${nik}_nomorAntrian_MCU') ?? 'Tidak Ada';
+        final paketInfo =
             _selectedPaketMCU != null
                 ? "${_selectedPaketMCU} - ${_paketMCUOptions[_selectedPaketMCU!]!['harga']}"
                 : "";
+        final waktu = _selectedWaktuPemeriksaan ?? 'Belum dipilih';
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.health_and_safety, color: Colors.white),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    "Registrasi MCU berhasil!\nNomor: MCU${DateTime.now().millisecondsSinceEpoch % 10000}\nPaket: $paketInfo",
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: const Color(0xFFFF6B35),
-            duration: const Duration(seconds: 4),
-          ),
+        // ✅ Panggil notifikasi
+        await showRegistrationSuccessNotification(
+          nomorAntrian,
+          paketInfo,
+          waktu,
         );
+
+        // Snackbar opsional (boleh dipakai atau dihapus)
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Row(
+        //       children: [
+        //         const Icon(Icons.health_and_safety, color: Colors.white),
+        //         const SizedBox(width: 8),
+        //         Expanded(
+        //           child: Text(
+        //             "Registrasi MCU berhasil!\nNomor: $nomorAntrian\nPaket: $paketInfo",
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //     backgroundColor: const Color(0xFFFF6B35),
+        //     duration: const Duration(seconds: 4),
+        //   ),
+        // );
+
         Navigator.pop(context);
       }
     } catch (e) {

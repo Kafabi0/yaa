@@ -35,7 +35,6 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
   String? _selectedJadwalKunjungan;
   bool _isLoading = false;
 
-  // Tambahkan fungsi ini di dalam class _RegistrasiRajalPageState
   Future<void> showRegistrationSuccessNotification(
     String poli,
     String nomorAntrian,
@@ -103,8 +102,7 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
 
   Future<void> _simpanData() async {
     final prefs = await SharedPreferences.getInstance();
-    final nik = prefs.getString('current_nik'); // user aktif bener
-    // user aktif
+    final nik = prefs.getString('current_nik'); 
 
     if (nik == null) {
       throw Exception("User belum login, NIK tidak ditemukan.");
@@ -112,7 +110,6 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
 
     String nomor = "RJ${DateTime.now().millisecondsSinceEpoch % 10000}";
 
-    // simpan data user dengan prefix nik
     await prefs.setString('user_${nik}_rajalName', _namaController.text.trim());
     await prefs.setString(
       'user_${nik}_familyCardNumber',
@@ -164,7 +161,6 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
       _keluhanController.text.trim(),
     );
 
-    // simpan nomor antrian unik untuk nik ini
     await prefs.setString('user_${nik}_nomorAntrian_RAJAL', nomor);
   }
 
@@ -178,19 +174,17 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
     });
 
     try {
-      // 1. Panggil _simpanData() yang menyimpan data ke SharedPreferences
       await _simpanData();
 
       if (mounted) {
-        // 2. Ambil nomor antrian dan poli yang baru disimpan dari SharedPreferences
         final prefs = await SharedPreferences.getInstance();
-        final nik = prefs.getString('current_nik'); // ✅
+        final nik = prefs.getString('current_nik'); 
         if (nik == null) {
           throw Exception("User belum login, NIK tidak ditemukan.");
         }
         final nomorAntrian = prefs.getString(
           'user_${nik}_nomorAntrian_RAJAL',
-        ); // ✅ sama
+        ); 
         await prefs.setString(
           'rajalWaktuRegistrasi',
           DateTime.now().toIso8601String(),
@@ -198,8 +192,7 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
 
         final poli = _selectedPoli ?? '';
 
-        // 3. PANGGIL FUNGSI NOTIFIKASI DI SINI
-        // Pastikan Anda sudah mengimpor file main.dart
+
         await showRegistrationSuccessNotification(
           poli,
           nomorAntrian ?? 'Tidak Ada',
@@ -407,7 +400,6 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Data Pribadi
               _buildSectionTitle("📋 Data Pribadi"),
               _buildTextField(
                 controller: _namaController,
@@ -551,7 +543,6 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
                 },
               ),
 
-              // Data Kontak & Alamat
               _buildSectionTitle("📍 Data Kontak & Alamat"),
               _buildTextField(
                 controller: _alamatController,
@@ -592,7 +583,6 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
                 },
               ),
 
-              // Data Kontak Keluarga
               _buildSectionTitle("👨‍👩‍👧‍👦 Kontak Keluarga/Wali"),
               _buildTextField(
                 controller: _namaKeluargaController,
@@ -618,7 +608,6 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
                 },
               ),
 
-              // Data Asuransi & Kunjungan
               _buildSectionTitle("🏥 Data Asuransi & Kunjungan"),
               _buildDropdownField(
                 label: "Jenis Asuransi/Pembayaran *",
@@ -670,7 +659,6 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
 
               const SizedBox(height: 24),
 
-              // Submit Button
               Container(
                 width: double.infinity,
                 height: 56,

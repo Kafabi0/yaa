@@ -78,6 +78,7 @@ dependencies:
   pedometer: ^4.1.1
   flutter_launcher_icons: ^0.14.4
   map_launcher: ^3.5.0
+  material_symbols_icons: ^4.2873.0
   
 flutter_icons:
   android: true
@@ -112,6 +113,10 @@ flutter:
     - assets/fonts/
     - assets/
     # - assets/images/ppp.png
+  fonts:
+    - family: KolkerBrush
+      fonts:
+        - asset: assets/fonts/KolkerBrush-Regular.ttf
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

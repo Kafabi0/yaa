@@ -11,21 +11,23 @@ class SplashOnboarding extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
 
     final pages = [
-      const PageData(
-        icon: Icons.local_hospital,
-        title: "Selamat datang di InoCare",
+      PageData(
+        icon: Image.asset("assets/dgl.png", width: 120, height: 120),
+        title: "Selamat datang di \nDigital Hospital", 
         bgColor: Colors.orange,
         textColor: Colors.white,
+        useCustomFont: true,
       ),
-      const PageData(
-        icon: Icons.health_and_safety,
+
+      PageData(
+        icon: const Icon(Icons.health_and_safety, size: 80),
         title: "Akses cepat layanan kesehatan",
         bgColor: Colors.white,
         textColor: Colors.orange,
       ),
-      const PageData(
-        icon: Icons.people,
-        title: "Dokter & Rumah Sakit terpercaya",
+      PageData(
+        icon: const Icon(Icons.people, size: 80),
+        title: "Dokter & Rumah Sakit pilihan anda",
         bgColor: Colors.orange,
         textColor: Colors.white,
       ),
@@ -35,10 +37,11 @@ class SplashOnboarding extends StatelessWidget {
       body: ConcentricPageView(
         colors: pages.map((p) => p.bgColor).toList(),
         radius: screenWidth * 0.1,
-        nextButtonBuilder: (context) => Padding(
-          padding: const EdgeInsets.only(left: 3),
-          child: Icon(Icons.navigate_next, size: screenWidth * 0.08),
-        ),
+        nextButtonBuilder:
+            (context) => Padding(
+              padding: const EdgeInsets.only(left: 3),
+              child: Icon(Icons.navigate_next, size: screenWidth * 0.08),
+            ),
         itemCount: pages.length,
         itemBuilder: (index) {
           final page = pages[index];
@@ -57,15 +60,14 @@ class SplashOnboarding extends StatelessWidget {
                       backgroundColor: page.textColor,
                       foregroundColor: page.bgColor,
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 40, vertical: 16),
+                        horizontal: 40,
+                        vertical: 16,
+                      ),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(30),
                       ),
                     ),
-                    child: const Text(
-                      "Mulai",
-                      style: TextStyle(fontSize: 18),
-                    ),
+                    child: const Text("Mulai", style: TextStyle(fontSize: 18)),
                   ),
               ],
             ),
@@ -76,17 +78,20 @@ class SplashOnboarding extends StatelessWidget {
   }
 }
 
+/// 🔹 PageData sekarang pakai `Widget` biar lebih fleksibel
 class PageData {
   final String title;
-  final IconData icon;
+  final Widget icon;
   final Color bgColor;
   final Color textColor;
+  final bool useCustomFont;
 
   const PageData({
     required this.title,
     required this.icon,
     required this.bgColor,
     required this.textColor,
+    this.useCustomFont = false,
   });
 }
 
@@ -98,6 +103,7 @@ class _Page extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -108,18 +114,46 @@ class _Page extends StatelessWidget {
             shape: BoxShape.circle,
             color: page.textColor,
           ),
-          child: Icon(page.icon, size: screenHeight * 0.1, color: page.bgColor),
+          child: page.icon,
         ),
         const SizedBox(height: 20),
-        Text(
-          page.title,
-          style: TextStyle(
-            color: page.textColor,
-            fontSize: screenHeight * 0.035,
-            fontWeight: FontWeight.bold,
+
+        if (page.useCustomFont && page.title.contains("Digital Hospital"))
+          RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: page.title.replaceAll("Digital Hospital", ""),
+                  style: TextStyle(
+                    color: page.textColor,
+                    fontSize: screenHeight * 0.035,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                TextSpan(
+                  text: "Digital Hospital",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: screenHeight * 0.080,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: "KolkerBrush", 
+                  ),
+                ),
+              ],
+            ),
+          )
+        else
+          Text(
+            page.title,
+            style: TextStyle(
+              color: page.textColor,
+              fontSize: screenHeight * 0.035,
+              fontWeight: FontWeight.bold,
+              fontFamily: page.useCustomFont ? "Poppins" : null,
+            ),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
-        ),
       ],
     );
   }

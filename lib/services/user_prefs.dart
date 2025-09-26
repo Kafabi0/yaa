@@ -46,7 +46,8 @@ static Future<Map<String, dynamic>?> getSelectedHospital(String nik) async {
 
   // ================== SAVE & GET USER BASIC DATA ==================
   static Future<void> saveUser({
-    required String email,
+    // required String email,
+    required String whatsapp,
     required String nik,
     required String password,
     required String name,
@@ -54,7 +55,7 @@ static Future<Map<String, dynamic>?> getSelectedHospital(String nik) async {
     final prefs = await SharedPreferences.getInstance();
 
     // Simpan user dengan prefix NIK (unik per user)
-    await prefs.setString('user_${nik}_email', email);
+    await prefs.setString('user_${nik}_whatsapp', whatsapp);
     await prefs.setString('user_${nik}_nik', nik);
     await prefs.setString('user_${nik}_password', password);
     await prefs.setString('user_${nik}_name', name);
@@ -67,14 +68,14 @@ static Future<Map<String, dynamic>?> getSelectedHospital(String nik) async {
   static Future<Map<String, String?>?> getUser(String nik) async {
     final prefs = await SharedPreferences.getInstance();
 
-    final email = prefs.getString('user_${nik}_email');
+    final whatsapp = prefs.getString('user_${nik}_whatsapp');
     final password = prefs.getString('user_${nik}_password');
     final name = prefs.getString('user_${nik}_name');
 
-    if (email == null || password == null || name == null) return null;
+    if (whatsapp == null || password == null || name == null) return null;
 
     return {
-      'email': email,
+      'whatsapp': whatsapp,
       'nik': nik,
       'password': password,
       'name': name,
@@ -96,9 +97,9 @@ static Future<List<Map<String, String>>> getAllUsers() async {
     if (key.startsWith("user_") && key.endsWith("_nik")) {
       final nik = prefs.getString(key);
       if (nik != null) {
-        final email = prefs.getString('user_${nik}_email') ?? '';
+        final whatsapp = prefs.getString('user_${nik}_whatsapp') ?? '';
         final name = prefs.getString('user_${nik}_name') ?? '';
-        users.add({"nik": nik, "email": email, "name": name});
+        users.add({"nik": nik, "whatsapp": whatsapp, "name": name});
       }
     }
   }
@@ -188,17 +189,17 @@ static Future<List<Map<String, String>>> getAllUsers() async {
   }
 
   // ================== MULTI USER SUPPORT ==================
-  static Future<Map<String, String?>?> getUserByEmailOrNik(String value) async {
+  static Future<Map<String, String?>?> getUserByWhatsappOrNik(String value) async {
     final prefs = await SharedPreferences.getInstance();
     final keys = prefs.getKeys();
 
     for (var key in keys) {
-      if (key.startsWith('user_') && key.endsWith('_email')) {
+      if (key.startsWith('user_') && key.endsWith('_whatsapp')) {
         final nik = key.split('_')[1];
         final user = await getUser(nik);
 
         if (user != null &&
-            (user['email'] == value || user['nik'] == value)) {
+            (user['whatsapp'] == value || user['nik'] == value)) {
           return user;
         }
       }

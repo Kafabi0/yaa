@@ -30,20 +30,26 @@ class _NotificationsPageState extends State<NotificationsPage> {
 
   Future<void> _loadNotifications() async {
     final prefs = await SharedPreferences.getInstance();
+    final nik = prefs.getString('current_nik'); // user aktif bener
+    // user aktif
+
+    if (nik == null) {
+      throw Exception("User belum login, NIK tidak ditemukan.");
+    }
 
     // Load existing services
-    final igd = prefs.getString('nomorAntrian_IGD');
-    final rajal = prefs.getString('nomorAntrian_RAJAL');
-    final mcu = prefs.getString('nomorAntrian_MCU');
-    final ranap = prefs.getString('nomorAntrian_RANAP');
-    final ambulance = prefs.getString('orderAmbulance');
-    
+    final igd = prefs.getString('user_${nik}_nomorAntrian_IGD');
+    final rajal = prefs.getString('user_${nik}_nomorAntrian_RAJAL');
+    final mcu = prefs.getString('user_${nik}_nomorAntrian_MCU');
+    final ranap = prefs.getString('user_${nik}_nomorAntrian_RANAP');
+    final ambulance = prefs.getString('user_${nik}_orderAmbulance');
+
     // Load new order services
-    final lab = prefs.getString('nomorAntrian_LAB');
-    final forensik = prefs.getString('nomorAntrian_FORENSIK');
-    final radiologi = prefs.getString('nomorAntrian_RADIOLOGI');
-    final utdrs = prefs.getString('nomorAntrian_UTDRS');
-    final farmasi = prefs.getString('nomorAntrian_FARMASI');
+    final lab = prefs.getString('user_${nik}_nomorAntrian_LAB');
+    final forensik = prefs.getString('user_${nik}_nomorAntrian_FORENSIK');
+    final radiologi = prefs.getString('user_${nik}_nomorAntrian_RADIOLOGI');
+    final utdrs = prefs.getString('user_${nik}_nomorAntrian_UTDRS');
+    final farmasi = prefs.getString('user_${nik}_nomorAntrian_FARMASI');
 
     List<NotificationItem> tempNotifications = [];
 
@@ -58,7 +64,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         ),
       );
     }
-    
+
     if (rajal != null) {
       _rajalNumber = rajal;
       tempNotifications.addAll([
@@ -82,7 +88,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         ),
       ]);
     }
-    
+
     if (mcu != null) {
       tempNotifications.add(
         NotificationItem(
@@ -93,7 +99,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         ),
       );
     }
-    
+
     if (ranap != null) {
       tempNotifications.add(
         NotificationItem(
@@ -104,7 +110,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         ),
       );
     }
-    
+
     if (ambulance != null) {
       _ambulanceOrder = ambulance;
       tempNotifications.add(
@@ -116,7 +122,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         ),
       );
     }
-    
+
     // New order service notifications
     if (lab != null) {
       _labOrderNumber = lab;
@@ -129,7 +135,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         ),
       );
     }
-    
+
     if (forensik != null) {
       _forensikOrderNumber = forensik;
       tempNotifications.add(
@@ -141,7 +147,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         ),
       );
     }
-    
+
     if (radiologi != null) {
       _radiologiOrderNumber = radiologi;
       tempNotifications.add(
@@ -153,7 +159,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         ),
       );
     }
-    
+
     if (utdrs != null) {
       _utdrsOrderNumber = utdrs;
       tempNotifications.add(
@@ -165,7 +171,7 @@ class _NotificationsPageState extends State<NotificationsPage> {
         ),
       );
     }
-    
+
     if (farmasi != null) {
       _farmasiOrderNumber = farmasi;
       tempNotifications.add(
@@ -247,84 +253,84 @@ class _NotificationsPageState extends State<NotificationsPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => ConsultationLetterPage(
-            nomorAntrian: _rajalNumber ?? '',
-          ),
+          builder:
+              (_) => ConsultationLetterPage(nomorAntrian: _rajalNumber ?? ''),
         ),
       );
     } else if (notif.title.contains('Surat Rujukan')) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => ReferralLetterPage(
-            nomorAntrian: _rajalNumber ?? '',
-          ),
+          builder: (_) => ReferralLetterPage(nomorAntrian: _rajalNumber ?? ''),
         ),
       );
     } else if (notif.title.contains('Order Ambulance')) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => AmbulanceOrderPage(
-            orderCode: _ambulanceOrder ?? '',
-          ),
+          builder: (_) => AmbulanceOrderPage(orderCode: _ambulanceOrder ?? ''),
         ),
       );
     } else if (notif.title.contains('Pemesanan Lab')) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => QueueTicketPage(
-            jenis: 'Lab',
-            nomorAntrian: _labOrderNumber ?? '',
-          ),
+          builder:
+              (_) => QueueTicketPage(
+                jenis: 'Lab',
+                nomorAntrian: _labOrderNumber ?? '',
+              ),
         ),
       );
     } else if (notif.title.contains('Pemesanan Forensik')) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => QueueTicketPage(
-            jenis: 'Forensik',
-            nomorAntrian: _forensikOrderNumber ?? '',
-          ),
+          builder:
+              (_) => QueueTicketPage(
+                jenis: 'Forensik',
+                nomorAntrian: _forensikOrderNumber ?? '',
+              ),
         ),
       );
     } else if (notif.title.contains('Pemesanan Radiologi')) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => QueueTicketPage(
-            jenis: 'Radiologi',
-            nomorAntrian: _radiologiOrderNumber ?? '',
-          ),
+          builder:
+              (_) => QueueTicketPage(
+                jenis: 'Radiologi',
+                nomorAntrian: _radiologiOrderNumber ?? '',
+              ),
         ),
       );
     } else if (notif.title.contains('Pemesanan UTDRS')) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => QueueTicketPage(
-            jenis: 'UTDRS',
-            nomorAntrian: _utdrsOrderNumber ?? '',
-          ),
+          builder:
+              (_) => QueueTicketPage(
+                jenis: 'UTDRS',
+                nomorAntrian: _utdrsOrderNumber ?? '',
+              ),
         ),
       );
     } else if (notif.title.contains('Pemesanan Farmasi')) {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => QueueTicketPage(
-            jenis: 'Farmasi',
-            nomorAntrian: _farmasiOrderNumber ?? '',
-          ),
+          builder:
+              (_) => QueueTicketPage(
+                jenis: 'Farmasi',
+                nomorAntrian: _farmasiOrderNumber ?? '',
+              ),
         ),
       );
     } else {
       // Handle other registration notifications
       String jenis = '';
       String nomorAntrian = '';
-      
+
       if (notif.title.contains('IGD')) {
         jenis = 'IGD';
       } else if (notif.title.contains('Rajal')) {
@@ -334,16 +340,14 @@ class _NotificationsPageState extends State<NotificationsPage> {
       } else if (notif.title.contains('Ranap')) {
         jenis = 'Ranap';
       }
-      
+
       nomorAntrian = notif.message.replaceAll('Nomor antrian Anda: ', '');
 
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => QueueTicketPage(
-            jenis: jenis,
-            nomorAntrian: nomorAntrian,
-          ),
+          builder:
+              (_) => QueueTicketPage(jenis: jenis, nomorAntrian: nomorAntrian),
         ),
       );
     }
@@ -352,34 +356,44 @@ class _NotificationsPageState extends State<NotificationsPage> {
   void _showClearConfirmation() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Hapus Semua Notifikasi'),
-        content: const Text('Yakin ingin menghapus semua notifikasi?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Batal'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Hapus Semua Notifikasi'),
+            content: const Text('Yakin ingin menghapus semua notifikasi?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Batal'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final prefs = await SharedPreferences.getInstance();
+                  final nik = prefs.getString(
+                    'current_nik',
+                  ); // user aktif bener
+                  // user aktif
+
+                  if (nik == null) {
+                    throw Exception("User belum login, NIK tidak ditemukan.");
+                  }
+
+                  await prefs.remove('user_${nik}_nomorAntrian_IGD');
+                  await prefs.remove('user_${nik}_nomorAntrian_RAJAL');
+                  await prefs.remove('user_${nik}_nomorAntrian_MCU');
+                  await prefs.remove('user_${nik}_nomorAntrian_RANAP');
+                  await prefs.remove('user_${nik}_orderAmbulance');
+                  await prefs.remove('user_${nik}_nomorAntrian_LAB');
+                  await prefs.remove('user_${nik}_nomorAntrian_FORENSIK');
+                  await prefs.remove('user_${nik}_nomorAntrian_RADIOLOGI');
+                  await prefs.remove('user_${nik}_nomorAntrian_UTDRS');
+                  await prefs.remove('user_${nik}_nomorAntrian_FARMASI');
+                  Navigator.pop(context);
+                  _loadNotifications();
+                },
+                child: const Text('Hapus'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () async {
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.remove('nomorAntrian_IGD');
-              await prefs.remove('nomorAntrian_RAJAL');
-              await prefs.remove('nomorAntrian_MCU');
-              await prefs.remove('nomorAntrian_RANAP');
-              await prefs.remove('orderAmbulance');
-              await prefs.remove('nomorAntrian_LAB');
-              await prefs.remove('nomorAntrian_FORENSIK');
-              await prefs.remove('nomorAntrian_RADIOLOGI');
-              await prefs.remove('nomorAntrian_UTDRS');
-              await prefs.remove('nomorAntrian_FARMASI');
-              Navigator.pop(context);
-              _loadNotifications();
-            },
-            child: const Text('Hapus'),
-          ),
-        ],
-      ),
     );
   }
 
@@ -410,18 +424,19 @@ class _NotificationsPageState extends State<NotificationsPage> {
                   _showClearConfirmation();
                 }
               },
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 'clear',
-                  child: Row(
-                    children: [
-                      Icon(Icons.clear_all, size: 20, color: Colors.red),
-                      SizedBox(width: 8),
-                      Text('Hapus Semua'),
-                    ],
-                  ),
-                ),
-              ],
+              itemBuilder:
+                  (context) => [
+                    const PopupMenuItem(
+                      value: 'clear',
+                      child: Row(
+                        children: [
+                          Icon(Icons.clear_all, size: 20, color: Colors.red),
+                          SizedBox(width: 8),
+                          Text('Hapus Semua'),
+                        ],
+                      ),
+                    ),
+                  ],
               child: const Padding(
                 padding: EdgeInsets.all(16),
                 child: Icon(Icons.more_vert, color: Colors.black87),
@@ -429,139 +444,142 @@ class _NotificationsPageState extends State<NotificationsPage> {
             ),
         ],
       ),
-      body: _notifications.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[100],
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.notifications_none,
-                      size: 64,
-                      color: Colors.grey[400],
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Belum ada notifikasi',
-                    style: TextStyle(
-                      color: Colors.grey[600],
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Notifikasi akan muncul setelah Anda\nmelakukan registrasi atau pemesanan layanan',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.grey[500],
-                      fontSize: 14,
-                      height: 1.5,
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: _notifications.length,
-              itemBuilder: (context, index) {
-                final notif = _notifications[index];
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.04),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
+      body:
+          _notifications.isEmpty
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[100],
+                        shape: BoxShape.circle,
                       ),
-                    ],
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
+                      child: Icon(
+                        Icons.notifications_none,
+                        size: 64,
+                        color: Colors.grey[400],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      'Belum ada notifikasi',
+                      style: TextStyle(
+                        color: Colors.grey[600],
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Notifikasi akan muncul setelah Anda\nmelakukan registrasi atau pemesanan layanan',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.grey[500],
+                        fontSize: 14,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+              : ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: _notifications.length,
+                itemBuilder: (context, index) {
+                  final notif = _notifications[index];
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
-                      onTap: () => _handleNotificationTap(notif),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: _getNotificationColor(notif.type).withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(16),
+                        onTap: () => _handleNotificationTap(notif),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(12),
+                                decoration: BoxDecoration(
+                                  color: _getNotificationColor(
+                                    notif.type,
+                                  ).withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Icon(
+                                  _getNotificationIcon(notif.type),
+                                  color: _getNotificationColor(notif.type),
+                                  size: 24,
+                                ),
                               ),
-                              child: Icon(
-                                _getNotificationIcon(notif.type),
-                                color: _getNotificationColor(notif.type),
-                                size: 24,
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    notif.title,
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 16,
-                                      color: Colors.black87,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 6),
-                                  Text(
-                                    notif.message,
-                                    style: TextStyle(
-                                      color: Colors.grey[600],
-                                      fontSize: 14,
-                                      height: 1.4,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.access_time,
-                                        size: 14,
-                                        color: Colors.grey[400],
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      notif.title,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 16,
+                                        color: Colors.black87,
                                       ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        '${notif.time.hour.toString().padLeft(2, '0')}:${notif.time.minute.toString().padLeft(2, '0')}',
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: Colors.grey[500],
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(
+                                      notif.message,
+                                      style: TextStyle(
+                                        color: Colors.grey[600],
+                                        fontSize: 14,
+                                        height: 1.4,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.access_time,
+                                          size: 14,
+                                          color: Colors.grey[400],
                                         ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '${notif.time.hour.toString().padLeft(2, '0')}:${notif.time.minute.toString().padLeft(2, '0')}',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey[500],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            Icon(
-                              Icons.chevron_right,
-                              color: Colors.grey[400],
-                            ),
-                          ],
+                              Icon(
+                                Icons.chevron_right,
+                                color: Colors.grey[400],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              ),
     );
   }
 }

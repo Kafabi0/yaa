@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:inocare/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class RegistrasiRanapPage extends StatefulWidget {
   const RegistrasiRanapPage({Key? key}) : super(key: key);
@@ -21,14 +23,18 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
   final TextEditingController _pekerjaanController = TextEditingController();
   final TextEditingController _diagnosisController = TextEditingController();
   final TextEditingController _keluhanController = TextEditingController();
-  final TextEditingController _riwayatPenyakitController = TextEditingController();
-  final TextEditingController _obatDikonsumsiController = TextEditingController();
+  final TextEditingController _riwayatPenyakitController =
+      TextEditingController();
+  final TextEditingController _obatDikonsumsiController =
+      TextEditingController();
   final TextEditingController _namaKeluargaController = TextEditingController();
   final TextEditingController _nohpKeluargaController = TextEditingController();
-  final TextEditingController _alamatKeluargaController = TextEditingController();
+  final TextEditingController _alamatKeluargaController =
+      TextEditingController();
   final TextEditingController _namaWaliController = TextEditingController();
   final TextEditingController _nohpWaliController = TextEditingController();
-  final TextEditingController _penanggungJawabController = TextEditingController();
+  final TextEditingController _penanggungJawabController =
+      TextEditingController();
 
   String? _selectedGender;
   String? _selectedAgama;
@@ -47,11 +53,50 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
   String? _jenisAlergi;
   String? _jenisOperasi;
 
+  // Tambahkan fungsi ini di dalam class _RegistrasiRanapPageState
+  Future<void> showRegistrationSuccessNotification(
+    String nomorAntrian,
+    String kelas,
+    String ruangan,
+  ) async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'registrasi_ranap_channel',
+          'Registrasi Rawat Inap',
+          channelDescription: 'Notifikasi konfirmasi pendaftaran rawat inap',
+          importance: Importance.max,
+          priority: Priority.high,
+        );
+
+    const NotificationDetails platformChannelDetails = NotificationDetails(
+      android: androidDetails,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      2, // ID unik berbeda dari rajal
+      'Registrasi Rawat Inap Berhasil! 🏥',
+      'Nomor registrasi Anda: $nomorAntrian\nKelas: $kelas\nRuangan: $ruangan',
+      platformChannelDetails,
+    );
+  }
+
   final List<String> _genderOptions = ['Laki-laki', 'Perempuan'];
-  final List<String> _agamaOptions = ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu'];
-  final List<String> _statusPerkawinanOptions = ['Belum Menikah', 'Menikah', 'Cerai Hidup', 'Cerai Mati'];
+  final List<String> _agamaOptions = [
+    'Islam',
+    'Kristen',
+    'Katolik',
+    'Hindu',
+    'Buddha',
+    'Konghucu',
+  ];
+  final List<String> _statusPerkawinanOptions = [
+    'Belum Menikah',
+    'Menikah',
+    'Cerai Hidup',
+    'Cerai Mati',
+  ];
   final List<String> _golonganDarahOptions = ['A', 'B', 'AB', 'O'];
-  
+
   final Map<String, Map<String, dynamic>> _kelasPerawatanOptions = {
     'VIP Suite': {
       'harga': 'Rp 2.500.000/hari',
@@ -120,7 +165,7 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
     'Isolasi',
     'ICU',
     'ICCU',
-    'NICU'
+    'NICU',
   ];
 
   final List<String> _jenisAsuransiOptions = [
@@ -130,7 +175,7 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
     'Jamkesmas',
     'Umum/Tunai',
     'Asuransi Jiwa',
-    'Lainnya'
+    'Lainnya',
   ];
 
   final List<String> _dokterOptions = [
@@ -143,7 +188,7 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
     'dr. Dedi Kurnia, Sp.THT (THT)',
     'dr. Nina Kartika, Sp.M (Mata)',
     'dr. Agus Wijaya, Sp.U (Urologi)',
-    'dr. Rina Dewi, Sp.KK (Kulit)'
+    'dr. Rina Dewi, Sp.KK (Kulit)',
   ];
 
   final List<String> _ruanganOptions = [
@@ -156,7 +201,7 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
     'Ruang Isolasi',
     'Ruang Bersalin',
     'Ruang Anak',
-    'Ruang Bedah'
+    'Ruang Bedah',
   ];
 
   final List<String> _caraMasukOptions = [
@@ -166,7 +211,7 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
     'Rujukan Puskesmas',
     'Datang Sendiri',
     'Transfer dari ICU',
-    'Post Operasi'
+    'Post Operasi',
   ];
 
   final List<String> _hubunganOptions = [
@@ -177,7 +222,7 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
     'Saudara Kandung',
     'Saudara',
     'Teman',
-    'Lainnya'
+    'Lainnya',
   ];
 
   bool _isLoading = false;
@@ -191,43 +236,115 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
       throw Exception("User belum login, NIK tidak ditemukan.");
     }
     String nomor = "RNP${DateTime.now().millisecondsSinceEpoch % 10000}";
-    
+
     await prefs.setString('user_${nik}_ranapName', _namaController.text.trim());
     await prefs.setString('user_${nik}_ranapNIK', _nikController.text.trim());
     await prefs.setString('user_${nik}_ranapNoKK', _noKKController.text.trim());
-    await prefs.setString('user_${nik}_ranapTempatLahir', _tempatLahirController.text.trim());
-    await prefs.setString('user_${nik}_ranapTanggalLahir', _tanggalLahirController.text.trim());
+    await prefs.setString(
+      'user_${nik}_ranapTempatLahir',
+      _tempatLahirController.text.trim(),
+    );
+    await prefs.setString(
+      'user_${nik}_ranapTanggalLahir',
+      _tanggalLahirController.text.trim(),
+    );
     await prefs.setString('user_${nik}_ranapGender', _selectedGender ?? '');
     await prefs.setString('user_${nik}_ranapAgama', _selectedAgama ?? '');
-    await prefs.setString('user_${nik}_ranapStatus', _selectedStatusPerkawinan ?? '');
-    await prefs.setString('user_${nik}_ranapGolDarah', _selectedGolonganDarah ?? '');
-    await prefs.setString('user_${nik}_ranapAlamat', _alamatController.text.trim());
+    await prefs.setString(
+      'user_${nik}_ranapStatus',
+      _selectedStatusPerkawinan ?? '',
+    );
+    await prefs.setString(
+      'user_${nik}_ranapGolDarah',
+      _selectedGolonganDarah ?? '',
+    );
+    await prefs.setString(
+      'user_${nik}_ranapAlamat',
+      _alamatController.text.trim(),
+    );
     await prefs.setString('user_${nik}_ranapNoHP', _nohpController.text.trim());
-    await prefs.setString('user_${nik}_ranapPekerjaan', _pekerjaanController.text.trim());
-    await prefs.setString('user_${nik}_ranapKelas', _selectedKelasPerawatan ?? '');
-    await prefs.setString('user_${nik}_ranapTipeKamar', _selectedTipeKamar ?? '');
-    await prefs.setString('user_${nik}_ranapAsuransi', _selectedJenisAsuransi ?? '');
-    await prefs.setString('user_${nik}_ranapDokter', _selectedDokterPenanggungJawab ?? '');
+    await prefs.setString(
+      'user_${nik}_ranapPekerjaan',
+      _pekerjaanController.text.trim(),
+    );
+    await prefs.setString(
+      'user_${nik}_ranapKelas',
+      _selectedKelasPerawatan ?? '',
+    );
+    await prefs.setString(
+      'user_${nik}_ranapTipeKamar',
+      _selectedTipeKamar ?? '',
+    );
+    await prefs.setString(
+      'user_${nik}_ranapAsuransi',
+      _selectedJenisAsuransi ?? '',
+    );
+    await prefs.setString(
+      'user_${nik}_ranapDokter',
+      _selectedDokterPenanggungJawab ?? '',
+    );
     await prefs.setString('user_${nik}_ranapRuangan', _selectedRuangan ?? '');
-    await prefs.setString('user_${nik}_ranapCaraMasuk', _selectedCaraMasuk ?? '');
-    await prefs.setString('user_${nik}_ranapDiagnosis', _diagnosisController.text.trim());
-    await prefs.setString('user_${nik}_ranapKeluhan', _keluhanController.text.trim());
-    await prefs.setString('user_${nik}_ranapRiwayatPenyakit', _riwayatPenyakitController.text.trim());
-    await prefs.setString('user_${nik}_ranapObatDikonsumsi', _obatDikonsumsiController.text.trim());
+    await prefs.setString(
+      'user_${nik}_ranapCaraMasuk',
+      _selectedCaraMasuk ?? '',
+    );
+    await prefs.setString(
+      'user_${nik}_ranapDiagnosis',
+      _diagnosisController.text.trim(),
+    );
+    await prefs.setString(
+      'user_${nik}_ranapKeluhan',
+      _keluhanController.text.trim(),
+    );
+    await prefs.setString(
+      'user_${nik}_ranapRiwayatPenyakit',
+      _riwayatPenyakitController.text.trim(),
+    );
+    await prefs.setString(
+      'user_${nik}_ranapObatDikonsumsi',
+      _obatDikonsumsiController.text.trim(),
+    );
     await prefs.setBool('user_${nik}_ranapRiwayatAlergi', _riwayatAlergi);
     await prefs.setBool('user_${nik}_ranapRiwayatOperasi', _riwayatOperasi);
     await prefs.setString('user_${nik}_ranapJenisAlergi', _jenisAlergi ?? '');
     await prefs.setString('user_${nik}_ranapJenisOperasi', _jenisOperasi ?? '');
-    await prefs.setString('user_${nik}_ranapNamaKeluarga', _namaKeluargaController.text.trim());
-    await prefs.setString('user_${nik}_ranapNoHPKeluarga', _nohpKeluargaController.text.trim());
-    await prefs.setString('user_${nik}_ranapAlamatKeluarga', _alamatKeluargaController.text.trim());
-    await prefs.setString('user_${nik}_ranapHubunganKeluarga', _selectedHubunganKeluarga ?? '');
-    await prefs.setString('user_${nik}_ranapNamaWali', _namaWaliController.text.trim());
-    await prefs.setString('user_${nik}_ranapNoHPWali', _nohpWaliController.text.trim());
-    await prefs.setString('user_${nik}_ranapHubunganWali', _selectedHubunganWali ?? '');
-    await prefs.setString('user_${nik}_ranapPenanggungJawab', _penanggungJawabController.text.trim());
+    await prefs.setString(
+      'user_${nik}_ranapNamaKeluarga',
+      _namaKeluargaController.text.trim(),
+    );
+    await prefs.setString(
+      'user_${nik}_ranapNoHPKeluarga',
+      _nohpKeluargaController.text.trim(),
+    );
+    await prefs.setString(
+      'user_${nik}_ranapAlamatKeluarga',
+      _alamatKeluargaController.text.trim(),
+    );
+    await prefs.setString(
+      'user_${nik}_ranapHubunganKeluarga',
+      _selectedHubunganKeluarga ?? '',
+    );
+    await prefs.setString(
+      'user_${nik}_ranapNamaWali',
+      _namaWaliController.text.trim(),
+    );
+    await prefs.setString(
+      'user_${nik}_ranapNoHPWali',
+      _nohpWaliController.text.trim(),
+    );
+    await prefs.setString(
+      'user_${nik}_ranapHubunganWali',
+      _selectedHubunganWali ?? '',
+    );
+    await prefs.setString(
+      'user_${nik}_ranapPenanggungJawab',
+      _penanggungJawabController.text.trim(),
+    );
     await prefs.setString('user_${nik}_nomorAntrian_RANAP', nomor);
-    await prefs.setString('ranapWaktuRegistrasi', DateTime.now().toIso8601String());
+    await prefs.setString(
+      'ranapWaktuRegistrasi',
+      DateTime.now().toIso8601String(),
+    );
   }
 
   void _submit() async {
@@ -241,32 +358,48 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
 
     try {
       await _simpanData();
-      
+
       if (mounted) {
         final prefs = await SharedPreferences.getInstance();
-        final nik = prefs.getString('current_nik'); // ✅
+        final nik = prefs.getString('current_nik');
         if (nik == null) {
           throw Exception("User belum login, NIK tidak ditemukan.");
         }
-        String kelasInfo = _selectedKelasPerawatan != null 
-            ? "${_selectedKelasPerawatan} - ${_kelasPerawatanOptions[_selectedKelasPerawatan!]!['harga']}" 
-            : "";
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Row(
-              children: [
-                const Icon(Icons.hotel, color: Colors.white),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text("Registrasi Rawat Inap berhasil!\nNomor: RNP${DateTime.now().millisecondsSinceEpoch % 10000}\nKelas: $kelasInfo"),
-                ),
-              ],
-            ),
-            backgroundColor: Colors.teal,
-            duration: const Duration(seconds: 4),
-          ),
+
+        final nomorAntrian =
+            prefs.getString('user_${nik}_nomorAntrian_RANAP') ?? 'Tidak Ada';
+        final kelasInfo =
+            _selectedKelasPerawatan != null
+                ? "${_selectedKelasPerawatan} - ${_kelasPerawatanOptions[_selectedKelasPerawatan!]!['harga']}"
+                : "";
+        final ruangan = _selectedRuangan ?? 'Belum dipilih';
+
+        // ✅ Panggil notifikasi
+        await showRegistrationSuccessNotification(
+          nomorAntrian,
+          kelasInfo,
+          ruangan,
         );
+
+        // Snackbar opsional, bisa tetap dipakai
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Row(
+        //       children: [
+        //         const Icon(Icons.hotel, color: Colors.white),
+        //         const SizedBox(width: 8),
+        //         Expanded(
+        //           child: Text(
+        //             "Registrasi Rawat Inap berhasil!\nNomor: $nomorAntrian\nKelas: $kelasInfo",
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //     backgroundColor: Colors.teal,
+        //     duration: const Duration(seconds: 4),
+        //   ),
+        // );
+
         Navigator.pop(context);
       }
     } catch (e) {
@@ -323,12 +456,16 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
           keyboardType: keyboardType,
           inputFormatters: inputFormatters,
           maxLines: maxLines,
-          validator: validator ?? (isRequired ? (value) {
-            if (value == null || value.trim().isEmpty) {
-              return "$label harus diisi";
-            }
-            return null;
-          } : null),
+          validator:
+              validator ??
+              (isRequired
+                  ? (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return "$label harus diisi";
+                    }
+                    return null;
+                  }
+                  : null),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(color: Colors.grey[400]),
@@ -350,7 +487,10 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
             ),
             filled: true,
             fillColor: Colors.grey[50],
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
           ),
         ),
         const SizedBox(height: 16),
@@ -391,12 +531,16 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
         DropdownButtonFormField<String>(
           value: value,
           onChanged: onChanged,
-          validator: validator ?? (isRequired ? (value) {
-            if (value == null || value.isEmpty) {
-              return "$label harus dipilih";
-            }
-            return null;
-          } : null),
+          validator:
+              validator ??
+              (isRequired
+                  ? (value) {
+                    if (value == null || value.isEmpty) {
+                      return "$label harus dipilih";
+                    }
+                    return null;
+                  }
+                  : null),
           decoration: InputDecoration(
             hintText: hint,
             hintStyle: TextStyle(color: Colors.grey[400]),
@@ -418,26 +562,30 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
             ),
             filled: true,
             fillColor: Colors.grey[50],
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
           ),
-          items: items.map((String item) {
-            return DropdownMenuItem<String>(
-              value: item,
-              child: Text(
-                item,
-                style: const TextStyle(fontSize: 13),
-              ),
-            );
-          }).toList(),
+          items:
+              items.map((String item) {
+                return DropdownMenuItem<String>(
+                  value: item,
+                  child: Text(item, style: const TextStyle(fontSize: 13)),
+                );
+              }).toList(),
         ),
         const SizedBox(height: 16),
       ],
     );
   }
 
-  Widget _buildKelasPerawatanCard(String kelasName, Map<String, dynamic> kelasData) {
+  Widget _buildKelasPerawatanCard(
+    String kelasName,
+    Map<String, dynamic> kelasData,
+  ) {
     final bool isSelected = _selectedKelasPerawatan == kelasName;
-    
+
     return GestureDetector(
       onTap: () => setState(() => _selectedKelasPerawatan = kelasName),
       child: Container(
@@ -449,7 +597,8 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
             width: isSelected ? 2 : 1,
           ),
           borderRadius: BorderRadius.circular(12),
-          color: isSelected ? kelasData['color'].withOpacity(0.05) : Colors.white,
+          color:
+              isSelected ? kelasData['color'].withOpacity(0.05) : Colors.white,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -459,7 +608,9 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                 Radio<String>(
                   value: kelasName,
                   groupValue: _selectedKelasPerawatan,
-                  onChanged: (value) => setState(() => _selectedKelasPerawatan = value),
+                  onChanged:
+                      (value) =>
+                          setState(() => _selectedKelasPerawatan = value),
                   activeColor: kelasData['color'],
                 ),
                 Expanded(
@@ -493,21 +644,25 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
               style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 4),
-            ...kelasData['fasilitas'].map<Widget>((item) => Padding(
-              padding: const EdgeInsets.only(left: 8, bottom: 2),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("• ", style: TextStyle(fontSize: 12)),
-                  Expanded(
-                    child: Text(
-                      item,
-                      style: const TextStyle(fontSize: 12),
+            ...kelasData['fasilitas']
+                .map<Widget>(
+                  (item) => Padding(
+                    padding: const EdgeInsets.only(left: 8, bottom: 2),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("• ", style: TextStyle(fontSize: 12)),
+                        Expanded(
+                          child: Text(
+                            item,
+                            style: const TextStyle(fontSize: 12),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            )).toList(),
+                )
+                .toList(),
           ],
         ),
       ),
@@ -560,7 +715,10 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
               children: [
                 Icon(Icons.hotel, color: Colors.white, size: 16),
                 SizedBox(width: 4),
-                Text("RANAP", style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                Text(
+                  "RANAP",
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                ),
               ],
             ),
           ),
@@ -589,7 +747,10 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                     const Expanded(
                       child: Text(
                         "Pastikan data yang dimasukkan lengkap dan benar untuk proses rawat inap yang optimal",
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ),
                   ],
@@ -670,7 +831,8 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                       hint: "Pilih jenis kelamin",
                       value: _selectedGender,
                       items: _genderOptions,
-                      onChanged: (value) => setState(() => _selectedGender = value),
+                      onChanged:
+                          (value) => setState(() => _selectedGender = value),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -680,7 +842,9 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                       hint: "Pilih golongan darah",
                       value: _selectedGolonganDarah,
                       items: _golonganDarahOptions,
-                      onChanged: (value) => setState(() => _selectedGolonganDarah = value),
+                      onChanged:
+                          (value) =>
+                              setState(() => _selectedGolonganDarah = value),
                     ),
                   ),
                 ],
@@ -697,7 +861,9 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                 hint: "Pilih status perkawinan",
                 value: _selectedStatusPerkawinan,
                 items: _statusPerkawinanOptions,
-                onChanged: (value) => setState(() => _selectedStatusPerkawinan = value),
+                onChanged:
+                    (value) =>
+                        setState(() => _selectedStatusPerkawinan = value),
               ),
 
               // Data Kontak
@@ -723,9 +889,10 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
               // Kelas Perawatan
               _buildSectionTitle("🏨 Pilih Kelas Perawatan"),
               Column(
-                children: _kelasPerawatanOptions.entries.map((entry) {
-                  return _buildKelasPerawatanCard(entry.key, entry.value);
-                }).toList(),
+                children:
+                    _kelasPerawatanOptions.entries.map((entry) {
+                      return _buildKelasPerawatanCard(entry.key, entry.value);
+                    }).toList(),
               ),
               if (_selectedKelasPerawatan == null)
                 Container(
@@ -749,7 +916,8 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                 hint: "Pilih tipe kamar",
                 value: _selectedTipeKamar,
                 items: _tipeKamarOptions,
-                onChanged: (value) => setState(() => _selectedTipeKamar = value),
+                onChanged:
+                    (value) => setState(() => _selectedTipeKamar = value),
               ),
               _buildDropdownField(
                 label: "Ruangan",
@@ -763,21 +931,25 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                 hint: "Pilih dokter yang akan merawat",
                 value: _selectedDokterPenanggungJawab,
                 items: _dokterOptions,
-                onChanged: (value) => setState(() => _selectedDokterPenanggungJawab = value),
+                onChanged:
+                    (value) =>
+                        setState(() => _selectedDokterPenanggungJawab = value),
               ),
               _buildDropdownField(
                 label: "Cara Masuk Rawat Inap",
                 hint: "Pilih cara masuk",
                 value: _selectedCaraMasuk,
                 items: _caraMasukOptions,
-                onChanged: (value) => setState(() => _selectedCaraMasuk = value),
+                onChanged:
+                    (value) => setState(() => _selectedCaraMasuk = value),
               ),
               _buildDropdownField(
                 label: "Jenis Pembayaran/Asuransi",
                 hint: "Pilih jenis pembayaran",
                 value: _selectedJenisAsuransi,
                 items: _jenisAsuransiOptions,
-                onChanged: (value) => setState(() => _selectedJenisAsuransi = value),
+                onChanged:
+                    (value) => setState(() => _selectedJenisAsuransi = value),
               ),
 
               // Kondisi Medis
@@ -822,16 +994,23 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                   children: [
                     const Text(
                       "Riwayat Medis",
-                      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     const SizedBox(height: 12),
                     CheckboxListTile(
                       value: _riwayatAlergi,
-                      onChanged: (value) => setState(() {
-                        _riwayatAlergi = value ?? false;
-                        if (!_riwayatAlergi) _jenisAlergi = null;
-                      }),
-                      title: const Text("Memiliki riwayat alergi", style: TextStyle(fontSize: 13)),
+                      onChanged:
+                          (value) => setState(() {
+                            _riwayatAlergi = value ?? false;
+                            if (!_riwayatAlergi) _jenisAlergi = null;
+                          }),
+                      title: const Text(
+                        "Memiliki riwayat alergi",
+                        style: TextStyle(fontSize: 13),
+                      ),
                       activeColor: Colors.teal,
                       contentPadding: EdgeInsets.zero,
                     ),
@@ -841,18 +1020,27 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                         onChanged: (value) => _jenisAlergi = value,
                         decoration: InputDecoration(
                           hintText: "Jenis alergi (makanan, obat, dll)",
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                         ),
                       ),
                     ],
                     CheckboxListTile(
                       value: _riwayatOperasi,
-                      onChanged: (value) => setState(() {
-                        _riwayatOperasi = value ?? false;
-                        if (!_riwayatOperasi) _jenisOperasi = null;
-                      }),
-                      title: const Text("Pernah menjalani operasi", style: TextStyle(fontSize: 13)),
+                      onChanged:
+                          (value) => setState(() {
+                            _riwayatOperasi = value ?? false;
+                            if (!_riwayatOperasi) _jenisOperasi = null;
+                          }),
+                      title: const Text(
+                        "Pernah menjalani operasi",
+                        style: TextStyle(fontSize: 13),
+                      ),
                       activeColor: Colors.teal,
                       contentPadding: EdgeInsets.zero,
                     ),
@@ -862,8 +1050,13 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                         onChanged: (value) => _jenisOperasi = value,
                         decoration: InputDecoration(
                           hintText: "Jenis operasi dan tahun",
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 12,
+                          ),
                         ),
                       ),
                     ],
@@ -896,7 +1089,9 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                 hint: "Pilih hubungan",
                 value: _selectedHubunganKeluarga,
                 items: _hubunganOptions,
-                onChanged: (value) => setState(() => _selectedHubunganKeluarga = value),
+                onChanged:
+                    (value) =>
+                        setState(() => _selectedHubunganKeluarga = value),
               ),
 
               // Data Wali (untuk pasien di bawah umur)
@@ -919,7 +1114,8 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                 hint: "Pilih hubungan",
                 value: _selectedHubunganWali,
                 items: _hubunganOptions,
-                onChanged: (value) => setState(() => _selectedHubunganWali = value),
+                onChanged:
+                    (value) => setState(() => _selectedHubunganWali = value),
                 isRequired: false,
               ),
 
@@ -932,7 +1128,7 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
               ),
 
               const SizedBox(height: 24),
-              
+
               // Submit Button
               Container(
                 width: double.infinity,
@@ -953,18 +1149,23 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                   ],
                 ),
                 child: ElevatedButton(
-                  onPressed: _isLoading ? null : () {
-                    if (_selectedKelasPerawatan == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text("Silakan pilih kelas perawatan terlebih dahulu"),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                      return;
-                    }
-                    _submit();
-                  },
+                  onPressed:
+                      _isLoading
+                          ? null
+                          : () {
+                            if (_selectedKelasPerawatan == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text(
+                                    "Silakan pilih kelas perawatan terlebih dahulu",
+                                  ),
+                                  backgroundColor: Colors.red,
+                                ),
+                              );
+                              return;
+                            }
+                            _submit();
+                          },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.transparent,
                     shadowColor: Colors.transparent,
@@ -972,49 +1173,52 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: _isLoading
-                      ? const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  child:
+                      _isLoading
+                          ? const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
                               ),
-                            ),
-                            SizedBox(width: 12),
-                            Text(
-                              "Memproses...",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                              SizedBox(width: 12),
+                              Text(
+                                "Memproses...",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                          ],
-                        )
-                      : const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.hotel, color: Colors.white),
-                            SizedBox(width: 8),
-                            Text(
-                              "DAFTAR RAWAT INAP",
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
+                            ],
+                          )
+                          : const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.hotel, color: Colors.white),
+                              SizedBox(width: 8),
+                              Text(
+                                "DAFTAR RAWAT INAP",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
+                            ],
+                          ),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Info Panel
               Container(
                 padding: const EdgeInsets.all(16),
@@ -1032,7 +1236,10 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                         const Expanded(
                           child: Text(
                             "PERSIAPAN RAWAT INAP:",
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -1120,7 +1327,10 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                         const Expanded(
                           child: Text(
                             "JAM BESUK:",
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -1130,17 +1340,31 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                       children: [
                         Row(
                           children: [
-                            Icon(Icons.access_time, size: 16, color: Colors.blue),
+                            Icon(
+                              Icons.access_time,
+                              size: 16,
+                              color: Colors.blue,
+                            ),
                             SizedBox(width: 8),
-                            Text("Pagi: 10:00 - 12:00 WIB", style: TextStyle(fontSize: 11)),
+                            Text(
+                              "Pagi: 10:00 - 12:00 WIB",
+                              style: TextStyle(fontSize: 11),
+                            ),
                           ],
                         ),
                         SizedBox(height: 4),
                         Row(
                           children: [
-                            Icon(Icons.access_time, size: 16, color: Colors.blue),
+                            Icon(
+                              Icons.access_time,
+                              size: 16,
+                              color: Colors.blue,
+                            ),
                             SizedBox(width: 8),
-                            Text("Sore: 16:00 - 20:00 WIB", style: TextStyle(fontSize: 11)),
+                            Text(
+                              "Sore: 16:00 - 20:00 WIB",
+                              style: TextStyle(fontSize: 11),
+                            ),
                           ],
                         ),
                         SizedBox(height: 4),
@@ -1148,7 +1372,10 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                           children: [
                             Icon(Icons.info, size: 16, color: Colors.blue),
                             SizedBox(width: 8),
-                            Text("ICU/ICCU: 11:00-12:00 & 17:00-18:00", style: TextStyle(fontSize: 11)),
+                            Text(
+                              "ICU/ICCU: 11:00-12:00 & 17:00-18:00",
+                              style: TextStyle(fontSize: 11),
+                            ),
                           ],
                         ),
                       ],
@@ -1180,7 +1407,10 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                         const Expanded(
                           child: Text(
                             "INFORMASI RAWAT INAP:",
-                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ],
@@ -1190,7 +1420,10 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                       children: [
                         Icon(Icons.call, size: 16, color: Colors.green),
                         SizedBox(width: 8),
-                        Text("Telepon: (021) 555-0124", style: TextStyle(fontSize: 11)),
+                        Text(
+                          "Telepon: (021) 555-0124",
+                          style: TextStyle(fontSize: 11),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -1198,7 +1431,10 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                       children: [
                         Icon(Icons.extension, size: 16, color: Colors.green),
                         SizedBox(width: 8),
-                        Text("Ext. Admisi: 101 | Perawat: 201", style: TextStyle(fontSize: 11)),
+                        Text(
+                          "Ext. Admisi: 101 | Perawat: 201",
+                          style: TextStyle(fontSize: 11),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 4),
@@ -1206,7 +1442,10 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
                       children: [
                         Icon(Icons.email, size: 16, color: Colors.green),
                         SizedBox(width: 8),
-                        Text("Email: ranap@rumahsakit.com", style: TextStyle(fontSize: 11)),
+                        Text(
+                          "Email: ranap@rumahsakit.com",
+                          style: TextStyle(fontSize: 11),
+                        ),
                       ],
                     ),
                   ],

@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'jadwaloperasi.dart';
 import '../main.dart'; // Tambahkan baris ini untuk mengakses fungsi notifikasi
-
+import 'package:flutter_local_notifications/flutter_local_notifications.dart ';
 class RegistrasiIGDPage extends StatefulWidget {
   const RegistrasiIGDPage({Key? key}) : super(key: key);
 
@@ -35,6 +35,32 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
   String? _selectedKesadaran;
   bool _riwayatAlergi = false;
   String? _jenisAlergi;
+
+  // Tambahkan di dalam class _RegistrasiIGDPageState
+  Future<void> showIGDRegistrationNotification(
+    String triase,
+    String nomorAntrian,
+  ) async {
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'registrasi_igd_channel',
+          'Registrasi IGD',
+          channelDescription: 'Notifikasi konfirmasi pendaftaran IGD',
+          importance: Importance.max,
+          priority: Priority.high,
+        );
+
+    const NotificationDetails platformChannelDetails = NotificationDetails(
+      android: androidDetails,
+    );
+
+    await flutterLocalNotificationsPlugin.show(
+      4, // ID unik berbeda dari rajal(1), ranap(2), mcu(3)
+      'Registrasi IGD Berhasil! 🚑',
+      'Nomor antrian Anda: $nomorAntrian\nTingkat triase: $triase',
+      platformChannelDetails,
+    );
+  }
 
   final List<String> _genderOptions = ['Laki-laki', 'Perempuan'];
   final List<String> _triaseOptions = [
@@ -81,12 +107,24 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
     await prefs.setString('user_${nik}_igdNIK', _nikController.text.trim());
     await prefs.setString('user_${nik}_igdUmur', _umurController.text.trim());
     await prefs.setString('user_${nik}_igdGender', _selectedGender ?? '');
-    await prefs.setString('user_${nik}_igdAlamat', _alamatController.text.trim());
+    await prefs.setString(
+      'user_${nik}_igdAlamat',
+      _alamatController.text.trim(),
+    );
     await prefs.setString('user_${nik}_igdNoHP', _nohpController.text.trim());
-    await prefs.setString('user_${nik}_igdKeluhan', _keluhanController.text.trim());
+    await prefs.setString(
+      'user_${nik}_igdKeluhan',
+      _keluhanController.text.trim(),
+    );
     await prefs.setString('user_${nik}_igdTriase', _selectedTriase ?? '');
-    await prefs.setString('user_${nik}_igdCaraDatang', _selectedCaraDatang ?? '');
-    await prefs.setString('user_${nik}_igdAsuransi', _selectedJenisAsuransi ?? '');
+    await prefs.setString(
+      'user_${nik}_igdCaraDatang',
+      _selectedCaraDatang ?? '',
+    );
+    await prefs.setString(
+      'user_${nik}_igdAsuransi',
+      _selectedJenisAsuransi ?? '',
+    );
     await prefs.setString('user_${nik}_igdKesadaran', _selectedKesadaran ?? '');
     await prefs.setString(
       'user_${nik}_igdRiwayatPenyakit',
@@ -133,11 +171,11 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
         String triaseLevel = _getTriaseLevel(_selectedTriase);
         final prefs = await SharedPreferences.getInstance();
         final nik = prefs.getString('current_nik'); // user aktif bener
-    // user aktif
+        // user aktif
 
-    if (nik == null) {
-      throw Exception("User belum login, NIK tidak ditemukan.");
-    }
+        if (nik == null) {
+          throw Exception("User belum login, NIK tidak ditemukan.");
+        }
         String nomorAntrian =
             prefs.getString('user_${nik}_nomorAntrian_IGD') ?? 'Tidak Ada';
         await prefs.setString(

@@ -47,7 +47,6 @@ class QueueTicketPage extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  // Header Section
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(24),

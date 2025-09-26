@@ -16,10 +16,12 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _emailController = TextEditingController();
+  // final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _whatsappController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  static String? registeredEmail;
+  // static String? registeredEmail;
+  static String? registeredWhatsapp;
   static String? registeredNik;
   static String? registeredPassword;
   static String? registeredName;
@@ -60,7 +62,7 @@ Map<String, dynamic> _getDefaultFacilities() {
 
     if (currentNik != null) {
       setState(() {
-        registeredEmail = prefs.getString('user_${currentNik}_email');
+        registeredWhatsapp = prefs.getString('user_${currentNik}_whatsapp');
         registeredNik = prefs.getString('user_${currentNik}_nik');
         registeredPassword = prefs.getString('user_${currentNik}_password');
         registeredName = prefs.getString('user_${currentNik}_name');
@@ -70,7 +72,8 @@ Map<String, dynamic> _getDefaultFacilities() {
 
   @override
   void dispose() {
-    _emailController.dispose();
+    // _emailController.dispose();
+    _whatsappController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -85,7 +88,7 @@ Map<String, dynamic> _getDefaultFacilities() {
         onOTPVerified: () async {
           // SIMPAN STATUS LOGIN KE UserPrefs setelah OTP berhasil
           await UserPrefs.saveUser(
-            email: registeredEmail!,
+            whatsapp: registeredWhatsapp!,
             nik: registeredNik!,
             password: registeredPassword!,
             name: registeredName!,
@@ -165,12 +168,13 @@ Map<String, dynamic> _getDefaultFacilities() {
       ),
       child: const Center(
         child: Text(
-          'INOTAL',
+          'Digital Hospital',
           style: TextStyle(
             fontSize: 48,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
             letterSpacing: 2,
+            fontFamily: "KolkerBrush",
           ),
         ),
       ),
@@ -191,7 +195,7 @@ Map<String, dynamic> _getDefaultFacilities() {
             ),
           ),
           const SizedBox(height: 40),
-          _buildTextField(controller: _emailController, hintText: 'Email/NIK'),
+          _buildTextField(controller: _whatsappController, hintText: 'no Whatsapp/NIK'),
           const SizedBox(height: 20),
           _buildTextField(
             controller: _passwordController,
@@ -253,7 +257,7 @@ Map<String, dynamic> _getDefaultFacilities() {
       ),
       child: ElevatedButton(
         onPressed: () async {
-          final emailOrNik = _emailController.text.trim();
+          final whatsappOrNik = _whatsappController.text.trim();
           final password = _passwordController.text.trim();
 
           final prefs = await SharedPreferences.getInstance();
@@ -262,10 +266,10 @@ Map<String, dynamic> _getDefaultFacilities() {
           for (String key in prefs.getKeys()) {
             if (key.startsWith("user_") && key.endsWith("_nik")) {
               final nik = prefs.getString(key);
-              final email = prefs.getString('user_${nik}_email');
+              final whatsapp = prefs.getString('user_${nik}_whatsapp');
               final pass = prefs.getString('user_${nik}_password');
 
-              if ((emailOrNik == nik || emailOrNik == email) &&
+              if ((whatsappOrNik == nik || whatsappOrNik == whatsapp) &&
                   password == pass) {
                 currentNik = nik;
                 break;
@@ -275,7 +279,7 @@ Map<String, dynamic> _getDefaultFacilities() {
 
           if (currentNik != null) {
             setState(() {
-              registeredEmail = prefs.getString('user_${currentNik}_email');
+              registeredWhatsapp = prefs.getString('user_${currentNik}_whatsapp');
               registeredNik = currentNik;
               registeredPassword = prefs.getString(
                 'user_${currentNik}_password',
@@ -660,14 +664,14 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _nikController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
+  // final TextEditingController _emailController = TextEditingController();
   final TextEditingController _whatsappController = TextEditingController();
 
   @override
   void dispose() {
     _nameController.dispose();
     _nikController.dispose();
-    _emailController.dispose();
+    // _emailController.dispose();
     _whatsappController.dispose();
     super.dispose();
   }
@@ -705,12 +709,13 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
       child: const Center(
         child: Text(
-          'INOTAL',
+          'Digital Hospital',
           style: TextStyle(
             fontSize: 48,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
             letterSpacing: 2,
+            fontFamily: "KolkerBrush",
           ),
         ),
       ),
@@ -739,7 +744,7 @@ class _RegisterPageState extends State<RegisterPage> {
             isNik: true,
           ),
           const SizedBox(height: 20),
-          _buildTextField(controller: _emailController, hintText: 'Email'),
+          // _buildTextField(controller: _emailController, hintText: 'Email'),
           const SizedBox(height: 20),
           _buildTextField(
             controller: _whatsappController,
@@ -818,7 +823,7 @@ class _RegisterPageState extends State<RegisterPage> {
             MaterialPageRoute(
               builder:
                   (context) => ActivationPage(
-                    email: _emailController.text.trim(),
+                    whatsapp: _whatsappController.text.trim(),
                     nik: _nikController.text.trim(),
                     name: _nameController.text.trim(),
                   ),
@@ -872,16 +877,17 @@ class _RegisterPageState extends State<RegisterPage> {
 }
 
 // =================================== AKTIVASI ===================================
+
 class ActivationPage extends StatefulWidget {
-  final String email;
   final String nik;
   final String name;
+  final String whatsapp;
 
   const ActivationPage({
     Key? key,
-    required this.email,
     required this.nik,
     required this.name,
+    required this.whatsapp,
   }) : super(key: key);
 
   @override
@@ -903,16 +909,16 @@ class _ActivationPageState extends State<ActivationPage> {
   }
 
   Future<void> _saveUserData(
-    String email,
     String nik,
     String password,
     String name,
+    String whatsapp,
   ) async {
     await UserPrefs.saveUser(
-      email: email,
       nik: nik,
       password: password,
       name: name,
+      whatsapp: whatsapp,
     );
   }
 
@@ -949,12 +955,13 @@ class _ActivationPageState extends State<ActivationPage> {
       ),
       child: const Center(
         child: Text(
-          'INOTAL',
+          'Digital Hospital',
           style: TextStyle(
             fontSize: 48,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
             letterSpacing: 2,
+            fontFamily: "KolkerBrush",
           ),
         ),
       ),
@@ -975,7 +982,7 @@ class _ActivationPageState extends State<ActivationPage> {
             ),
           ),
           const SizedBox(height: 40),
-          _buildTextField(controller: _tokenController, hintText: 'Token'),
+          _buildTextField(controller: _tokenController, hintText: 'Token Aktivasi'),
           const SizedBox(height: 20),
           _buildTextField(
             controller: _passwordController,
@@ -1042,19 +1049,19 @@ class _ActivationPageState extends State<ActivationPage> {
             return;
           }
 
-          // Simpan ke SharedPreferences (untuk data registrasi)
+          // Simpan ke SharedPreferences (data registrasi)
           await _saveUserData(
-            widget.email,
             widget.nik,
             _passwordController.text,
             widget.name,
+            widget.whatsapp,
           );
 
-          // Update variabel statis juga
-          _LoginPageState.registeredEmail = widget.email;
+          // Update variabel statis di LoginPage
           _LoginPageState.registeredNik = widget.nik;
           _LoginPageState.registeredPassword = _passwordController.text;
           _LoginPageState.registeredName = widget.name;
+          _LoginPageState.registeredWhatsapp = widget.whatsapp;
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -1088,3 +1095,4 @@ class _ActivationPageState extends State<ActivationPage> {
     );
   }
 }
+
