@@ -5,6 +5,7 @@ import 'package:inocare/screens/rumahsakitmember.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:inocare/services/user_prefs.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'settings_screen.dart';
 import 'profile_page.dart'; // Import halaman profile yang baru dibuat
 import 'package:url_launcher/url_launcher.dart';
@@ -105,82 +106,84 @@ class _HomePageMemberState extends State<HomePageMember> {
           bottomRight: Radius.circular(20),
         ),
       ),
-    child:  SafeArea(
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Color(0xFFFF6B35), Color(0xFFFF8A50)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
+      child: SafeArea(
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFFF6B35), Color(0xFFFF8A50)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(25),
+              bottomRight: Radius.circular(25),
+            ),
           ),
-          borderRadius: BorderRadius.only(
-            bottomLeft: Radius.circular(25),
-            bottomRight: Radius.circular(25),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Bagian nama user yang clickable
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ProfilePage()),
-                );
-              },
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // Bagian nama user yang clickable
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ProfilePage(),
+                    ),
+                  );
+                },
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Halo, ${_userName ?? "Member"} 👋',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const Text(
+                      'Semoga sehat selalu!',
+                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                    ),
+                    const SizedBox(height: 4),
+                  ],
+                ),
+              ),
+              Row(
                 children: [
-                  Text(
-                    'Halo, ${_userName ?? "Member"} 👋',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
+                  GestureDetector(
+                    onTap: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Fitur notifikasi akan segera hadir'),
+                          backgroundColor: Color(0xFFFF6B35),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.notifications,
+                        color: Colors.white,
+                        size: 24,
+                      ),
                     ),
                   ),
-                  const Text(
-                    'Semoga sehat selalu!',
-                    style: TextStyle(color: Colors.white70, fontSize: 14),
-                  ),
-                  const SizedBox(height: 4),
+                  const SizedBox(width: 12),
                 ],
               ),
-            ),
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Fitur notifikasi akan segera hadir'),
-                        backgroundColor: Color(0xFFFF6B35),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(
-                      Icons.notifications,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-    );  
+    );
   }
 
   Widget _buildBottomNavigation() {
@@ -241,7 +244,7 @@ class _HomePageMemberState extends State<HomePageMember> {
         Future.microtask(() => _navigateToHospitalAndGo(_buildRiwayatPage()));
         return const SizedBox();
 
-      case 4: 
+      case 4:
         return SettingsScreen(onLogout: _handleLogout);
 
       default:
@@ -631,8 +634,8 @@ class _HomePageMemberState extends State<HomePageMember> {
             const SizedBox(height: 16),
             _buildTodayItem(
               icon: Icons.bloodtype,
-              iconColor: Colors.red,
-              title: 'Cek Ketersediaan Labu Darah',
+              iconColor: const Color.fromARGB(255, 151, 11, 1),
+              title: 'Ketersediaan Labu Darah',
               onTap: () {
                 Navigator.push(
                   context,
@@ -646,7 +649,35 @@ class _HomePageMemberState extends State<HomePageMember> {
             _buildTodayItem(
               icon: Icons.hotel,
               iconColor: Colors.blue,
-              title: 'Cek Ketersediaan Bed',
+              title: 'Ketersediaan Bed',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RumahSakitMemberPage(),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildTodayItem(
+              icon: MdiIcons.ambulance,
+              iconColor: const Color.fromARGB(255, 244, 19, 19),
+              title: 'Ketersediaan Mobil Ambulance / Jenazah',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => RumahSakitMemberPage(),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 12),
+            _buildTodayItem(
+              icon: MdiIcons.doctor,
+              iconColor: const Color.fromARGB(255, 128, 19, 244),
+              title: 'Ketersediaan Dokter',
               onTap: () {
                 Navigator.push(
                   context,
