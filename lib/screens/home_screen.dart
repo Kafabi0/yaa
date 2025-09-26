@@ -1158,8 +1158,8 @@ String _getShortAddress(String address) {
             _buildTodayItem(
               icon: MdiIcons.ambulance,
               iconColor: const Color.fromARGB(255, 244, 19, 19),
-              title: 'Ketersediaan Ambulance',
-              onTap: () => _showLoginRequired('Cek Ambulance'),
+              title: 'Ketersediaan Mobil Ambulance / Jenazah',
+              onTap: () => _showLoginRequired('Cek Mobil Ambulance / Jenazah'),
               iconSize: 30,
             ),
             const SizedBox(height: 12),
