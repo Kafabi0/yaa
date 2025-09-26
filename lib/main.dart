@@ -179,7 +179,7 @@ class _InoCareAppState extends State<InoCareApp> {
             (context) => SplashOnboarding(
               onCompleted: () {
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => HomePageMember()),
+                  MaterialPageRoute(builder: (_) => HealthAppHomePage()),
                 );
               },
             ),
