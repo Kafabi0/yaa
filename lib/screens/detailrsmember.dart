@@ -153,63 +153,82 @@ class _HospitalDetailPageState extends State<HospitalDetailPage> {
     );
   }
 
-  Widget _buildStatusRealTime() {
-    return Container(
-      margin: EdgeInsets.all(16),
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 6,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.circle, color: Colors.red, size: 8),
-              SizedBox(width: 8),
-              Text(
-                'Status Real-time',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87,
-                ),
+  // Di dalam HospitalDetailPage, tambahkan atau modifikasi bagian _buildStatusRealTime()
+Widget _buildStatusRealTime() {
+  return Container(
+    margin: EdgeInsets.all(16),
+    padding: EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      boxShadow: [
+        BoxShadow(
+          color: Colors.grey.withOpacity(0.1),
+          spreadRadius: 1,
+          blurRadius: 6,
+          offset: Offset(0, 2),
+        ),
+      ],
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.circle, color: Colors.red, size: 8),
+            SizedBox(width: 8),
+            Text(
+              'Status Real-time',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
               ),
-            ],
-          ),
-          SizedBox(height: 16),
-          GridView.count(
-            crossAxisCount: 3,
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
-            childAspectRatio: 1.2,
-            children: [
-              _buildStatusCard('8', 'Bed IGD', Colors.green),
-              _buildStatusCard('3', 'Bed VIP', Colors.orange),
-              _buildStatusCard('8', 'Bed Kelas 1', Colors.green),
-              _buildStatusCard('15', 'Bed Kelas 2', Colors.green),
-              _buildStatusCard('0', 'Bed Kelas 3', Colors.red),
-              _buildStatusCard('25 Menit', 'Est. Antrian', Colors.green),
-              _buildStatusCard('4', 'Ambulans', Colors.green),
-              _buildStatusCard('6', 'ICU', Colors.green),
-              Container(), // empty space
-            ],
-          ),
-        ],
-      ),
-    );
-  }
+            ),
+          ],
+        ),
+        SizedBox(height: 16),
+        GridView.count(
+          crossAxisCount: 3,
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          mainAxisSpacing: 12,
+          crossAxisSpacing: 12,
+          childAspectRatio: 1.2,
+          children: [
+            // Gunakan data dari widget.hospital.bedAvailability
+            _buildStatusCard(
+              '${widget.hospital.bedAvailability?['igd']?['available'] ?? 0}/${widget.hospital.bedAvailability?['igd']?['total'] ?? 0}', 
+              'Bed IGD', 
+              (widget.hospital.bedAvailability?['igd']?['available'] ?? 0) > 0 ? Colors.green : Colors.red
+            ),
+            _buildStatusCard(
+              '${widget.hospital.bedAvailability?['vip']?['available'] ?? 0}/${widget.hospital.bedAvailability?['vip']?['total'] ?? 0}', 
+              'Bed VIP', 
+              (widget.hospital.bedAvailability?['vip']?['available'] ?? 0) > 0 ? Colors.green : Colors.red
+            ),
+            _buildStatusCard(
+              '${widget.hospital.bedAvailability?['kelas1']?['available'] ?? 0}/${widget.hospital.bedAvailability?['kelas1']?['total'] ?? 0}', 
+              'Bed Kelas 1', 
+              (widget.hospital.bedAvailability?['kelas1']?['available'] ?? 0) > 0 ? Colors.green : Colors.red
+            ),
+            _buildStatusCard(
+              '${widget.hospital.bedAvailability?['kelas2']?['available'] ?? 0}/${widget.hospital.bedAvailability?['kelas2']?['total'] ?? 0}', 
+              'Bed Kelas 2', 
+              (widget.hospital.bedAvailability?['kelas2']?['available'] ?? 0) > 0 ? Colors.green : Colors.red
+            ),
+            _buildStatusCard(
+              '${widget.hospital.bedAvailability?['kelas3']?['available'] ?? 0}/${widget.hospital.bedAvailability?['kelas3']?['total'] ?? 0}', 
+              'Bed Kelas 3', 
+              (widget.hospital.bedAvailability?['kelas3']?['available'] ?? 0) > 0 ? Colors.green : Colors.red
+            ),
+            _buildStatusCard('25 Menit', 'Est. Antrian', Colors.green),
+          ],
+        ),
+      ],
+    ),
+  );
+}
 
   Widget _buildStatusCard(String value, String label, Color color) {
     return Container(

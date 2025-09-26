@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:inocare/screens/tiketantrian.dart';
 import 'screens/home_screen.dart';
 import 'screens/health_records_screen.dart';
+import 'screens/home_page_member.dart';
 import 'screens/notifications_screen.dart';
 import 'screens/settings_screen.dart';
 import 'widgets/bottom_navigation_bar.dart';
@@ -178,7 +179,7 @@ class _InoCareAppState extends State<InoCareApp> {
             (context) => SplashOnboarding(
               onCompleted: () {
                 Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => HealthAppHomePage()),
+                  MaterialPageRoute(builder: (_) => HomePageMember()),
                 );
               },
             ),

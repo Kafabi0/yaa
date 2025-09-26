@@ -11,6 +11,7 @@ import 'package:inocare/models/hospital_model.dart';
 import 'package:inocare/services/hospital_service.dart'; 
 import 'package:inocare/widgets/nearest_hospital_widget.dart';
 import 'package:inocare/screens/artikel_semua_screen.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class HealthAppHomePage extends StatefulWidget {
   final VoidCallback? onLoginSuccess;
@@ -1140,16 +1141,34 @@ String _getShortAddress(String address) {
             const SizedBox(height: 16),
             _buildTodayItem(
               icon: Icons.bloodtype,
-              iconColor: Colors.red,
-              title: 'Cek Ketersediaan Labu Darah',
+              iconColor: const Color.fromARGB(255, 151, 11, 1),
+              title: 'Ketersediaan Labu Darah',
               onTap: () => _showLoginRequired('Cek Labu Darah'),
+              iconSize: 30,
             ),
             const SizedBox(height: 12),
             _buildTodayItem(
               icon: Icons.hotel,
               iconColor: Colors.blue,
-              title: 'Cek Ketersediaan Bed',
+              title: 'Ketersediaan Bed',
               onTap: () => _showLoginRequired('Cek Bed'),
+              iconSize: 30,
+            ),
+            const SizedBox(height: 12),
+            _buildTodayItem(
+              icon: MdiIcons.ambulance,
+              iconColor: const Color.fromARGB(255, 244, 19, 19),
+              title: 'Ketersediaan Ambulance',
+              onTap: () => _showLoginRequired('Cek Ambulance'),
+              iconSize: 30,
+            ),
+            const SizedBox(height: 12),
+            _buildTodayItem(
+              icon: MdiIcons.doctor,
+              iconColor: const Color.fromARGB(255, 128, 19, 244),
+              title: 'Ketersediaan Dokter',
+              onTap: () => _showLoginRequired('Cek Jadwal Dokter'),
+              iconSize: 30,
             ),
           ],
         ),
@@ -1162,6 +1181,7 @@ String _getShortAddress(String address) {
     required Color iconColor,
     required String title,
     required VoidCallback onTap,
+    double iconSize = 28,
   }) {
     return GestureDetector(
       onTap: onTap,
