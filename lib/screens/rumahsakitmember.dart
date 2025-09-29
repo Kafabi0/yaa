@@ -412,10 +412,10 @@ class _RumahSakitMemberPageState extends State<RumahSakitMemberPage> {
             hospital.address.toLowerCase().contains(_searchController.text.toLowerCase());
 
         bool matchesFilter = _selectedFilter == 'Semua' ||
-            (_selectedFilter == 'Buka 24 Jam' && hospital.services.contains('IGD 24 Jam')) ||
-            (_selectedFilter == 'Stok Darah' && hospital.hasBloodStock()) ||
+            (_selectedFilter == 'Buka 24 Jam' && hospital.isOpen) || // Perbaikan: gunakan properti isOpen
+            (_selectedFilter == 'Stok Darah' && hospital.hasBloodStock) || // Perbaikan: gunakan getter hasBloodStock
             (_selectedFilter == 'BPJS' && hospital.services.contains('BPJS')) ||
-            (_selectedFilter == 'IGD' && hospital.services.contains('IGD 24 Jam')) ||
+            (_selectedFilter == 'IGD' && hospital.services.contains('IGD')) || // Perbaikan: gunakan 'IGD' bukan 'IGD 24 Jam'
             (_selectedFilter == 'MCU' && hospital.services.contains('MCU'));
 
         return matchesSearch && matchesFilter;
@@ -883,460 +883,461 @@ class _RumahSakitMemberPageState extends State<RumahSakitMemberPage> {
   }
 
   Widget _buildHospitalCard(Hospital hospital) {
-  return Container(
-    margin: EdgeInsets.only(bottom: 16),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(16),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.grey.withOpacity(0.1),
-          spreadRadius: 1,
-          blurRadius: 8,
-          offset: const Offset(0, 2),
-        ),
-      ],
-    ),
-    child: Column(
-      children: [
-        // Hospital Image
-        Container(
-          height: 200,
-          child: ClipRRect(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: Image.asset(
-                    hospital.imagePath,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [Color(0xFF4A90E2), Color(0xFF357ABD)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                        ),
-                        child: Center(
-                          child: Icon(Icons.local_hospital,
-                              color: Colors.white, size: 40),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-                Positioned.fill(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          Colors.black.withOpacity(0.6),
-                          Colors.transparent,
-                        ],
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  bottom: 12,
-                  left: 12,
-                  right: 12,
-                  child: Text(
-                    hospital.name,
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      shadows: [
-                        Shadow(
-                          offset: Offset(1, 1),
-                          blurRadius: 3,
-                          color: Colors.black.withOpacity(0.5),
-                        ),
-                      ],
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
+    return Container(
+      margin: EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
-        ),
-
-        // Hospital Details
-        Padding(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Rating + Distance
-              Row(
+        ],
+      ),
+      child: Column(
+        children: [
+          // Hospital Image
+          Container(
+            height: 200,
+            child: ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+              child: Stack(
                 children: [
-                  Row(
-                    children: [
-                      Icon(Icons.star, color: Colors.amber, size: 16),
-                      SizedBox(width: 4),
-                      Text(
-                        '${hospital.rating}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      SizedBox(width: 4),
-                      Text(
-                        '(${hospital.reviewCount} ulasan)',
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                    ],
-                  ),
-                  Spacer(),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(12),
+                  Positioned.fill(
+                    child: Image.asset(
+                      hospital.imagePath,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: [Color(0xFF4A90E2), Color(0xFF357ABD)],
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                            ),
+                          ),
+                          child: Center(
+                            child: Icon(Icons.local_hospital,
+                                color: Colors.white, size: 40),
+                          ),
+                        );
+                      },
                     ),
+                  ),
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.black.withOpacity(0.6),
+                            Colors.transparent,
+                          ],
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 12,
+                    left: 12,
+                    right: 12,
                     child: Text(
-                      hospital.distance,
+                      hospital.name,
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 10,
+                        fontSize: 16,
                         fontWeight: FontWeight.bold,
+                        shadows: [
+                          Shadow(
+                            offset: Offset(1, 1),
+                            blurRadius: 3,
+                            color: Colors.black.withOpacity(0.5),
+                          ),
+                        ],
                       ),
-                    ),
-                  ),
-                ],
-              ),
-
-              SizedBox(height: 8),
-
-              // Layanan Penting di Atas
-              Wrap(
-                spacing: 6,
-                runSpacing: 4,
-                children: hospital.services
-                    .where((service) =>
-                        service == 'IGD' ||
-                        service == 'BPJS' ||
-                        service == 'UTDRS' ||
-                        service == 'Rujukan' ||
-                        service == 'Spesialis')
-                    .map((service) {
-                  Color serviceColor = _getServiceColor(service);
-                  return Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: serviceColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: serviceColor.withOpacity(0.3)),
-                    ),
-                    child: Text(
-                      service,
-                      style: TextStyle(
-                        fontSize: 9,
-                        color: serviceColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-
-              SizedBox(height: 12),
-
-              // Address + Phone
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(Icons.location_on, color: Colors.red, size: 14),
-                  SizedBox(width: 4),
-                  Expanded(
-                    child: Text(
-                      hospital.address,
-                      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                      maxLines: 2,
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 6),
-              Row(
-                children: [
-                  Icon(Icons.phone, color: Colors.green, size: 14),
-                  SizedBox(width: 4),
-                  Text(
-                    hospital.phone,
-                    style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                  ),
-                  Spacer(),
-                  Icon(
-                    Icons.access_time,
-                    color: hospital.isOpen ? Colors.green : Colors.red,
-                    size: 14,
-                  ),
-                  SizedBox(width: 4),
-                  Text(
-                    hospital.operatingHours,
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: hospital.isOpen ? Colors.green : Colors.red,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
+            ),
+          ),
 
-              SizedBox(height: 12),
-
-              // Bed Availability
-              Text('Ketersediaan Bed:',
-                  style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87)),
-              SizedBox(height: 8),
-              Row(
-                children: [
-                  _buildBedStatus('IGD',
-                      (hospital.bedAvailability?['igd']?['available'] ?? 0) > 0),
-                  SizedBox(width: 8),
-                  _buildBedStatus('VIP',
-                      (hospital.bedAvailability?['vip']?['available'] ?? 0) > 0),
-                  SizedBox(width: 8),
-                  _buildBedStatus(
-                      'Kelas 1',
-                      (hospital.bedAvailability?['kelas1']?['available'] ?? 0) >
-                          0),
-                  SizedBox(width: 8),
-                  _buildBedStatus(
-                      'Kelas 2',
-                      (hospital.bedAvailability?['kelas2']?['available'] ?? 0) >
-                          0),
-                ],
-              ),
-              SizedBox(height: 8),
-              Row(
-                children: [
-                  _buildBedStatus(
-                      'Kelas 3',
-                      (hospital.bedAvailability?['kelas3']?['available'] ?? 0) >
-                          0),
-                  SizedBox(width: 8),
-                  _buildBedStatus('ICU',
-                      (hospital.bedAvailability?['icu']?['available'] ?? 0) > 0),
-                ],
-              ),
-
-              SizedBox(height: 12),
-
-              // Stok Darah
-              Text('Stok Darah:',
-                  style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87)),
-              SizedBox(height: 8),
-              Row(
-                children: [
-                  _buildBloodStockStatus(
-                      'A+', hospital.bloodStock['A+']?.available ?? false),
-                  SizedBox(width: 8),
-                  _buildBloodStockStatus(
-                      'A-', hospital.bloodStock['A-']?.available ?? false),
-                  SizedBox(width: 8),
-                  _buildBloodStockStatus(
-                      'B+', hospital.bloodStock['B+']?.available ?? false),
-                  SizedBox(width: 8),
-                  _buildBloodStockStatus(
-                      'B-', hospital.bloodStock['B-']?.available ?? false),
-                ],
-              ),
-              SizedBox(height: 8),
-              Row(
-                children: [
-                  _buildBloodStockStatus(
-                      'AB+', hospital.bloodStock['AB+']?.available ?? false),
-                  SizedBox(width: 8),
-                  _buildBloodStockStatus(
-                      'AB-', hospital.bloodStock['AB-']?.available ?? false),
-                  SizedBox(width: 8),
-                  _buildBloodStockStatus(
-                      'O+', hospital.bloodStock['O+']?.available ?? false),
-                  SizedBox(width: 8),
-                  _buildBloodStockStatus(
-                      'O-', hospital.bloodStock['O-']?.available ?? false),
-                ],
-              ),
-
-              SizedBox(height: 12),
-
-              // Layanan Instalasi (tetap di bawah)
-              Text('Layanan Instalasi:',
-                  style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87)),
-              SizedBox(height: 6),
-              Wrap(
-                spacing: 6,
-                runSpacing: 4,
-                children: hospital.services
-                    .where((service) =>
-                        service != 'IGD' &&
-                        service != 'BPJS' &&
-                        service != 'UTDRS' &&
-                        service != 'Rujukan' &&
-                        service != 'Spesialis')
-                    .map((service) {
-                  Color serviceColor = _getServiceColor(service);
-                  return Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: serviceColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: serviceColor.withOpacity(0.3)),
-                    ),
-                    child: Text(
-                      service,
-                      style: TextStyle(
-                        fontSize: 9,
-                        color: serviceColor,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-
-              SizedBox(height: 16),
-
-              // Tombol Info Detail + Maps (TETAP ADA)
-              Row(
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                HospitalDetailPage(hospital: hospital),
+          // Hospital Details
+          Padding(
+            padding: EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Rating + Distance
+                Row(
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.star, color: Colors.amber, size: 16),
+                        SizedBox(width: 4),
+                        Text(
+                          '${hospital.rating}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87,
                           ),
-                        );
-                      },
-                      icon: Icon(Icons.info_outline, size: 16),
-                      label: Text('Info Detail',
-                          style: TextStyle(fontWeight: FontWeight.w600)),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Color(0xFFFF6B35),
-                        side: BorderSide(color: Color(0xFFFF6B35)),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 12),
+                        SizedBox(width: 4),
+                        Text(
+                          '(${hospital.reviewCount} ulasan)',
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                      ],
+                    ),
+                    Spacer(),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.green,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        hospital.distance,
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(width: 12),
-                  Expanded(
-                    flex: 3,
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        // Open Maps
-                      },
-                      icon: Icon(Icons.map, size: 16),
-                      label: Text('Maps',
-                          style: TextStyle(fontWeight: FontWeight.w600)),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Color(0xFFFF6B35),
-                        side: BorderSide(color: Color(0xFFFF6B35)),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        padding: EdgeInsets.symmetric(vertical: 12),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
-    ),
-  );
-}
+                  ],
+                ),
 
-  
-  Widget _buildBedStatus(String label, bool isAvailable) {
-  return Expanded(
-    child: Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-      decoration: BoxDecoration(
-        color: isAvailable
-            ? Colors.green.withOpacity(0.1)
-            : Colors.red.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: isAvailable ? Colors.green : Colors.red,
-          width: 1,
-        ),
-      ),
-      child: Center(
-        child: Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w600,
-            color: isAvailable ? Colors.green : Colors.red,
-          ),
-          textAlign: TextAlign.center,
-        ),
+                SizedBox(height: 8),
+
+                // Layanan Penting di Atas
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
+                  children: hospital.services
+                      .where((service) =>
+                          service == 'IGD' ||
+                          service == 'BPJS' ||
+                          service == 'UTDRS' ||
+                          service == 'Rujukan' ||
+                          service == 'Spesialis')
+                      .map((service) {
+                    Color serviceColor = _getServiceColor(service);
+                    return Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: serviceColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: serviceColor.withOpacity(0.3)),
+                      ),
+                      child: Text(
+                        service,
+                        style: TextStyle(
+                          fontSize: 9,
+                          color: serviceColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+
+                SizedBox(height: 12),
+
+                // Address + Phone
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(Icons.location_on, color: Colors.red, size: 14),
+                    SizedBox(width: 4),
+                    Expanded(
+                      child: Text(
+                        hospital.address,
+                        style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 6),
+                // Di dalam method _buildHospitalCard, cari bagian Row yang menampilkan jam operasional
+Row(
+  children: [
+    Icon(Icons.phone, color: Colors.green, size: 14),
+    SizedBox(width: 4),
+    Text(
+      hospital.phone,
+      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+    ),
+    Spacer(),
+    Icon(
+      Icons.access_time,
+      color: hospital.isOpen ? Colors.green : Colors.grey[500],
+      size: 14,
+    ),
+    SizedBox(width: 4),
+    Text(
+      // Ganti teks jam operasional berdasarkan status buka 24 jam
+      hospital.isOpen ? hospital.operatingHours : 'Tidak 24 jam',
+      style: TextStyle(
+        fontSize: 11,
+        color: hospital.isOpen ? Colors.green : Colors.grey[500],
+        fontWeight: FontWeight.w500,
       ),
     ),
-  );
-}
+  ],
+),
+
+                SizedBox(height: 12),
+
+                // Bed Availability
+                Text('Ketersediaan Bed:',
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87)),
+                SizedBox(height: 8),
+                Row(
+                  children: [
+                    _buildBedStatus('IGD',
+                        (hospital.bedAvailability?['igd']?['available'] ?? 0) > 0),
+                    SizedBox(width: 8),
+                    _buildBedStatus('VIP',
+                        (hospital.bedAvailability?['vip']?['available'] ?? 0) > 0),
+                    SizedBox(width: 8),
+                    _buildBedStatus(
+                        'Kelas 1',
+                        (hospital.bedAvailability?['kelas1']?['available'] ?? 0) >
+                            0),
+                    SizedBox(width: 8),
+                    _buildBedStatus(
+                        'Kelas 2',
+                        (hospital.bedAvailability?['kelas2']?['available'] ?? 0) >
+                            0),
+                  ],
+                ),
+                SizedBox(height: 8),
+                Row(
+                  children: [
+                    _buildBedStatus(
+                        'Kelas 3',
+                        (hospital.bedAvailability?['kelas3']?['available'] ?? 0) >
+                            0),
+                    SizedBox(width: 8),
+                    _buildBedStatus('ICU',
+                        (hospital.bedAvailability?['icu']?['available'] ?? 0) > 0),
+                  ],
+                ),
+
+                SizedBox(height: 12),
+
+                // Stok Darah
+                Text('Stok Darah:',
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87)),
+                SizedBox(height: 8),
+                Row(
+                  children: [
+                    _buildBloodStockStatus(
+                        'A+', hospital.bloodStock['A+']?.available ?? false),
+                    SizedBox(width: 8),
+                    _buildBloodStockStatus(
+                        'A-', hospital.bloodStock['A-']?.available ?? false),
+                    SizedBox(width: 8),
+                    _buildBloodStockStatus(
+                        'B+', hospital.bloodStock['B+']?.available ?? false),
+                    SizedBox(width: 8),
+                    _buildBloodStockStatus(
+                        'B-', hospital.bloodStock['B-']?.available ?? false),
+                  ],
+                ),
+                SizedBox(height: 8),
+                Row(
+                  children: [
+                    _buildBloodStockStatus(
+                        'AB+', hospital.bloodStock['AB+']?.available ?? false),
+                    SizedBox(width: 8),
+                    _buildBloodStockStatus(
+                        'AB-', hospital.bloodStock['AB-']?.available ?? false),
+                    SizedBox(width: 8),
+                    _buildBloodStockStatus(
+                        'O+', hospital.bloodStock['O+']?.available ?? false),
+                    SizedBox(width: 8),
+                    _buildBloodStockStatus(
+                        'O-', hospital.bloodStock['O-']?.available ?? false),
+                  ],
+                ),
+
+                SizedBox(height: 12),
+
+                // Layanan Instalasi (tetap di bawah)
+                Text('Layanan Instalasi:',
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87)),
+                SizedBox(height: 6),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
+                  children: hospital.services
+                      .where((service) =>
+                          service != 'IGD' &&
+                          service != 'BPJS' &&
+                          service != 'UTDRS' &&
+                          service != 'Rujukan' &&
+                          service != 'Spesialis')
+                      .map((service) {
+                    Color serviceColor = _getServiceColor(service);
+                    return Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: serviceColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: serviceColor.withOpacity(0.3)),
+                      ),
+                      child: Text(
+                        service,
+                        style: TextStyle(
+                          fontSize: 9,
+                          color: serviceColor,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+
+                SizedBox(height: 16),
+
+                // Tombol Info Detail + Maps (TETAP ADA)
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  HospitalDetailPage(hospital: hospital),
+                            ),
+                          );
+                        },
+                        icon: Icon(Icons.info_outline, size: 16),
+                        label: Text('Info Detail',
+                            style: TextStyle(fontWeight: FontWeight.w600)),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Color(0xFFFF6B35),
+                          side: BorderSide(color: Color(0xFFFF6B35)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      flex: 3,
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          // Open Maps
+                        },
+                        icon: Icon(Icons.map, size: 16),
+                        label: Text('Maps',
+                            style: TextStyle(fontWeight: FontWeight.w600)),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Color(0xFFFF6B35),
+                          side: BorderSide(color: Color(0xFFFF6B35)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBedStatus(String label, bool isAvailable) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        decoration: BoxDecoration(
+          color: isAvailable
+              ? Colors.green.withOpacity(0.1)
+              : Colors.red.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isAvailable ? Colors.green : Colors.red,
+            width: 1,
+          ),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: isAvailable ? Colors.green : Colors.red,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
 
   Widget _buildBloodStockStatus(String type, bool isAvailable) {
-  return Expanded(
-    child: Container(
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-      decoration: BoxDecoration(
-        color: isAvailable
-            ? Colors.green.withOpacity(0.1)
-            : Colors.red.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: isAvailable ? Colors.green : Colors.red,
-          width: 1,
-        ),
-      ),
-      child: Center(
-        child: Text(
-          type,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 12, // sedikit lebih besar biar jelas
-            fontWeight: FontWeight.w600,
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        decoration: BoxDecoration(
+          color: isAvailable
+              ? Colors.green.withOpacity(0.1)
+              : Colors.red.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
             color: isAvailable ? Colors.green : Colors.red,
+            width: 1,
+          ),
+        ),
+        child: Center(
+          child: Text(
+            type,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 12, // sedikit lebih besar biar jelas
+              fontWeight: FontWeight.w600,
+              color: isAvailable ? Colors.green : Colors.red,
+            ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildFacilityInfo(String count, String label, IconData icon) {
     return Column(
@@ -1410,7 +1411,8 @@ class Hospital {
     this.bedAvailability, // Tambahkan ini
   });
 
-  bool hasBloodStock() {
+  // Ubah dari metode menjadi getter
+  bool get hasBloodStock {
     return bloodStock.values.any((stock) => stock.available && stock.count > 0);
   }
 }
