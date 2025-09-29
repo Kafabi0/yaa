@@ -32,12 +32,18 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    setState(() {
-      registertedWhatsapp = prefs.getString('registeredWhatsapp');
-      registeredNik = prefs.getString('registeredNik');
-      registeredPassword = prefs.getString('registeredPassword');
-      registeredName = prefs.getString('registeredName');
-    });
+    final currentNik = prefs.getString(
+      'current_nik',
+    ); // ambil user yang sedang aktif
+
+    if (currentNik != null) {
+      setState(() {
+        registertedWhatsapp = prefs.getString('user_${currentNik}_whatsapp');
+        registeredNik = prefs.getString('user_${currentNik}_nik');
+        registeredPassword = prefs.getString('user_${currentNik}_password');
+        registeredName = prefs.getString('user_${currentNik}_name');
+      });
+    }
   }
 
   @override
@@ -197,20 +203,37 @@ class _LoginPageState extends State<LoginPage> {
         borderRadius: BorderRadius.circular(25),
       ),
       child: ElevatedButton(
-        onPressed: () {
+        onPressed: () async {
           // tambahkan async
           final whatsappOrNik = _whatsappController.text.trim();
           final password = _passwordController.text.trim();
 
-          if ((whatsappOrNik == registertedWhatsapp ||
-                  whatsappOrNik == registeredNik) &&
-              password == registeredPassword) {
-            // SIMPAN STATUS LOGIN KE UserPrefs
-            // await UserPrefs.saveUser(
-            //   whatsapp: registertedWhatsapp!,
-            //   nik: registeredNik!,
-            //   password: registeredPassword!,
-            //   name: registeredName!,
+          final prefs = await SharedPreferences.getInstance();
+          String? currentNik;
+
+          for (String key in prefs.getKeys()) {
+            if (key.startsWith("user_") && key.endsWith("_nik")) {
+              final nik = prefs.getString(key);
+              final whatsapp = prefs.getString('user_${nik}_whatsapp');
+              final pass = prefs.getString('user_${nik}_password');
+
+              if ((whatsappOrNik == nik || whatsappOrNik == whatsapp) &&
+                  password == pass) {
+                currentNik = nik;
+                break;
+              }
+            }
+          }
+
+          if (currentNik != null) {
+            setState(() {
+              registertedWhatsapp = prefs.getString('user_${currentNik}_whatsapp');
+              registeredNik = currentNik;
+              registeredPassword = prefs.getString(
+                'user_${currentNik}_password',
+              );
+              registeredName = prefs.getString('user_${currentNik}_name');
+            });
             _showOTPModal();
           } else {
             ScaffoldMessenger.of(context).showSnackBar(

@@ -574,11 +574,11 @@ class _HomePagePasienState extends State<HomePagePasien> {
                         'Tagihan',
                         Colors.purple,
                       ),
-                    _buildQuickActionItem(
-                      Icons.monitor_heart_outlined,
-                      'Kesehatan Saya',
-                      Colors.yellow,
-                    ),
+                    // _buildQuickActionItem(
+                    //   Icons.monitor_heart_outlined,
+                    //   'Kesehatan Saya',
+                    //   Colors.yellow,
+                    // ),
 
                     // Layanan pasien tambahan
                     if (_antrianIGD != null ||
@@ -679,14 +679,14 @@ class _HomePagePasienState extends State<HomePagePasien> {
             _openBillingPage();
             break;
 
-          case 'Kesehatan Saya':
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => const KesehatanSayaSensorPage(),
-              ),
-            );
-            break;
+          // case 'Kesehatan Saya':
+          //   Navigator.push(
+          //     context,
+          //     MaterialPageRoute(
+          //       builder: (_) => const KesehatanSayaSensorPage(),
+          //     ),
+          //   );
+          //   break;
 
           case 'Hasil Pemeriksaan':
             _openHasilPemeriksaan();
