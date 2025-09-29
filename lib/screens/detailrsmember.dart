@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:inocare/screens/detailjadwaldokter.dart';
 import 'package:inocare/screens/homepagepasien.dart';
 import 'rumahsakitmember.dart';
-import 'package:inocare/services/user_prefs.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class HospitalDetailPage extends StatefulWidget {
   final Hospital hospital;
@@ -153,82 +150,63 @@ class _HospitalDetailPageState extends State<HospitalDetailPage> {
     );
   }
 
-  // Di dalam HospitalDetailPage, tambahkan atau modifikasi bagian _buildStatusRealTime()
-Widget _buildStatusRealTime() {
-  return Container(
-    margin: EdgeInsets.all(16),
-    padding: EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(12),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.grey.withOpacity(0.1),
-          spreadRadius: 1,
-          blurRadius: 6,
-          offset: Offset(0, 2),
-        ),
-      ],
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Icon(Icons.circle, color: Colors.red, size: 8),
-            SizedBox(width: 8),
-            Text(
-              'Status Real-time',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: Colors.black87,
+  Widget _buildStatusRealTime() {
+    return Container(
+      margin: EdgeInsets.all(16),
+      padding: EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 6,
+            offset: Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.circle, color: Colors.red, size: 8),
+              SizedBox(width: 8),
+              Text(
+                'Status Real-time',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                ),
               ),
-            ),
-          ],
-        ),
-        SizedBox(height: 16),
-        GridView.count(
-          crossAxisCount: 3,
-          shrinkWrap: true,
-          physics: NeverScrollableScrollPhysics(),
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 1.2,
-          children: [
-            // Gunakan data dari widget.hospital.bedAvailability
-            _buildStatusCard(
-              '${widget.hospital.bedAvailability?['igd']?['available'] ?? 0}/${widget.hospital.bedAvailability?['igd']?['total'] ?? 0}', 
-              'Bed IGD', 
-              (widget.hospital.bedAvailability?['igd']?['available'] ?? 0) > 0 ? Colors.green : Colors.red
-            ),
-            _buildStatusCard(
-              '${widget.hospital.bedAvailability?['vip']?['available'] ?? 0}/${widget.hospital.bedAvailability?['vip']?['total'] ?? 0}', 
-              'Bed VIP', 
-              (widget.hospital.bedAvailability?['vip']?['available'] ?? 0) > 0 ? Colors.green : Colors.red
-            ),
-            _buildStatusCard(
-              '${widget.hospital.bedAvailability?['kelas1']?['available'] ?? 0}/${widget.hospital.bedAvailability?['kelas1']?['total'] ?? 0}', 
-              'Bed Kelas 1', 
-              (widget.hospital.bedAvailability?['kelas1']?['available'] ?? 0) > 0 ? Colors.green : Colors.red
-            ),
-            _buildStatusCard(
-              '${widget.hospital.bedAvailability?['kelas2']?['available'] ?? 0}/${widget.hospital.bedAvailability?['kelas2']?['total'] ?? 0}', 
-              'Bed Kelas 2', 
-              (widget.hospital.bedAvailability?['kelas2']?['available'] ?? 0) > 0 ? Colors.green : Colors.red
-            ),
-            _buildStatusCard(
-              '${widget.hospital.bedAvailability?['kelas3']?['available'] ?? 0}/${widget.hospital.bedAvailability?['kelas3']?['total'] ?? 0}', 
-              'Bed Kelas 3', 
-              (widget.hospital.bedAvailability?['kelas3']?['available'] ?? 0) > 0 ? Colors.green : Colors.red
-            ),
-            _buildStatusCard('25 Menit', 'Est. Antrian', Colors.green),
-          ],
-        ),
-      ],
-    ),
-  );
-}
+            ],
+          ),
+          SizedBox(height: 16),
+          GridView.count(
+            crossAxisCount: 3,
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 1.2,
+            children: [
+              _buildStatusCard('8', 'Bed IGD', Colors.green),
+              _buildStatusCard('3', 'Bed VIP', Colors.orange),
+              _buildStatusCard('8', 'Bed Kelas 1', Colors.green),
+              _buildStatusCard('15', 'Bed Kelas 2', Colors.green),
+              _buildStatusCard('0', 'Bed Kelas 3', Colors.red),
+              _buildStatusCard('25 Menit', 'Est. Antrian', Colors.green),
+              _buildStatusCard('4', 'Ambulans', Colors.green),
+              _buildStatusCard('6', 'ICU', Colors.green),
+              Container(), // empty space
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
   Widget _buildStatusCard(String value, String label, Color color) {
     return Container(
@@ -400,14 +378,7 @@ Widget _buildStatusRealTime() {
           Container(
             width: double.infinity,
             child: OutlinedButton.icon(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DoctorSchedulePage(hospital: widget.hospital),
-                  ),
-                );
-              },
+              onPressed: () {},
               icon: Icon(Icons.calendar_today, size: 16),
               label: Text('Lihat Jadwal Lengkap Dokter'),
               style: OutlinedButton.styleFrom(
@@ -917,35 +888,14 @@ Widget _buildStatusRealTime() {
       margin: EdgeInsets.all(16),
       width: double.infinity,
       child: ElevatedButton.icon(
-        onPressed: () async {
-          // Simpan rumah sakit terpilih ke SharedPreferences
-          final prefs = await SharedPreferences.getInstance();
-          final currentNik = prefs.getString('current_nik');
-          
-          if (currentNik != null) {
-            await UserPrefs.setSelectedHospital(currentNik, {
-              'name': widget.hospital.name,
-              'address': widget.hospital.address,
-              'phone': widget.hospital.phone,
-              'distance': widget.hospital.distance,
-              'rating': widget.hospital.rating,
-              'reviewCount': widget.hospital.reviewCount,
-              'isOpen': widget.hospital.isOpen,
-              'imagePath': widget.hospital.imagePath,
-              'operatingHours': widget.hospital.operatingHours,
-              'type': widget.hospital.type,
-              'services': widget.hospital.services,
-              'specialties': widget.hospital.specialties,
-            });
-          }
-
+        onPressed: () {
           // Navigasi ke HomePage Pasien
           Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
               builder: (context) => HomePagePasien(selectedHospital: widget.hospital),
             ),
-            (route) => false,
+            (route) => false, // Hapus semua route sebelumnya
           );
         },
         icon: Icon(Icons.check_circle, color: Colors.white, size: 20),

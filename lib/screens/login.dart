@@ -3,9 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:inocare/screens/home_page_member.dart';
 import 'package:inocare/services/user_prefs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:async';
-import 'package:inocare/screens/rumahsakitmember.dart';
-import 'package:inocare/screens/homepagepasien.dart';
+import '../main.dart'; // biar bisa akses MainPage setelah login
 
 // =================================== LOGIN ===================================
 class LoginPage extends StatefulWidget {
@@ -16,12 +14,10 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // final TextEditingController _emailController = TextEditingController();
   final TextEditingController _whatsappController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // static String? registeredEmail;
-  static String? registeredWhatsapp;
+  static String? registertedWhatsapp;
   static String? registeredNik;
   static String? registeredPassword;
   static String? registeredName;
@@ -32,108 +28,21 @@ class _LoginPageState extends State<LoginPage> {
     _loadUserData();
   }
 
-  Map<String, BloodStock> _getDefaultBloodStock() {
-    return {
-      'A+': BloodStock(type: 'A+', available: true, count: 10),
-      'A-': BloodStock(type: 'A-', available: true, count: 3),
-      'B+': BloodStock(type: 'B+', available: true, count: 8),
-      'B-': BloodStock(type: 'B-', available: false, count: 0),
-      'AB+': BloodStock(type: 'AB+', available: false, count: 0),
-      'AB-': BloodStock(type: 'AB-', available: true, count: 2),
-      'O+': BloodStock(type: 'O+', available: true, count: 15),
-      'O-': BloodStock(type: 'O-', available: true, count: 5),
-    };
-  }
-
-  Map<String, dynamic> _getDefaultFacilities() {
-    return {'kamarVip': 10, 'igd': 5, 'dokter': 25, 'antrian': 'Sedang'};
-  }
-
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    final currentNik = prefs.getString(
-      'current_nik',
-    ); // ambil user yang sedang aktif
-
-    if (currentNik != null) {
-      setState(() {
-        registeredWhatsapp = prefs.getString('user_${currentNik}_whatsapp');
-        registeredNik = prefs.getString('user_${currentNik}_nik');
-        registeredPassword = prefs.getString('user_${currentNik}_password');
-        registeredName = prefs.getString('user_${currentNik}_name');
-      });
-    }
+    setState(() {
+      registertedWhatsapp = prefs.getString('registeredWhatsapp');
+      registeredNik = prefs.getString('registeredNik');
+      registeredPassword = prefs.getString('registeredPassword');
+      registeredName = prefs.getString('registeredName');
+    });
   }
 
   @override
   void dispose() {
-    // _emailController.dispose();
     _whatsappController.dispose();
     _passwordController.dispose();
     super.dispose();
-  }
-
-  // Method untuk menampilkan OTP Modal
-  void _showOTPModal() {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return OTPModal(
-          onOTPVerified: () async {
-            // SIMPAN STATUS LOGIN KE UserPrefs setelah OTP berhasil
-            await UserPrefs.saveUser(
-              whatsapp: registeredWhatsapp!,
-              nik: registeredNik!,
-              password: registeredPassword!,
-              name: registeredName!,
-            );
-
-            // CEK APAKAH USER SUDAH PERNAH PILIH RUMAH SAKIT
-            final selectedHospitalData = await UserPrefs.getSelectedHospital(
-              registeredNik!,
-            );
-
-            if (selectedHospitalData != null) {
-              // Jika sudah pernah pilih, buat objek Hospital dan langsung ke HomePagePasien
-              final savedHospital = Hospital(
-                name: selectedHospitalData['name'],
-                address: selectedHospitalData['address'],
-                phone: selectedHospitalData['phone'],
-                distance: selectedHospitalData['distance'],
-                rating: selectedHospitalData['rating'],
-                reviewCount: selectedHospitalData['reviewCount'],
-                isOpen: selectedHospitalData['isOpen'],
-                services: List<String>.from(selectedHospitalData['services']),
-                imagePath: selectedHospitalData['imagePath'],
-                operatingHours: selectedHospitalData['operatingHours'],
-                type: selectedHospitalData['type'],
-                bloodStock: _getDefaultBloodStock(),
-                facilities: _getDefaultFacilities(),
-                specialties: List<String>.from(
-                  selectedHospitalData['specialties'],
-                ),
-              );
-
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder:
-                      (context) =>
-                          HomePagePasien(selectedHospital: savedHospital),
-                ),
-              );
-            } else {
-              // Jika belum pernah pilih, ke HomePageMember
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => HomePageMember()),
-              );
-            }
-          },
-        );
-      },
-    );
   }
 
   @override
@@ -167,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
           bottomRight: Radius.elliptical(200, 100),
         ),
       ),
-      child:  Center(
+      child: const Center(
         child: Text(
           'Digital Hospital',
           style: TextStyle(
@@ -175,7 +84,7 @@ class _LoginPageState extends State<LoginPage> {
             fontWeight: FontWeight.bold,
             color: Colors.black87,
             letterSpacing: 2,
-            fontFamily: "KolkerBrush",
+            fontFamily: 'KolkerBrush'
           ),
         ),
       ),
@@ -196,10 +105,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
           const SizedBox(height: 40),
-          _buildTextField(
-            controller: _whatsappController,
-            hintText: 'no Whatsapp/NIK',
-          ),
+          _buildTextField(controller: _whatsappController, hintText: 'whatsapp/NIK'),
           const SizedBox(height: 20),
           _buildTextField(
             controller: _passwordController,
@@ -251,6 +157,7 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  // Di login.dart, perbaiki bagian login button
   Widget _buildLoginButton() {
     return Container(
       width: double.infinity,
@@ -261,50 +168,33 @@ class _LoginPageState extends State<LoginPage> {
       ),
       child: ElevatedButton(
         onPressed: () async {
+          // tambahkan async
           final whatsappOrNik = _whatsappController.text.trim();
           final password = _passwordController.text.trim();
 
-          final prefs = await SharedPreferences.getInstance();
-          String? currentNik;
+          if ((whatsappOrNik == registertedWhatsapp || whatsappOrNik == registeredNik) &&
+              password == registeredPassword) {
+            // SIMPAN STATUS LOGIN KE UserPrefs
+            await UserPrefs.saveUser(
+              whatsapp: registertedWhatsapp!,
+              nik: registeredNik!,
+              password: registeredPassword!,
+              name: registeredName!,
+            );
 
-          for (String key in prefs.getKeys()) {
-            if (key.startsWith("user_") && key.endsWith("_nik")) {
-              final nik = prefs.getString(key);
-              final whatsapp = prefs.getString('user_${nik}_whatsapp');
-              final pass = prefs.getString('user_${nik}_password');
-
-              if ((whatsappOrNik == nik || whatsappOrNik == whatsapp) &&
-                  password == pass) {
-                currentNik = nik;
-                break;
-              }
-            }
-          }
-
-          if (currentNik != null) {
-            setState(() {
-              registeredWhatsapp = prefs.getString(
-                'user_${currentNik}_whatsapp',
-              );
-              registeredNik = currentNik;
-              registeredPassword = prefs.getString(
-                'user_${currentNik}_password',
-              );
-              registeredName = prefs.getString('user_${currentNik}_name');
-            });
-
-            // OTP sebelum login
-            _showOTPModal();
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomePageMember()),
+            );
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('No Whatsapp/NIK atau Password salah!'),
+                content: Text('Whatsapp/NIK atau Password salah!'),
                 backgroundColor: Colors.red,
               ),
             );
           }
         },
-
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.transparent,
           shadowColor: Colors.transparent,
@@ -350,311 +240,6 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       ],
-    );
-  }
-}
-
-// =================================== OTP MODAL ===================================
-class OTPModal extends StatefulWidget {
-  final VoidCallback onOTPVerified;
-
-  const OTPModal({Key? key, required this.onOTPVerified}) : super(key: key);
-
-  @override
-  State<OTPModal> createState() => _OTPModalState();
-}
-
-class _OTPModalState extends State<OTPModal> {
-  final List<TextEditingController> _otpControllers = List.generate(
-    6,
-    (index) => TextEditingController(),
-  );
-  final List<FocusNode> _focusNodes = List.generate(6, (index) => FocusNode());
-
-  Timer? _timer;
-  int _countdown = 60;
-  bool _isResendEnabled = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _startCountdown();
-  }
-
-  void _startCountdown() {
-    setState(() {
-      _countdown = 60;
-      _isResendEnabled = false;
-    });
-
-    _timer?.cancel();
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
-      if (_countdown > 0) {
-        setState(() {
-          _countdown--;
-        });
-      } else {
-        setState(() {
-          _isResendEnabled = true;
-        });
-        timer.cancel();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    for (var controller in _otpControllers) {
-      controller.dispose();
-    }
-    for (var focusNode in _focusNodes) {
-      focusNode.dispose();
-    }
-    super.dispose();
-  }
-
-  void _onOTPChanged(String value, int index) {
-    if (value.length == 1) {
-      if (index < 5) {
-        _focusNodes[index + 1].requestFocus();
-      }
-    } else if (value.isEmpty && index > 0) {
-      _focusNodes[index - 1].requestFocus();
-    }
-
-    // Check if all fields are filled
-    String otp = _otpControllers.map((controller) => controller.text).join();
-    if (otp.length == 6) {
-      _verifyOTP(otp);
-    }
-  }
-
-  void _verifyOTP(String otp) {
-    // Simulasi verifikasi OTP (dalam implementasi nyata, kirim ke server)
-    if (otp == "123456") {
-      // OTP dummy untuk testing
-      Navigator.pop(context);
-      widget.onOTPVerified();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Kode OTP tidak valid. Silakan coba lagi.'),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 2),
-        ),
-      );
-      // Clear OTP fields
-      for (var controller in _otpControllers) {
-        controller.clear();
-      }
-      _focusNodes[0].requestFocus();
-    }
-  }
-
-  void _resendOTP() {
-    if (_isResendEnabled) {
-      // Simulasi kirim ulang OTP
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Kode OTP telah dikirim ulang ke WhatsApp Anda.'),
-          backgroundColor: Colors.green,
-          duration: Duration(seconds: 2),
-        ),
-      );
-      _startCountdown();
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      child: Container(
-        padding: EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 10,
-              offset: Offset(0, 5),
-            ),
-          ],
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Header
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Verifikasi OTP',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-                GestureDetector(
-                  onTap: () => Navigator.pop(context),
-                  child: Container(
-                    padding: EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Icons.close, size: 20, color: Colors.grey[600]),
-                  ),
-                ),
-              ],
-            ),
-
-            SizedBox(height: 20),
-
-            // WhatsApp Icon
-            Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Color(0xFF25D366).withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(Icons.phone, size: 40, color: Color(0xFF25D366)),
-            ),
-
-            SizedBox(height: 16),
-
-            // Description
-            Text(
-              'Kode verifikasi telah dikirim melalui WhatsApp ke nomor terdaftar Anda.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-                height: 1.4,
-              ),
-            ),
-
-            SizedBox(height: 24),
-
-            // OTP Input Fields
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: List.generate(6, (index) {
-                return Container(
-                  width: 45,
-                  height: 45,
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color:
-                          _otpControllers[index].text.isEmpty
-                              ? Colors.grey[300]!
-                              : Color(0xFFFF8C00),
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: TextField(
-                    controller: _otpControllers[index],
-                    focusNode: _focusNodes[index],
-                    textAlign: TextAlign.center,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(1),
-                    ],
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                    decoration: InputDecoration(
-                      border: InputBorder.none,
-                      counterText: '',
-                    ),
-                    onChanged: (value) => _onOTPChanged(value, index),
-                  ),
-                );
-              }),
-            ),
-
-            SizedBox(height: 24),
-
-            // Countdown and Resend
-            if (!_isResendEnabled)
-              Text(
-                'Kirim ulang kode dalam $_countdown detik',
-                style: TextStyle(fontSize: 14, color: Colors.grey[600]),
-              )
-            else
-              GestureDetector(
-                onTap: _resendOTP,
-                child: Text(
-                  'Kirim Ulang Kode OTP',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Color(0xFFFF8C00),
-                    fontWeight: FontWeight.w600,
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ),
-
-            SizedBox(height: 24),
-
-            // Verify Button
-            Container(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  String otp =
-                      _otpControllers
-                          .map((controller) => controller.text)
-                          .join();
-                  if (otp.length == 6) {
-                    _verifyOTP(otp);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Silakan masukkan kode OTP lengkap.'),
-                        backgroundColor: Colors.orange,
-                        duration: Duration(seconds: 2),
-                      ),
-                    );
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFFFF8C00),
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                ),
-                child: Text(
-                  'Verifikasi',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-              ),
-            ),
-
-            SizedBox(height: 12),
-
-            // Help Text
-            Text(
-              'Gunakan kode "123456" untuk testing',
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[500],
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -713,15 +298,14 @@ class _RegisterPageState extends State<RegisterPage> {
           bottomRight: Radius.elliptical(200, 100),
         ),
       ),
-      child:  Center(
+      child: const Center(
         child: Text(
-          'Digital Hospital',
+          'INOTAL',
           style: TextStyle(
             fontSize: 48,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
             letterSpacing: 2,
-            fontFamily: "KolkerBrush",
           ),
         ),
       ),
@@ -749,13 +333,12 @@ class _RegisterPageState extends State<RegisterPage> {
             hintText: 'NIK',
             isNik: true,
           ),
-          const SizedBox(height: 20),
+          // const SizedBox(height: 20),
           // _buildTextField(controller: _emailController, hintText: 'Email'),
           const SizedBox(height: 20),
           _buildTextField(
             controller: _whatsappController,
             hintText: 'No Whatsapp',
-            isNumeric: true, // tambahkan parameter baru
           ),
           const SizedBox(height: 40),
           _buildRegisterButton(),
@@ -770,7 +353,6 @@ class _RegisterPageState extends State<RegisterPage> {
     required TextEditingController controller,
     required String hintText,
     bool isNik = false,
-    bool isNumeric = false, // tambahkan ini
   }) {
     return Container(
       decoration: BoxDecoration(
@@ -779,16 +361,13 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
       child: TextField(
         controller: controller,
-        keyboardType:
-            isNumeric || isNik ? TextInputType.number : TextInputType.text,
+        keyboardType: isNik ? TextInputType.number : TextInputType.text,
         inputFormatters:
             isNik
                 ? [
                   FilteringTextInputFormatter.digitsOnly,
                   LengthLimitingTextInputFormatter(16),
                 ]
-                : isNumeric
-                ? [FilteringTextInputFormatter.digitsOnly]
                 : [],
         style: const TextStyle(color: Colors.black87, fontSize: 16),
         decoration: InputDecoration(
@@ -829,7 +408,7 @@ class _RegisterPageState extends State<RegisterPage> {
             MaterialPageRoute(
               builder:
                   (context) => ActivationPage(
-                    whatsapp: _whatsappController.text.trim(),
+                    whatsapp:_whatsappController.text.trim(), // email: _emailController.text.trim(),
                     nik: _nikController.text.trim(),
                     name: _nameController.text.trim(),
                   ),
@@ -883,17 +462,16 @@ class _RegisterPageState extends State<RegisterPage> {
 }
 
 // =================================== AKTIVASI ===================================
-
 class ActivationPage extends StatefulWidget {
+  final String whatsapp;
   final String nik;
   final String name;
-  final String whatsapp;
 
   const ActivationPage({
     Key? key,
+    required this.whatsapp,
     required this.nik,
     required this.name,
-    required this.whatsapp,
   }) : super(key: key);
 
   @override
@@ -915,17 +493,16 @@ class _ActivationPageState extends State<ActivationPage> {
   }
 
   Future<void> _saveUserData(
+    String whatsapp,
     String nik,
     String password,
     String name,
-    String whatsapp,
   ) async {
-    await UserPrefs.saveUser(
-      nik: nik,
-      password: password,
-      name: name,
-      whatsapp: whatsapp,
-    );
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('registeredWhatsapp', whatsapp);
+    await prefs.setString('registeredNik', nik);
+    await prefs.setString('registeredPassword', password);
+    await prefs.setString('registeredName', name);
   }
 
   @override
@@ -967,7 +544,7 @@ class _ActivationPageState extends State<ActivationPage> {
             fontWeight: FontWeight.bold,
             color: Colors.black87,
             letterSpacing: 2,
-            fontFamily: "KolkerBrush",
+            fontFamily: 'KolkerBrush'
           ),
         ),
       ),
@@ -988,10 +565,7 @@ class _ActivationPageState extends State<ActivationPage> {
             ),
           ),
           const SizedBox(height: 40),
-          _buildTextField(
-            controller: _tokenController,
-            hintText: 'Token Aktivasi',
-          ),
+          _buildTextField(controller: _tokenController, hintText: 'Token'),
           const SizedBox(height: 20),
           _buildTextField(
             controller: _passwordController,
@@ -1038,6 +612,7 @@ class _ActivationPageState extends State<ActivationPage> {
     );
   }
 
+  // Di login.dart, perbaiki bagian activation button
   Widget _buildActivationButton() {
     return Container(
       width: double.infinity,
@@ -1058,19 +633,19 @@ class _ActivationPageState extends State<ActivationPage> {
             return;
           }
 
-          // Simpan ke SharedPreferences (data registrasi)
+          // Simpan ke SharedPreferences (untuk data registrasi)
           await _saveUserData(
+            widget.whatsapp,
             widget.nik,
             _passwordController.text,
             widget.name,
-            widget.whatsapp,
           );
 
-          // Update variabel statis di LoginPage
+          // Update variabel statis juga
+          _LoginPageState.registertedWhatsapp = widget.whatsapp;
           _LoginPageState.registeredNik = widget.nik;
           _LoginPageState.registeredPassword = _passwordController.text;
           _LoginPageState.registeredName = widget.name;
-          _LoginPageState.registeredWhatsapp = widget.whatsapp;
 
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
