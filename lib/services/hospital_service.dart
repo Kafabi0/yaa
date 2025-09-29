@@ -34,6 +34,11 @@ class HospitalService {
         'kelas3': {'total': 80, 'available': 0},
         'icu': {'total': 12, 'available': 6},
       },
+
+      'mobilAvailability': {
+        'ambulance': {'total': 5, 'available': 2},
+        'jenazah': {'total': 2, 'available': 0},
+      },
       'rating': 4.5,
       'operatingHours': 'Buka 24 Jam'
     },
@@ -64,6 +69,10 @@ class HospitalService {
         'kelas3': {'total': 70, 'available': 5},
         'icu': {'total': 10, 'available': 4},
       },
+      'mobilAvailability': {
+        'ambulance': {'total': 5, 'available': 2},
+        'jenazah': {'total': 2, 'available': 1},
+      },
       'rating': 4.3,
       'operatingHours': 'Buka 24 Jam'
     },
@@ -90,6 +99,10 @@ class HospitalService {
         'kelas2': {'total': 40, 'available': 15},
         'kelas3': {'total': 60, 'available': 10},
         'icu': {'total': 8, 'available': 2},
+      },
+      'mobilAvailability': {
+        'ambulance': {'total': 9, 'available': 7},
+        'jenazah': {'total': 2, 'available': 1},
       },
       'rating': 4.4,
       'operatingHours': 'Buka 24 Jam'
@@ -120,6 +133,10 @@ class HospitalService {
         'kelas2': {'total': 42, 'available': 12},
         'kelas3': {'total': 65, 'available': 8},
         'icu': {'total': 9, 'available': 3},
+      },
+      'mobilAvailability': {
+        'ambulance': {'total': 5, 'available': 2},
+        'jenazah': {'total': 2, 'available': 1},
       },
       'rating': 4.2,
       'operatingHours': 'Buka 24 Jam'
@@ -152,6 +169,10 @@ class HospitalService {
         'kelas3': {'total': 85, 'available': 20},
         'icu': {'total': 15, 'available': 7},
       },
+      'mobilAvailability': {
+        'ambulance': {'total': 5, 'available': 2},
+        'jenazah': {'total': 2, 'available': 1},
+      },
       'rating': 4.3,
       'operatingHours': 'Buka 24 Jam'
     },
@@ -181,6 +202,10 @@ class HospitalService {
         'kelas2': {'total': 50, 'available': 20},
         'kelas3': {'total': 75, 'available': 25},
         'icu': {'total': 12, 'available': 5},
+      },
+      'mobilAvailability': {
+        'ambulance': {'total': 5, 'available': 2},
+        'jenazah': {'total': 2, 'available': 0},
       },
       'rating': 4.6,
       'operatingHours': 'Buka 24 Jam'

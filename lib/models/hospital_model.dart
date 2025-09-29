@@ -15,6 +15,7 @@ class Hospital {
   final bool hasMCU;
   final Map<String, int>? bloodStock;
   final Map<String, Map<String, int>>? bedAvailability; // Tambahkan ini
+  final Map<String, Map<String, int>>? mobilAvailability; // Tambahkan ini
   final double rating;
   final String operatingHours;
   double? distance;
@@ -35,6 +36,7 @@ class Hospital {
     required this.hasMCU,
     this.bloodStock,
     this.bedAvailability, // Tambahkan ini
+    this.mobilAvailability, // Tambahkan ini
     required this.rating,
     required this.operatingHours,
     this.distance,
@@ -65,6 +67,13 @@ class Hospital {
               )
             ) 
           : null,
+      mobilAvailability: json['mobilAvailability'] != null 
+          ? Map<String, Map<String, int>>.from(
+              json['mobilAvailability'].map((key, value) => 
+                MapEntry(key, Map<String, int>.from(value))
+              )
+            ) 
+          : null,
       rating: json['rating'],
       operatingHours: json['operatingHours'],
     );
@@ -89,6 +98,7 @@ class Hospital {
       hasMCU: hasMCU,
       bloodStock: bloodStock,
       bedAvailability: bedAvailability,
+      mobilAvailability: mobilAvailability,
       rating: rating,
       operatingHours: operatingHours,
       distance: distance ?? this.distance,
