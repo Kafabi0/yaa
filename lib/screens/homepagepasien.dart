@@ -9,6 +9,7 @@ import 'package:inocare/screens/hasilradiologi.dart';
 import 'package:inocare/screens/hasilutdrs.dart';
 import 'package:inocare/screens/infobed.dart';
 import 'package:inocare/screens/infolabu.dart';
+import 'package:inocare/screens/infomobil.dart';
 import 'package:inocare/screens/jadwaloperasi.dart';
 import 'package:inocare/screens/kesehatansaya.dart';
 import 'package:inocare/screens/liveantrian.dart';
@@ -1171,6 +1172,20 @@ class _HomePagePasienState extends State<HomePagePasien> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const BedAvailabilityPage()),
+              );
+            },
+          ),
+          SizedBox(height: 8),
+          _buildScheduleItem(
+            'Ketersediaan Mobil',
+            'Update 12 Sep 2025 - 07:00',
+            'Ambulance : 12, Mobil Jenazah : 6',
+            Colors.red[700]!,
+            FontAwesomeIcons.truckMedical,
+            () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const MobilAvailabilityPage()),
               );
             },
           ),

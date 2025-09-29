@@ -682,7 +682,7 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
       child: Text(
         title,
         style: TextStyle(
-          fontSize: 16,
+          fontSize: 10,
           fontWeight: FontWeight.bold,
           color: color ?? Colors.teal,
         ),

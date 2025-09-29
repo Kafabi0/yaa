@@ -54,7 +54,7 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
 
     await flutterLocalNotificationsPlugin.show(
       1, // ID unik notifikasi (pastikan berbeda jika ada notif lain)
-      'Registrasi Rajal Berhasil! 🎉',
+      'Registrasi Rajal Berhasil!',
       'Pendaftaran Anda di $poli berhasil. Nomor antrian Anda adalah: $nomorAntrian.',
       platformChannelDetails,
     );
@@ -100,9 +100,30 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
     'Sore (16:00-19:00)',
   ];
 
+  // Future<String> generateNomorAntrian() async {
+  //   final prefs = await SharedPreferences.getInstance();
+
+  //   String today = DateTime.now().toIso8601String().substring(
+  //     0,
+  //     10,
+  //   ); // yyyy-MM-dd
+  //   String key = "rajal_last_number_$today";
+
+  //   int lastNumber = prefs.getInt(key) ?? 0;
+  //   int newNumber = lastNumber + 1;
+
+  //   // Simpan kembali
+  //   await prefs.setInt(key, newNumber);
+
+  //   // Format jadi 3 digit, misal 001, 002
+  //   String formattedNumber = newNumber.toString().padLeft(3, '0');
+
+  //   return "RJ$formattedNumber";
+  // }
+
   Future<void> _simpanData() async {
     final prefs = await SharedPreferences.getInstance();
-    final nik = prefs.getString('current_nik'); 
+    final nik = prefs.getString('current_nik');
 
     if (nik == null) {
       throw Exception("User belum login, NIK tidak ditemukan.");
@@ -178,20 +199,17 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
 
       if (mounted) {
         final prefs = await SharedPreferences.getInstance();
-        final nik = prefs.getString('current_nik'); 
+        final nik = prefs.getString('current_nik');
         if (nik == null) {
           throw Exception("User belum login, NIK tidak ditemukan.");
         }
-        final nomorAntrian = prefs.getString(
-          'user_${nik}_nomorAntrian_RAJAL',
-        ); 
+        final nomorAntrian = prefs.getString('user_${nik}_nomorAntrian_RAJAL');
         await prefs.setString(
           'rajalWaktuRegistrasi',
           DateTime.now().toIso8601String(),
         );
 
         final poli = _selectedPoli ?? '';
-
 
         await showRegistrationSuccessNotification(
           poli,

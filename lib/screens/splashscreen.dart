@@ -138,6 +138,7 @@ class _Page extends StatelessWidget {
                     fontSize: screenHeight * 0.080,
                     fontWeight: FontWeight.bold,
                     fontFamily: "KolkerBrush", 
+                    letterSpacing: 2.5,
                   ),
                 ),
               ],
