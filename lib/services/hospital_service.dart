@@ -270,6 +270,12 @@ class HospitalService {
     },
   ];
 
+
+  // Tambahkan metode ini di dalam kelas HospitalService
+static List<Map<String, dynamic>> getLocalHospitals() {
+  return _localHospitals;
+}
+
   static Future<List<Hospital>> getNearbyHospitals({
     required double latitude,
     required double longitude,

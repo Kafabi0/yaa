@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'rumahsakitmember.dart';
+import '../services/hospital_service.dart';
 
 class DoctorSchedulePage extends StatefulWidget {
   final Hospital hospital;
+  final String? doctorName; // Tambahkan parameter ini
   
-  const DoctorSchedulePage({Key? key, required this.hospital}) : super(key: key);
+  const DoctorSchedulePage({
+    Key? key, 
+    required this.hospital,
+    this.doctorName, // Parameter opsional
+  }) : super(key: key);
 
   @override
   State<DoctorSchedulePage> createState() => _DoctorSchedulePageState();
@@ -23,6 +29,12 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage> with SingleTick
   void initState() {
     super.initState();
     _tabController = TabController(length: 7, vsync: this);
+    
+    // Jika ada nama dokter yang diberikan, set sebagai query pencarian
+    if (widget.doctorName != null && widget.doctorName!.isNotEmpty) {
+      _searchController.text = widget.doctorName!;
+      _searchQuery = widget.doctorName!;
+    }
   }
 
   @override
@@ -76,7 +88,8 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage> with SingleTick
       'Minggu': [],
     };
 
-    if (widget.hospital.name == 'RSUD Dr. H. Abdul Moeloek') {
+    // RSUP Dr. Hasan Sadikin
+    if (widget.hospital.name == 'RSUP Dr. Hasan Sadikin') {
       doctorsByDay['Senin']!.add(
         Doctor(
           name: 'Dr. Ahmad Rizki, Sp.EM',
@@ -167,7 +180,9 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage> with SingleTick
           isAvailable: true,
         ),
       );
-    } else if (widget.hospital.name == 'Edelweiss Hospital') {
+    } 
+    // Edelweiss Hospital
+    else if (widget.hospital.name == 'Edelweiss Hospital') {
       doctorsByDay['Senin']!.add(
         Doctor(
           name: 'Dr. Maya Sari, Sp.JP',
@@ -228,7 +243,9 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage> with SingleTick
           isAvailable: true,
         ),
       );
-    } else if (widget.hospital.name == 'RS Advent Bandung') {
+    } 
+    // RS Advent Bandung
+    else if (widget.hospital.name == 'RS Advent Bandung') {
       doctorsByDay['Senin']!.add(
         Doctor(
           name: 'Dr. Robert Chen, Sp.PD',
@@ -279,7 +296,9 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage> with SingleTick
           isAvailable: false,
         ),
       );
-    } else if (widget.hospital.name == 'RS Hermina Arcamanik') {
+    } 
+    // RS Hermina Arcamanik
+    else if (widget.hospital.name == 'RS Hermina Arcamanik') {
       doctorsByDay['Senin']!.add(
         Doctor(
           name: 'Dr. Indra Gunawan, Sp.OG',
@@ -331,6 +350,258 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage> with SingleTick
         ),
       );
     }
+    // RSUP Fatmawati
+    else if (widget.hospital.name == 'RSUP Fatmawati') {
+      doctorsByDay['Senin']!.add(
+        Doctor(
+          name: 'Dr. Budi Santoso, Sp.PD',
+          specialty: 'PENYAKIT DALAM',
+          location: 'Poliklinik Penyakit Dalam',
+          time: '08:00 - 14:00',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+      doctorsByDay['Selasa']!.add(
+        Doctor(
+          name: 'Dr. Siti Nurhaliza, Sp.JP',
+          specialty: 'JANTUNG',
+          location: 'Poliklinik Jantung',
+          time: '09:00 - 15:00',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+      doctorsByDay['Rabu']!.add(
+        Doctor(
+          name: 'Dr. Ahmad Rizki, Sp.EM',
+          specialty: 'INSTALASI GAWAT DARURAT',
+          location: 'Gawat Darurat',
+          time: '24 Jam',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+      doctorsByDay['Kamis']!.add(
+        Doctor(
+          name: 'Dr. Dewi Lestari, Sp.KK',
+          specialty: 'KULIT',
+          location: 'Poliklinik Kulit',
+          time: '08:00 - 12:00',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+      doctorsByDay['Jumat']!.add(
+        Doctor(
+          name: 'Dr. Robert Chen, Sp.PD',
+          specialty: 'PENYAKIT DALAM',
+          location: 'Poliklinik Penyakit Dalam',
+          time: '08:00 - 14:00',
+          status: 'Sibuk',
+          isAvailable: false,
+        ),
+      );
+    }
+    // RS Pondok Indah
+    else if (widget.hospital.name == 'RS Pondok Indah') {
+      doctorsByDay['Senin']!.add(
+        Doctor(
+          name: 'Dr. Maya Sari, Sp.OG',
+          specialty: 'KANDUNGAN',
+          location: 'Poliklinik Kandungan',
+          time: '09:00 - 15:00',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+      doctorsByDay['Selasa']!.add(
+        Doctor(
+          name: 'Dr. Andi Wijaya, Sp.S',
+          specialty: 'SARAF',
+          location: 'Poliklinik Saraf',
+          time: '10:00 - 14:00',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+      doctorsByDay['Rabu']!.add(
+        Doctor(
+          name: 'Dr. Jessica Wong, Sp.JP',
+          specialty: 'JANTUNG',
+          location: 'Poliklinik Jantung',
+          time: '08:00 - 16:00',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+      doctorsByDay['Kamis']!.add(
+        Doctor(
+          name: 'Dr. Michael Tan, Sp.THT',
+          specialty: 'THT',
+          location: 'Poliklinik THT',
+          time: '09:00 - 13:00',
+          status: 'Sibuk',
+          isAvailable: false,
+        ),
+      );
+      doctorsByDay['Jumat']!.add(
+        Doctor(
+          name: 'Dr. Budi Santoso, Sp.PD',
+          specialty: 'PENYAKIT DALAM',
+          location: 'Poliklinik Penyakit Dalam',
+          time: '08:00 - 14:00',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+    }
+    // Klinik Husada Jakarta
+    else if (widget.hospital.name == 'Klinik Husada Jakarta') {
+      doctorsByDay['Senin']!.add(
+        Doctor(
+          name: 'Dr. Lisa Permata, Sp.PD',
+          specialty: 'PENYAKIT DALAM',
+          location: 'Poliklinik Umum',
+          time: '08:00 - 16:00',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+      doctorsByDay['Selasa']!.add(
+        Doctor(
+          name: 'Dr. Rizki Pratama, Sp.PD',
+          specialty: 'PENYAKIT DALAM',
+          location: 'Poliklinik Umum',
+          time: '08:00 - 16:00',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+      doctorsByDay['Rabu']!.add(
+        Doctor(
+          name: 'Dr. Ratna Dewi, Sp.A',
+          specialty: 'ANAK',
+          location: 'Poliklinik Anak',
+          time: '09:00 - 15:00',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+      doctorsByDay['Kamis']!.add(
+        Doctor(
+          name: 'Dr. Hendra Kusuma, Sp.JP',
+          specialty: 'JANTUNG',
+          location: 'Poliklinik Jantung',
+          time: '10:00 - 14:00',
+          status: 'Sibuk',
+          isAvailable: false,
+        ),
+      );
+      doctorsByDay['Jumat']!.add(
+        Doctor(
+          name: 'Dr. Dewi Lestari, Sp.KK',
+          specialty: 'KULIT',
+          location: 'Poliklinik Kulit',
+          time: '08:00 - 12:00',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+    }
+    // RSUD Dr. H. Abdul Moeloek
+    else if (widget.hospital.name == 'RSUD Dr. H. Abdul Moeloek') {
+      doctorsByDay['Senin']!.add(
+        Doctor(
+          name: 'Dr. Ahmad Rizki, Sp.EM',
+          specialty: 'INSTALASI GAWAT DARURAT',
+          location: 'Gawat Darurat',
+          time: '24 Jam',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+      doctorsByDay['Senin']!.add(
+        Doctor(
+          name: 'Dr. Sri Handayani, Sp.PD',
+          specialty: 'PENYAKIT DALAM',
+          location: 'Poliklinik Penyakit Dalam - Ruang 3A',
+          time: '08:00 - 16:00',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+      doctorsByDay['Selasa']!.add(
+        Doctor(
+          name: 'Dr. Ahmad Rizki, Sp.EM',
+          specialty: 'INSTALASI GAWAT DARURAT',
+          location: 'Gawat Darurat',
+          time: '24 Jam',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+      doctorsByDay['Selasa']!.add(
+        Doctor(
+          name: 'Dr. Maria Sari, Sp.JP',
+          specialty: 'JANTUNG',
+          location: 'Poliklinik Jantung - Ruang 5A',
+          time: '10:00 - 18:00',
+          status: 'Sibuk',
+          isAvailable: false,
+        ),
+      );
+      doctorsByDay['Rabu']!.add(
+        Doctor(
+          name: 'Dr. Budi Santoso, Sp.A',
+          specialty: 'ANAK',
+          location: 'Poliklinik Anak - Ruang 2B',
+          time: '09:00 - 15:00',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+      doctorsByDay['Kamis']!.add(
+        Doctor(
+          name: 'Dr. Siti Nurhaliza, Sp.M',
+          specialty: 'MATA',
+          location: 'Poliklinik Mata - Ruang 4A',
+          time: '08:00 - 14:00',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+      doctorsByDay['Jumat']!.add(
+        Doctor(
+          name: 'Dr. Ahmad Rizki, Sp.EM',
+          specialty: 'INSTALASI GAWAT DARURAT',
+          location: 'Gawat Darurat',
+          time: '24 Jam',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+      doctorsByDay['Sabtu']!.add(
+        Doctor(
+          name: 'Dr. Dewi Lestari, Sp.KK',
+          specialty: 'KULIT',
+          location: 'Poliklinik Kulit - Ruang 1A',
+          time: '08:00 - 12:00',
+          status: 'Tidak Tersedia',
+          isAvailable: false,
+        ),
+      );
+      doctorsByDay['Minggu']!.add(
+        Doctor(
+          name: 'Dr. Ahmad Rizki, Sp.EM',
+          specialty: 'INSTALASI GAWAT DARURAT',
+          location: 'Gawat Darurat',
+          time: '24 Jam',
+          status: 'Tersedia',
+          isAvailable: true,
+        ),
+      );
+    }
 
     return doctorsByDay;
   }
@@ -365,6 +636,12 @@ class _DoctorSchedulePageState extends State<DoctorSchedulePage> with SingleTick
 
   @override
   Widget build(BuildContext context) {
+    // Tambahkan print untuk debugging
+    print("DoctorSchedulePage dibuka untuk: ${widget.hospital.name}");
+    if (widget.doctorName != null) {
+      print("Mencari dokter: ${widget.doctorName}");
+    }
+    
     Map<String, List<Doctor>> doctorsByDay = getDoctorsForHospital();
     
     return Scaffold(
