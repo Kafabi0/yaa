@@ -76,7 +76,7 @@ class HospitalService {
       'imageUrl': 'assets/images/rsadvent.jpg',
       'phone': '(022) 2034386',
       'services': ['IGD', 'Rawat Jalan', 'Rawat Inap', 'MCU'],
-      'isOpen24Hours': true,
+      'isOpen24Hours': false,
       'hasBloodStock': false, // RS swasta premium, stok darah terbatas
       'acceptsBPJS': false, // RS premium, tidak terima BPJS
       'hasIGD': true,
