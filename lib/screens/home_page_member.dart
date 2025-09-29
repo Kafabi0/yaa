@@ -34,6 +34,7 @@ class HomePageMember extends StatefulWidget {
 
 class _HomePageMemberState extends State<HomePageMember> {
   final TextEditingController _searchController = TextEditingController();
+  final TextEditingController _doctorSearchController = TextEditingController(); // Controller untuk pencarian dokter
   final PageController _promoPageController = PageController();
   int _currentPromoIndex = 0;
   int _currentIndex = 0;
@@ -393,6 +394,7 @@ class _HomePageMemberState extends State<HomePageMember> {
   @override
   void dispose() {
     _searchController.dispose();
+    _doctorSearchController.dispose(); // Dispose controller dokter
     _promoPageController.dispose();
     super.dispose();
   }
@@ -429,6 +431,8 @@ class _HomePageMemberState extends State<HomePageMember> {
           _buildSearchSection(),
           _buildNearestHospitalSection(),
           _buildQuickAccessSection(),
+          _buildDoctorSearchSection(),
+          const SizedBox(height: 20),
           _buildTodaySection(),
           _buildPromoSection(),
           _buildHealthArticlesSection(),
@@ -895,20 +899,6 @@ class _HomePageMemberState extends State<HomePageMember> {
                 );
               },
             ),
-            const SizedBox(height: 12),
-            _buildTodayItem(
-              icon: MdiIcons.doctor,
-              iconColor: const Color.fromARGB(255, 128, 19, 244),
-              title: 'Ketersediaan Dokter',
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => RumahSakitMemberPage(),
-                  ),
-                );
-              },
-            ),
           ],
         ),
       ),
@@ -962,6 +952,102 @@ class _HomePageMemberState extends State<HomePageMember> {
                   Icons.arrow_forward_ios,
                   size: 24,
                   color: Colors.white,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Tambahkan metode baru untuk card pencarian dokter
+  Widget _buildDoctorSearchSection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.person_search, color: Color(0xFFFF6B35)),
+                const SizedBox(width: 8),
+                Text(
+                  'Cari Dokter',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _doctorSearchController,
+              decoration: InputDecoration(
+                hintText: 'Masukkan nama dokter...',
+                prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Color(0xFFFF6B35)),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  // Navigasi ke halaman rumah sakit dengan parameter pencarian dokter
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => RumahSakitMemberPage(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFFF6B35),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: Text(
+                  'Cari Dokter',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ),
