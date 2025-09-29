@@ -5,7 +5,7 @@ import 'package:inocare/services/user_prefs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 
-import '../main.dart'; // biar bisa akses MainPage setelah login
+import '../main.dart';
 
 // =================================== LOGIN ===================================
 class LoginPage extends StatefulWidget {
@@ -32,9 +32,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    final currentNik = prefs.getString(
-      'current_nik',
-    ); // ambil user yang sedang aktif
+    final currentNik = prefs.getString('current_nik');
 
     if (currentNik != null) {
       setState(() {
@@ -60,7 +58,6 @@ class _LoginPageState extends State<LoginPage> {
       builder: (BuildContext context) {
         return OTPModal(
           onOTPVerified: () async {
-            // SIMPAN STATUS LOGIN KE UserPrefs setelah OTP berhasil
             await UserPrefs.saveUser(
               whatsapp: registertedWhatsapp!,
               nik: registeredNik!,
@@ -172,13 +169,12 @@ class _LoginPageState extends State<LoginPage> {
         controller: controller,
         obscureText: isPassword,
         keyboardType: isNik ? TextInputType.number : TextInputType.text,
-        inputFormatters:
-            isNik
-                ? [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(16),
-                ]
-                : [],
+        inputFormatters: isNik
+            ? [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(16),
+              ]
+            : [],
         style: const TextStyle(color: Colors.black87, fontSize: 16),
         decoration: InputDecoration(
           hintText: hintText,
@@ -193,7 +189,6 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  // Di login.dart, perbaiki bagian login button
   Widget _buildLoginButton() {
     return Container(
       width: double.infinity,
@@ -204,9 +199,18 @@ class _LoginPageState extends State<LoginPage> {
       ),
       child: ElevatedButton(
         onPressed: () async {
-          // tambahkan async
           final whatsappOrNik = _whatsappController.text.trim();
           final password = _passwordController.text.trim();
+
+          if (whatsappOrNik.isEmpty || password.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Whatsapp/NIK dan Password harus diisi!'),
+                backgroundColor: Colors.red,
+              ),
+            );
+            return;
+          }
 
           final prefs = await SharedPreferences.getInstance();
           String? currentNik;
@@ -214,26 +218,29 @@ class _LoginPageState extends State<LoginPage> {
           for (String key in prefs.getKeys()) {
             if (key.startsWith("user_") && key.endsWith("_nik")) {
               final nik = prefs.getString(key);
-              final whatsapp = prefs.getString('user_${nik}_whatsapp');
-              final pass = prefs.getString('user_${nik}_password');
+              if (nik != null) {
+                final whatsapp = prefs.getString('user_${nik}_whatsapp');
+                final pass = prefs.getString('user_${nik}_password');
 
-              if ((whatsappOrNik == nik || whatsappOrNik == whatsapp) &&
-                  password == pass) {
-                currentNik = nik;
-                break;
+                if ((whatsappOrNik == nik || whatsappOrNik == whatsapp) &&
+                    password == pass) {
+                  currentNik = nik;
+                  break;
+                }
               }
             }
           }
 
           if (currentNik != null) {
+            await prefs.setString('current_nik', currentNik);
+            
             setState(() {
               registertedWhatsapp = prefs.getString('user_${currentNik}_whatsapp');
               registeredNik = currentNik;
-              registeredPassword = prefs.getString(
-                'user_${currentNik}_password',
-              );
+              registeredPassword = prefs.getString('user_${currentNik}_password');
               registeredName = prefs.getString('user_${currentNik}_name');
             });
+            
             _showOTPModal();
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -361,7 +368,6 @@ class _OTPModalState extends State<OTPModal> {
       _focusNodes[index - 1].requestFocus();
     }
 
-    // Check if all fields are filled
     String otp = _otpControllers.map((controller) => controller.text).join();
     if (otp.length == 6) {
       _verifyOTP(otp);
@@ -369,9 +375,7 @@ class _OTPModalState extends State<OTPModal> {
   }
 
   void _verifyOTP(String otp) {
-    // Simulasi verifikasi OTP (dalam implementasi nyata, kirim ke server)
     if (otp == "123456") {
-      // OTP dummy untuk testing
       Navigator.pop(context);
       widget.onOTPVerified();
     } else {
@@ -382,7 +386,6 @@ class _OTPModalState extends State<OTPModal> {
           duration: Duration(seconds: 2),
         ),
       );
-      // Clear OTP fields
       for (var controller in _otpControllers) {
         controller.clear();
       }
@@ -392,7 +395,6 @@ class _OTPModalState extends State<OTPModal> {
 
   void _resendOTP() {
     if (_isResendEnabled) {
-      // Simulasi kirim ulang OTP
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Kode OTP telah dikirim ulang ke WhatsApp Anda.'),
@@ -424,7 +426,6 @@ class _OTPModalState extends State<OTPModal> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Header
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -449,10 +450,7 @@ class _OTPModalState extends State<OTPModal> {
                 ),
               ],
             ),
-
             SizedBox(height: 20),
-
-            // WhatsApp Icon
             Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -461,10 +459,7 @@ class _OTPModalState extends State<OTPModal> {
               ),
               child: Icon(Icons.phone, size: 40, color: Color(0xFF25D366)),
             ),
-
             SizedBox(height: 16),
-
-            // Description
             Text(
               'Kode verifikasi telah dikirim melalui WhatsApp ke nomor terdaftar Anda.',
               textAlign: TextAlign.center,
@@ -474,10 +469,7 @@ class _OTPModalState extends State<OTPModal> {
                 height: 1.4,
               ),
             ),
-
             SizedBox(height: 24),
-
-            // OTP Input Fields
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: List.generate(6, (index) {
@@ -486,10 +478,9 @@ class _OTPModalState extends State<OTPModal> {
                   height: 45,
                   decoration: BoxDecoration(
                     border: Border.all(
-                      color:
-                          _otpControllers[index].text.isEmpty
-                              ? Colors.grey[300]!
-                              : Color(0xFFFF8C00),
+                      color: _otpControllers[index].text.isEmpty
+                          ? Colors.grey[300]!
+                          : Color(0xFFFF8C00),
                       width: 2,
                     ),
                     borderRadius: BorderRadius.circular(8),
@@ -517,10 +508,7 @@ class _OTPModalState extends State<OTPModal> {
                 );
               }),
             ),
-
             SizedBox(height: 24),
-
-            // Countdown and Resend
             if (!_isResendEnabled)
               Text(
                 'Kirim ulang kode dalam $_countdown detik',
@@ -539,19 +527,15 @@ class _OTPModalState extends State<OTPModal> {
                   ),
                 ),
               ),
-
             SizedBox(height: 24),
-
-            // Verify Button
             Container(
               width: double.infinity,
               height: 50,
               child: ElevatedButton(
                 onPressed: () {
-                  String otp =
-                      _otpControllers
-                          .map((controller) => controller.text)
-                          .join();
+                  String otp = _otpControllers
+                      .map((controller) => controller.text)
+                      .join();
                   if (otp.length == 6) {
                     _verifyOTP(otp);
                   } else {
@@ -578,10 +562,7 @@ class _OTPModalState extends State<OTPModal> {
                 ),
               ),
             ),
-
             SizedBox(height: 12),
-
-            // Help Text
             Text(
               'Gunakan kode "123456" untuk testing',
               style: TextStyle(
@@ -608,14 +589,12 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _nikController = TextEditingController();
-  // final TextEditingController _emailController = TextEditingController();
   final TextEditingController _whatsappController = TextEditingController();
 
   @override
   void dispose() {
     _nameController.dispose();
     _nikController.dispose();
-    // _emailController.dispose();
     _whatsappController.dispose();
     super.dispose();
   }
@@ -686,8 +665,6 @@ class _RegisterPageState extends State<RegisterPage> {
             hintText: 'NIK',
             isNik: true,
           ),
-          // const SizedBox(height: 20),
-          // _buildTextField(controller: _emailController, hintText: 'Email'),
           const SizedBox(height: 20),
           _buildTextField(
             controller: _whatsappController,
@@ -715,13 +692,12 @@ class _RegisterPageState extends State<RegisterPage> {
       child: TextField(
         controller: controller,
         keyboardType: isNik ? TextInputType.number : TextInputType.text,
-        inputFormatters:
-            isNik
-                ? [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(16),
-                ]
-                : [],
+        inputFormatters: isNik
+            ? [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(16),
+              ]
+            : [],
         style: const TextStyle(color: Colors.black87, fontSize: 16),
         decoration: InputDecoration(
           hintText: hintText,
@@ -745,7 +721,17 @@ class _RegisterPageState extends State<RegisterPage> {
         borderRadius: BorderRadius.circular(25),
       ),
       child: ElevatedButton(
-        onPressed: () {
+        onPressed: () async {
+          if (_nameController.text.trim().isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Nama harus diisi'),
+                backgroundColor: Colors.red,
+              ),
+            );
+            return;
+          }
+
           if (_nikController.text.length != 16) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -756,17 +742,37 @@ class _RegisterPageState extends State<RegisterPage> {
             return;
           }
 
+          if (_whatsappController.text.trim().isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('No WhatsApp harus diisi'),
+                backgroundColor: Colors.red,
+              ),
+            );
+            return;
+          }
+
+          final prefs = await SharedPreferences.getInstance();
+          final existingNik = prefs.getString('user_${_nikController.text.trim()}_nik');
+          
+          if (existingNik != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('NIK sudah terdaftar!'),
+                backgroundColor: Colors.red,
+              ),
+            );
+            return;
+          }
+
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder:
-                  (context) => ActivationPage(
-                    whatsapp:
-                        _whatsappController.text
-                            .trim(), // email: _emailController.text.trim(),
-                    nik: _nikController.text.trim(),
-                    name: _nameController.text.trim(),
-                  ),
+              builder: (context) => ActivationPage(
+                whatsapp: _whatsappController.text.trim(),
+                nik: _nikController.text.trim(),
+                name: _nameController.text.trim(),
+              ),
             ),
           );
         },
@@ -854,10 +860,12 @@ class _ActivationPageState extends State<ActivationPage> {
     String name,
   ) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('registeredWhatsapp', whatsapp);
-    await prefs.setString('registeredNik', nik);
-    await prefs.setString('registeredPassword', password);
-    await prefs.setString('registeredName', name);
+    
+    await prefs.setString('user_${nik}_whatsapp', whatsapp);
+    await prefs.setString('user_${nik}_nik', nik);
+    await prefs.setString('user_${nik}_password', password);
+    await prefs.setString('user_${nik}_name', name);
+    await prefs.setString('current_nik', nik);
   }
 
   @override
@@ -967,7 +975,6 @@ class _ActivationPageState extends State<ActivationPage> {
     );
   }
 
-  // Di login.dart, perbaiki bagian activation button
   Widget _buildActivationButton() {
     return Container(
       width: double.infinity,
@@ -978,6 +985,26 @@ class _ActivationPageState extends State<ActivationPage> {
       ),
       child: ElevatedButton(
         onPressed: () async {
+          if (_tokenController.text.trim().isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Token harus diisi'),
+                backgroundColor: Colors.red,
+              ),
+            );
+            return;
+          }
+
+          if (_passwordController.text.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Password harus diisi'),
+                backgroundColor: Colors.red,
+              ),
+            );
+            return;
+          }
+
           if (_passwordController.text != _confirmPasswordController.text) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
@@ -988,7 +1015,6 @@ class _ActivationPageState extends State<ActivationPage> {
             return;
           }
 
-          // Simpan ke SharedPreferences (untuk data registrasi)
           await _saveUserData(
             widget.whatsapp,
             widget.nik,
@@ -996,7 +1022,6 @@ class _ActivationPageState extends State<ActivationPage> {
             widget.name,
           );
 
-          // Update variabel statis juga
           _LoginPageState.registertedWhatsapp = widget.whatsapp;
           _LoginPageState.registeredNik = widget.nik;
           _LoginPageState.registeredPassword = _passwordController.text;
