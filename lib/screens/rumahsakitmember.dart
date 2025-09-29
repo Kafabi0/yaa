@@ -393,6 +393,7 @@ class _RumahSakitMemberPageState extends State<RumahSakitMemberPage> {
       bloodStock: bloodStockMap,
       facilities: facilities,
       specialties: specialties,
+      mobilAvailability: serviceHospital.mobilAvailability,
       // Tambahkan data bed availability
       bedAvailability: serviceHospital.bedAvailability,
     );
@@ -1182,6 +1183,23 @@ Row(
                 ),
 
                 SizedBox(height: 12),
+                Text('Ketersediaan Ambulans:',
+                    style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87)),
+                SizedBox(height: 8),
+                Row(
+                  children: [
+                    _buildMobilStockStatus('Ambulance',
+                        (hospital.mobilAvailability?['ambulance']?['available'] ?? 0) > 0),
+                    SizedBox(width: 8),
+                    _buildMobilStockStatus('Jenazah',
+                        (hospital.mobilAvailability?['jenazah']?['available'] ?? 0) > 0),
+                    SizedBox(width: 8),
+                  ],
+                ),
+                SizedBox(height: 12),
 
                 // Layanan Instalasi (tetap di bawah)
                 Text('Layanan Instalasi:',
@@ -1339,6 +1357,35 @@ Row(
     );
   }
 
+  Widget _buildMobilStockStatus(String label, bool isAvailable) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        decoration: BoxDecoration(
+          color: isAvailable
+              ? Colors.green.withOpacity(0.1)
+              : Colors.red.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(
+            color: isAvailable ? Colors.green : Colors.red,
+            width: 1,
+          ),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: isAvailable ? Colors.green : Colors.red,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildFacilityInfo(String count, String label, IconData icon) {
     return Column(
       children: [
@@ -1392,6 +1439,7 @@ class Hospital {
   final Map<String, dynamic> facilities;
   final List<String> specialties;
   final Map<String, Map<String, int>>? bedAvailability; // Tambahkan ini
+  final Map<String, Map<String, int>>? mobilAvailability; // Tambahkan ini
 
   Hospital({
     required this.name,
@@ -1409,6 +1457,7 @@ class Hospital {
     required this.facilities,
     required this.specialties,
     this.bedAvailability, // Tambahkan ini
+    this.mobilAvailability, // Tambahkan ini
   });
 
   // Ubah dari metode menjadi getter
