@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:inocare/screens/homepagepasien.dart';
 import 'rumahsakitmember.dart';
+import 'package:inocare/screens/detailjadwaldokter.dart';
 
 class HospitalDetailPage extends StatefulWidget {
   final Hospital hospital;
@@ -378,7 +379,14 @@ class _HospitalDetailPageState extends State<HospitalDetailPage> {
           Container(
             width: double.infinity,
             child: OutlinedButton.icon(
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DoctorSchedulePage(hospital: widget.hospital),
+                  ),
+                );
+              },
               icon: Icon(Icons.calendar_today, size: 16),
               label: Text('Lihat Jadwal Lengkap Dokter'),
               style: OutlinedButton.styleFrom(
