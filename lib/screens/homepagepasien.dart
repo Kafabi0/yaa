@@ -1380,9 +1380,9 @@ class _HomePagePasienState extends State<HomePagePasien> {
             scrollDirection: Axis.horizontal,
             child: Row(
               children: [
-                _buildQueueItem('IGD', 'RJ37', Colors.brown, _antrianIGD),
+                _buildQueueItem('IGD', 'I37', Colors.brown, _antrianIGD),
                 SizedBox(width: 12),
-                _buildQueueItem('RAJAL', 'B40', Colors.blue, _antrianRajal),
+                _buildQueueItem('RAJAL', 'RJ40', Colors.blue, _antrianRajal),
                 SizedBox(width: 12),
                 _buildQueueItem('MCU', 'M10', Colors.grey[700]!, _antrianMCU),
                 SizedBox(width: 12),

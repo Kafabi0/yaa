@@ -7,12 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:inocare/screens/order.dart';
 // import 'package:inocare/screens/tiketantrian.dart';
 import 'screens/home_screen.dart';
-import 'screens/health_records_screen.dart';
 import 'screens/home_page_member.dart';
-import 'screens/notifications_screen.dart';
 import 'screens/settings_screen.dart';
 import 'widgets/bottom_navigation_bar.dart';
-import 'screens/doctor_list.dart';
 import 'services/user_prefs.dart';
 import 'screens/splashscreen.dart';
 
@@ -244,13 +241,13 @@ class _MainPageState extends State<MainPage> {
           },
         );
       case 1:
-        return const HealthRecordsScreen();
+        return const HealthAppHomePage();
       case 2:
-        return const NotificationsScreen();
+        return const HealthAppHomePage();
       case 3:
         return SettingsScreen(onLogout: _handleLogout);
       case 4:
-        return const DoctorListScreen();
+        return const HealthAppHomePage();
       default:
         return const Center(child: Text("Halaman tidak ditemukan"));
     }
