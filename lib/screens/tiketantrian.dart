@@ -274,29 +274,129 @@ class QueueTicketPage extends StatelessWidget {
     );
   }
 
-  Future<void> _hapusDataRegistrasiRajal(String nik) async {
+  Future<void> _hapusDataRegistrasiByJenis(String nik, String jenis) async {
     final prefs = await SharedPreferences.getInstance();
 
-    // Hapus semua data registrasi RAJAL
-    await prefs.remove('user_${nik}_rajalName');
-    await prefs.remove('user_${nik}_familyCardNumber');
-    await prefs.remove('user_${nik}_birthPlace');
-    await prefs.remove('user_${nik}_birthDate');
-    await prefs.remove('user_${nik}_gender');
-    await prefs.remove('user_${nik}_registeredAgama');
-    await prefs.remove('user_${nik}_registeredStatus');
-    await prefs.remove('user_${nik}_registeredGolDarah');
-    await prefs.remove('user_${nik}_address');
-    await prefs.remove('user_${nik}_phone');
-    await prefs.remove('user_${nik}_registeredPekerjaan');
-    await prefs.remove('user_${nik}_registeredNamaKeluarga');
-    await prefs.remove('user_${nik}_registeredNoHPKeluarga');
-    await prefs.remove('user_${nik}_registeredAsuransi');
-    await prefs.remove('user_${nik}_registeredPoli');
-    await prefs.remove('user_${nik}_registeredJadwal');
-    await prefs.remove('user_${nik}_registeredKeluhan');
-    await prefs.remove('user_${nik}_nomorAntrian_RAJAL');
-    await prefs.remove('rajalWaktuRegistrasi');
+    switch (jenis) {
+      case 'RAJAL':
+        await prefs.remove('user_${nik}_rajalName');
+        await prefs.remove('user_${nik}_familyCardNumber');
+        await prefs.remove('user_${nik}_birthPlace');
+        await prefs.remove('user_${nik}_birthDate');
+        await prefs.remove('user_${nik}_gender');
+        await prefs.remove('user_${nik}_registeredAgama');
+        await prefs.remove('user_${nik}_registeredStatus');
+        await prefs.remove('user_${nik}_registeredGolDarah');
+        await prefs.remove('user_${nik}_address');
+        await prefs.remove('user_${nik}_phone');
+        await prefs.remove('user_${nik}_registeredPekerjaan');
+        await prefs.remove('user_${nik}_registeredNamaKeluarga');
+        await prefs.remove('user_${nik}_registeredNoHPKeluarga');
+        await prefs.remove('user_${nik}_registeredAsuransi');
+        await prefs.remove('user_${nik}_registeredPoli');
+        await prefs.remove('user_${nik}_registeredJadwal');
+        await prefs.remove('user_${nik}_registeredKeluhan');
+        await prefs.remove('user_${nik}_nomorAntrian_RAJAL');
+        await prefs.remove('rajalWaktuRegistrasi');
+        break;
+
+      case 'RANAP':
+        await prefs.remove('user_${nik}_ranapName');
+        await prefs.remove('user_${nik}_ranapNIK');
+        await prefs.remove('user_${nik}_ranapNoKK');
+        await prefs.remove('user_${nik}_ranapTempatLahir');
+        await prefs.remove('user_${nik}_ranapTanggalLahir');
+        await prefs.remove('user_${nik}_ranapGender');
+        await prefs.remove('user_${nik}_ranapAgama');
+        await prefs.remove('user_${nik}_ranapStatus');
+        await prefs.remove('user_${nik}_ranapGolDarah');
+        await prefs.remove('user_${nik}_ranapAlamat');
+        await prefs.remove('user_${nik}_ranapNoHP');
+        await prefs.remove('user_${nik}_ranapPekerjaan');
+        await prefs.remove('user_${nik}_ranapKelas');
+        await prefs.remove('user_${nik}_ranapTipeKamar');
+        await prefs.remove('user_${nik}_ranapAsuransi');
+        await prefs.remove('user_${nik}_ranapDokter');
+        await prefs.remove('user_${nik}_ranapRuangan');
+        await prefs.remove('user_${nik}_ranapCaraMasuk');
+        await prefs.remove('user_${nik}_ranapDiagnosis');
+        await prefs.remove('user_${nik}_ranapKeluhan');
+        await prefs.remove('user_${nik}_ranapRiwayatPenyakit');
+        await prefs.remove('user_${nik}_ranapObatDikonsumsi');
+        await prefs.remove('user_${nik}_ranapRiwayatAlergi');
+        await prefs.remove('user_${nik}_ranapRiwayatOperasi');
+        await prefs.remove('user_${nik}_ranapJenisAlergi');
+        await prefs.remove('user_${nik}_ranapJenisOperasi');
+        await prefs.remove('user_${nik}_ranapNamaKeluarga');
+        await prefs.remove('user_${nik}_ranapNoHPKeluarga');
+        await prefs.remove('user_${nik}_ranapAlamatKeluarga');
+        await prefs.remove('user_${nik}_ranapHubunganKeluarga');
+        await prefs.remove('user_${nik}_ranapNamaWali');
+        await prefs.remove('user_${nik}_ranapNoHPWali');
+        await prefs.remove('user_${nik}_ranapHubunganWali');
+        await prefs.remove('user_${nik}_ranapPenanggungJawab');
+        await prefs.remove('user_${nik}_nomorAntrian_RANAP');
+        await prefs.remove('ranapWaktuRegistrasi');
+        break;
+
+      case 'MCU':
+        await prefs.remove('user_${nik}_mcuName');
+        await prefs.remove('user_${nik}_mcuNIK');
+        await prefs.remove('user_${nik}_mcuTempatLahir');
+        await prefs.remove('user_${nik}_mcuTanggalLahir');
+        await prefs.remove('user_${nik}_mcuGender');
+        await prefs.remove('user_${nik}_mcuAgama');
+        await prefs.remove('user_${nik}_mcuStatus');
+        await prefs.remove('user_${nik}_mcuGolDarah');
+        await prefs.remove('user_${nik}_mcuAlamat');
+        await prefs.remove('user_${nik}_mcuNoHP');
+        await prefs.remove('user_${nik}_mcuEmail');
+        await prefs.remove('user_${nik}_mcuPekerjaan');
+        await prefs.remove('user_${nik}_mcuNamaPerusahaan');
+        await prefs.remove('user_${nik}_mcuAlamatPerusahaan');
+        await prefs.remove('user_${nik}_mcuPaket');
+        await prefs.remove('user_${nik}_mcuTujuan');
+        await prefs.remove('user_${nik}_mcuWaktu');
+        await prefs.remove('user_${nik}_mcuPembayaran');
+        await prefs.remove('user_${nik}_mcuRiwayatPenyakit');
+        await prefs.remove('user_${nik}_mcuObatDikonsumsi');
+        await prefs.remove('user_${nik}_mcuKeluhan');
+        await prefs.remove('user_${nik}_mcuPuasa');
+        await prefs.remove('user_${nik}_mcuRiwayatOperasi');
+        await prefs.remove('user_${nik}_mcuRiwayatAlergi');
+        await prefs.remove('user_${nik}_mcuMerokok');
+        await prefs.remove('user_${nik}_mcuAlkohol');
+        await prefs.remove('user_${nik}_mcuJenisAlergi');
+        await prefs.remove('user_${nik}_mcuJenisOperasi');
+        await prefs.remove('user_${nik}_mcuKontakDarurat');
+        await prefs.remove('user_${nik}_mcuNoHPKontakDarurat');
+        await prefs.remove('user_${nik}_nomorAntrian_MCU');
+        await prefs.remove('mcuWaktuRegistrasi');
+        break;
+
+      case 'IGD':
+        await prefs.remove('user_${nik}_igdName');
+        await prefs.remove('user_${nik}_igdNIK');
+        await prefs.remove('user_${nik}_igdUmur');
+        await prefs.remove('user_${nik}_igdGender');
+        await prefs.remove('user_${nik}_igdAlamat');
+        await prefs.remove('user_${nik}_igdNoHP');
+        await prefs.remove('user_${nik}_igdKeluhan');
+        await prefs.remove('user_${nik}_igdTriase');
+        await prefs.remove('user_${nik}_igdCaraDatang');
+        await prefs.remove('user_${nik}_igdAsuransi');
+        await prefs.remove('user_${nik}_igdKesadaran');
+        await prefs.remove('user_${nik}_igdRiwayatPenyakit');
+        await prefs.remove('user_${nik}_igdObatDikonsumsi');
+        await prefs.remove('user_${nik}_igdRiwayatAlergi');
+        await prefs.remove('user_${nik}_igdJenisAlergi');
+        await prefs.remove('user_${nik}_igdNamaKeluarga');
+        await prefs.remove('user_${nik}_igdNoHPKeluarga');
+        await prefs.remove('user_${nik}_igdHubunganKeluarga');
+        await prefs.remove('user_${nik}_nomorAntrian_IGD');
+        await prefs.remove('igdWaktuRegistrasi');
+        break;
+    }
   }
 
   void _showCancelConfirmation(BuildContext context) {
@@ -331,21 +431,25 @@ class QueueTicketPage extends StatelessWidget {
                 final nik = prefs.getString('current_nik');
 
                 if (nik != null) {
-                  await _hapusDataRegistrasiRajal(nik);
+                  await _hapusDataRegistrasiByJenis(nik, jenis);
                 }
 
                 // ✅ Info ke user
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
+                  SnackBar(
                     content: Text(
-                      "Registrasi berhasil dibatalkan dan data dihapus",
+                      "Registrasi $jenis berhasil dibatalkan dan data dihapus",
                     ),
                     backgroundColor: Colors.redAccent,
                   ),
                 );
 
-                // (Opsional) arahkan kembali ke halaman home / daftar registrasi
-                Navigator.pop(context);
+                // ✅ Arahkan ke Home setelah batal
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/home', // ganti dengan route Home kamu
+                  (route) => false,
+                );
               },
               child: const Text(
                 "Ya, Batalkan",
