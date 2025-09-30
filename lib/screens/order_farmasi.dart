@@ -493,7 +493,7 @@ class _OrderFarmasiPageState extends State<OrderFarmasiPage> {
                       _buildHelpOption(
                         icon: Icons.chat,
                         title: 'Chat',
-                        subtitle: 'Konsultasi dengan apoteker',
+                        subtitle: 'Konsultasi \ndengan apoteker',
                         onTap: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -506,7 +506,7 @@ class _OrderFarmasiPageState extends State<OrderFarmasiPage> {
                       _buildHelpOption(
                         icon: Icons.medication,
                         title: 'Panduan Obat',
-                        subtitle: 'Cara penggunaan obat',
+                        subtitle: 'Cara \npenggunaan obat',
                         onTap: () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -519,7 +519,7 @@ class _OrderFarmasiPageState extends State<OrderFarmasiPage> {
                       _buildHelpOption(
                         icon: Icons.local_shipping,
                         title: 'Info Pengiriman',
-                        subtitle: 'Status pengiriman obat',
+                        subtitle: 'Status \npengiriman obat',
                         onTap: () {
                           if (_shippingInfo != null) {
                             ScaffoldMessenger.of(context).showSnackBar(

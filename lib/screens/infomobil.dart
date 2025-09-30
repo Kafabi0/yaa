@@ -202,7 +202,7 @@ class _MobilAvailabilityPageState extends State<MobilAvailabilityPage> {
                                 child: Text(
                                   bed.title,
                                   style: const TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black87,
                                   ),
@@ -217,7 +217,7 @@ class _MobilAvailabilityPageState extends State<MobilAvailabilityPage> {
                                 child: Icon(
                                   FontAwesomeIcons.truckMedical,
                                   color: bed.color,
-                                  size: 20,
+                                  size: 15,
                                 ),
                               ),
                             ],
@@ -229,7 +229,7 @@ class _MobilAvailabilityPageState extends State<MobilAvailabilityPage> {
                           Text(
                             bed.count.toString(),
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: bed.color,
                             ),
@@ -268,14 +268,14 @@ class _MobilAvailabilityPageState extends State<MobilAvailabilityPage> {
                                   Text(
                                     "Okupansi",
                                     style: TextStyle(
-                                      fontSize: 8,
+                                      fontSize: 10,
                                       color: Colors.grey[600],
                                     ),
                                   ),
                                   Text(
                                     "${((3 - bed.count) / 3 * 100).toInt()}%",
                                     style: TextStyle(
-                                      fontSize: 11,
+                                      fontSize: 10,
                                       fontWeight: FontWeight.w600,
                                       color: Colors.grey[700],
                                     ),

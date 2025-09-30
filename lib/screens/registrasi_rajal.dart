@@ -335,6 +335,7 @@ class _RegistrasiRajalPageState extends State<RegistrasiRajalPage> {
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
           value: value,
+          isExpanded: true,
           onChanged: onChanged,
           validator: validator,
           decoration: InputDecoration(

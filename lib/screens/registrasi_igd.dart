@@ -302,7 +302,7 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
                   : null),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: Colors.grey[400]),
+            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 14),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(color: Colors.grey[300]!),
@@ -361,6 +361,7 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
           value: value,
+          isExpanded: true,
           onChanged: onChanged,
           validator:
               validator ??
@@ -374,7 +375,7 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
                   : null),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: Colors.grey[400]),
+            hintStyle: TextStyle(color: Colors.grey[400], fontSize: 12),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(color: Colors.grey[300]!),
@@ -551,7 +552,7 @@ class _RegistrasiIGDPageState extends State<RegistrasiIGDPage> {
                       hint: "Contoh: 25 tahun",
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 5),
                   Expanded(
                     child: _buildDropdownField(
                       label: "Jenis Kelamin",

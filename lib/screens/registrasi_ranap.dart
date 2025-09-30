@@ -530,6 +530,7 @@ class _RegistrasiRanapPageState extends State<RegistrasiRanapPage> {
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
           value: value,
+          isExpanded: true,
           onChanged: onChanged,
           validator:
               validator ??

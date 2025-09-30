@@ -175,8 +175,13 @@ class _BloodAvailabilityPageState extends State<BloodAvailabilityPage>
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showEmergencyDialog(context),
         backgroundColor: Colors.red,
-        icon: const Icon(Icons.emergency),
-        label: const Text("Darurat"),
+        icon: const Icon(Icons.emergency, color: Colors.white),
+        label: const Text(
+          "Darurat",
+          style: TextStyle(
+              color: Colors.white, 
+              fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
@@ -398,13 +403,15 @@ class _BloodAvailabilityPageState extends State<BloodAvailabilityPage>
                       ),
                       child: Text(blood.title,
                           style: TextStyle(
-                              color: color, fontWeight: FontWeight.bold)),
+                              color: color, fontWeight: FontWeight.bold,
+                              fontSize: 12)),
                     ),
                     Icon(
                         blood.count == 0
                             ? Icons.warning_amber_rounded
                             : Icons.water_drop,
                         color: color),
+                        
                   ],
                 ),
                 const SizedBox(height: 8),
@@ -415,7 +422,7 @@ class _BloodAvailabilityPageState extends State<BloodAvailabilityPage>
                       children: [
                         Text(blood.count.toString(),
                             style: TextStyle(
-                                fontSize: 26,
+                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: color)),
                         const SizedBox(height: 4),

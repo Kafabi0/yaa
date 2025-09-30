@@ -445,9 +445,11 @@ class _HomePagePasienState extends State<HomePagePasien> {
                 onPressed: () => _pilihRsLain(context),
                 child: const Text(
                   'Pilih Rumah Sakit Lain',
+                  textAlign: TextAlign.justify,
                   style: TextStyle(
                     color: Color(0xFFFF6B35),
                     fontWeight: FontWeight.w600,
+                    fontSize: 13,
                   ),
                 ),
               ),
@@ -496,62 +498,60 @@ class _HomePagePasienState extends State<HomePagePasien> {
   }
 
   void _pilihRsLain(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        title: const Text(
-          "Konfirmasi",
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
-        content: const Text(
-          "Apakah kamu ingin melihat rumah sakit lain?",
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // ❌ Tutup modal
-            },
-            child: const Text(
-              "Batal",
-              style: TextStyle(color: Colors.black87),
-            ),
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
           ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFFF6B35),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+          title: const Text(
+            "Konfirmasi",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: const Text("Apakah kamu ingin melihat rumah sakit lain?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // ❌ Tutup modal
+              },
+              child: const Text(
+                "Batal",
+                style: TextStyle(color: Colors.black87),
               ),
             ),
-            onPressed: () {
-              Navigator.of(context).pop(); // Tutup modal
-              Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const RumahSakitMemberPage()),
-            );
-            },
-            child: const 
-            Text(
-              "Lanjut",
-              style: TextStyle(color: Colors.white),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFFF6B35),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(); // Tutup modal
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const RumahSakitMemberPage(),
+                  ),
+                );
+              },
+              child: const Text(
+                "Lanjut",
+                style: TextStyle(color: Colors.white),
+              ),
             ),
-          ),
-        ],
-      );
-    },
-  );
-}
+          ],
+        );
+      },
+    );
+  }
 
-// void _navigateToQuickActions(BuildContext context) {
-//   ScaffoldMessenger.of(context).showSnackBar(
-//     const SnackBar(content: Text("Menuju Quick Actions...")),
-//   );
-// }
-
+  // void _navigateToQuickActions(BuildContext context) {
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     const SnackBar(content: Text("Menuju Quick Actions...")),
+  //   );
+  // }
 
   Widget _buildQuickActions() {
     return Container(

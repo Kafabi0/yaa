@@ -203,7 +203,7 @@ class _BedAvailabilityPageState extends State<BedAvailabilityPage> {
                                 child: Text(
                                   bed.title,
                                   style: const TextStyle(
-                                    fontSize: 16,
+                                    fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black87,
                                   ),
@@ -218,7 +218,7 @@ class _BedAvailabilityPageState extends State<BedAvailabilityPage> {
                                 child: Icon(
                                   Icons.bed,
                                   color: bed.color,
-                                  size: 20,
+                                  size: 16,
                                 ),
                               ),
                             ],
@@ -230,7 +230,7 @@ class _BedAvailabilityPageState extends State<BedAvailabilityPage> {
                           Text(
                             bed.count.toString(),
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 16,
                               fontWeight: FontWeight.bold,
                               color: bed.color,
                             ),
@@ -253,7 +253,7 @@ class _BedAvailabilityPageState extends State<BedAvailabilityPage> {
                               style: TextStyle(
                                 color: bed.color,
                                 fontWeight: FontWeight.w600,
-                                fontSize: 8,
+                                fontSize: 10,
                               ),
                             ),
                           ),

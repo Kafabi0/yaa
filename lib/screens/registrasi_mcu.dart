@@ -454,6 +454,7 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
         const SizedBox(height: 6),
         DropdownButtonFormField<String>(
           value: value,
+          isExpanded: true,
           onChanged: onChanged,
           validator:
               validator ??
