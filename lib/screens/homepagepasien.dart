@@ -425,15 +425,35 @@ class _HomePagePasienState extends State<HomePagePasien> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 🏥 Nama Rumah Sakit
-          Text(
-            widget.selectedHospital.name,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
+          // 🏥 Nama Rumah Sakit + Tombol (Sejajar)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  widget.selectedHospital.name,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                  overflow:
+                      TextOverflow.ellipsis, // biar nama panjang tidak pecah
+                ),
+              ),
+              TextButton(
+                onPressed: () => _pilihRsLain(context),
+                child: const Text(
+                  'Pilih Rumah Sakit Lain',
+                  style: TextStyle(
+                    color: Color(0xFFFF6B35),
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
+
           const SizedBox(height: 8),
 
           // 🖼️ Gambar Rumah Sakit (lebih besar)
@@ -474,6 +494,64 @@ class _HomePagePasienState extends State<HomePagePasien> {
       ),
     );
   }
+
+  void _pilihRsLain(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        title: const Text(
+          "Konfirmasi",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        content: const Text(
+          "Apakah kamu ingin melihat rumah sakit lain?",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // ❌ Tutup modal
+            },
+            child: const Text(
+              "Batal",
+              style: TextStyle(color: Colors.black87),
+            ),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFF6B35),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            onPressed: () {
+              Navigator.of(context).pop(); // Tutup modal
+              Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const RumahSakitMemberPage()),
+            );
+            },
+            child: const 
+            Text(
+              "Lanjut",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+// void _navigateToQuickActions(BuildContext context) {
+//   ScaffoldMessenger.of(context).showSnackBar(
+//     const SnackBar(content: Text("Menuju Quick Actions...")),
+//   );
+// }
+
 
   Widget _buildQuickActions() {
     return Container(
@@ -1185,7 +1263,9 @@ class _HomePagePasienState extends State<HomePagePasien> {
             () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const MobilAvailabilityPage()),
+                MaterialPageRoute(
+                  builder: (_) => const MobilAvailabilityPage(),
+                ),
               );
             },
           ),

@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class QueueTicketPage extends StatelessWidget {
   final String jenis;
   final String nomorAntrian;
 
   const QueueTicketPage({
-    super.key, 
-    required this.jenis, 
-    required this.nomorAntrian
+    super.key,
+    required this.jenis,
+    required this.nomorAntrian,
   });
 
   @override
@@ -85,7 +86,7 @@ class QueueTicketPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  
+
                   // Ticket Content
                   Padding(
                     padding: const EdgeInsets.all(32),
@@ -125,9 +126,9 @@ class QueueTicketPage extends StatelessWidget {
                             ),
                           ),
                         ),
-                        
+
                         const SizedBox(height: 32),
-                        
+
                         // QR Code Section
                         Container(
                           padding: const EdgeInsets.all(20),
@@ -146,9 +147,9 @@ class QueueTicketPage extends StatelessWidget {
                             foregroundColor: const Color(0xFF1A202C),
                           ),
                         ),
-                        
+
                         const SizedBox(height: 24),
-                        
+
                         // Instructions
                         Container(
                           padding: const EdgeInsets.all(16),
@@ -187,9 +188,9 @@ class QueueTicketPage extends StatelessWidget {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Additional Info Card
             Container(
               width: double.infinity,
@@ -227,6 +228,7 @@ class QueueTicketPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 12),
+
                   _buildInfoItem(
                     Icons.access_time,
                     'Datang 15 menit sebelum jadwal',
@@ -239,6 +241,30 @@ class QueueTicketPage extends StatelessWidget {
                     Icons.phone_outlined,
                     'Pastikan ponsel Anda terisi daya',
                   ),
+
+                  const SizedBox(height: 20),
+
+                  // 🔘 Tombol Batalkan
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.redAccent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                      onPressed: () {
+                        // Aksi ketika batalkan ditekan
+                        _showCancelConfirmation(context);
+                      },
+                      child: const Text(
+                        "Batalkan",
+                        style: TextStyle(color: Colors.white, fontSize: 16),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -248,24 +274,101 @@ class QueueTicketPage extends StatelessWidget {
     );
   }
 
+  Future<void> _hapusDataRegistrasiRajal(String nik) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Hapus semua data registrasi RAJAL
+    await prefs.remove('user_${nik}_rajalName');
+    await prefs.remove('user_${nik}_familyCardNumber');
+    await prefs.remove('user_${nik}_birthPlace');
+    await prefs.remove('user_${nik}_birthDate');
+    await prefs.remove('user_${nik}_gender');
+    await prefs.remove('user_${nik}_registeredAgama');
+    await prefs.remove('user_${nik}_registeredStatus');
+    await prefs.remove('user_${nik}_registeredGolDarah');
+    await prefs.remove('user_${nik}_address');
+    await prefs.remove('user_${nik}_phone');
+    await prefs.remove('user_${nik}_registeredPekerjaan');
+    await prefs.remove('user_${nik}_registeredNamaKeluarga');
+    await prefs.remove('user_${nik}_registeredNoHPKeluarga');
+    await prefs.remove('user_${nik}_registeredAsuransi');
+    await prefs.remove('user_${nik}_registeredPoli');
+    await prefs.remove('user_${nik}_registeredJadwal');
+    await prefs.remove('user_${nik}_registeredKeluhan');
+    await prefs.remove('user_${nik}_nomorAntrian_RAJAL');
+    await prefs.remove('rajalWaktuRegistrasi');
+  }
+
+  void _showCancelConfirmation(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: const Text(
+            "Batalkan Janji?",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          content: const Text("Apakah Anda yakin ingin membatalkan janji ini?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text(
+                "Tidak",
+                style: TextStyle(color: Colors.black87),
+              ),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.redAccent,
+              ),
+              onPressed: () async {
+                Navigator.pop(context); // Tutup modal
+
+                final prefs = await SharedPreferences.getInstance();
+                final nik = prefs.getString('current_nik');
+
+                if (nik != null) {
+                  await _hapusDataRegistrasiRajal(nik);
+                }
+
+                // ✅ Info ke user
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      "Registrasi berhasil dibatalkan dan data dihapus",
+                    ),
+                    backgroundColor: Colors.redAccent,
+                  ),
+                );
+
+                // (Opsional) arahkan kembali ke halaman home / daftar registrasi
+                Navigator.pop(context);
+              },
+              child: const Text(
+                "Ya, Batalkan",
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Widget _buildInfoItem(IconData icon, String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
-          Icon(
-            icon,
-            size: 16,
-            color: const Color(0xFF64748B),
-          ),
+          Icon(icon, size: 16, color: const Color(0xFF64748B)),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               text,
-              style: const TextStyle(
-                fontSize: 14,
-                color: Color(0xFF64748B),
-              ),
+              style: const TextStyle(fontSize: 14, color: Color(0xFF64748B)),
             ),
           ),
         ],
