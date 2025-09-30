@@ -28,11 +28,9 @@ import 'notifikasi.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'webview_page.dart';
 import 'settings_screen.dart';
-<<<<<<< Updated upstream
 import 'dart:io';
-=======
 import 'package:inocare/models/hospital_model.dart';
->>>>>>> Stashed changes
+import 'package:inocare/screens/rumahsakitmember.dart';
 
 class HomePagePasien extends StatefulWidget {
   final Hospital selectedHospital;
