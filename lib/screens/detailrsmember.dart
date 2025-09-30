@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:inocare/screens/homepagepasien.dart';
-import 'rumahsakitmember.dart';
 import 'package:inocare/screens/detailjadwaldokter.dart';
+import 'package:inocare/models/hospital_model.dart';
 
 class HospitalDetailPage extends StatefulWidget {
   final Hospital hospital;
@@ -112,8 +112,10 @@ class _HospitalDetailPageState extends State<HospitalDetailPage> {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(
-                                widget.hospital.distance,
-                                style: TextStyle(
+                                widget.hospital.distance != null
+                                    ? "${widget.hospital.distance!.toStringAsFixed(2)} km"
+                                    : "0 km", // fallback kalau null
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
@@ -278,25 +280,25 @@ class _HospitalDetailPageState extends State<HospitalDetailPage> {
           SizedBox(height: 16),
           Row(
             children: [
-              Expanded(child: _buildBloodTypeCard('A+', widget.hospital.bloodStock['A+']!.count.toString(), widget.hospital.bloodStock['A+']!.available ? Colors.green : Colors.red)),
+              Expanded(child: _buildBloodTypeCard('A+', widget.hospital.bloodStockInfo['A+']!.count.toString(), widget.hospital.bloodStockInfo['A+']!.available ? Colors.green : Colors.red)),
               SizedBox(width: 8),
-              Expanded(child: _buildBloodTypeCard('B+', widget.hospital.bloodStock['B+']!.count.toString(), widget.hospital.bloodStock['B+']!.available ? Colors.green : Colors.red)),
+              Expanded(child: _buildBloodTypeCard('B+', widget.hospital.bloodStockInfo['B+']!.count.toString(), widget.hospital.bloodStockInfo['B+']!.available ? Colors.green : Colors.red)),
               SizedBox(width: 8),
-              Expanded(child: _buildBloodTypeCard('AB+', widget.hospital.bloodStock['AB+']!.count.toString(), widget.hospital.bloodStock['AB+']!.available ? Colors.green : Colors.red)),
+              Expanded(child: _buildBloodTypeCard('AB+', widget.hospital.bloodStockInfo['AB+']!.count.toString(), widget.hospital.bloodStockInfo['AB+']!.available ? Colors.green : Colors.red)),
               SizedBox(width: 8),
-              Expanded(child: _buildBloodTypeCard('O-', widget.hospital.bloodStock['O-']!.count.toString(), widget.hospital.bloodStock['O-']!.available ? Colors.green : Colors.red)),
+              Expanded(child: _buildBloodTypeCard('O-', widget.hospital.bloodStockInfo['O-']!.count.toString(), widget.hospital.bloodStockInfo['O-']!.available ? Colors.green : Colors.red)),
             ],
           ),
           SizedBox(height: 8),
           Row(
             children: [
-              Expanded(child: _buildBloodTypeCard('A-', widget.hospital.bloodStock['A-']!.count.toString(), widget.hospital.bloodStock['A-']!.available ? Colors.green : Colors.red)),
+              Expanded(child: _buildBloodTypeCard('A-', widget.hospital.bloodStockInfo['A-']!.count.toString(), widget.hospital.bloodStockInfo['A-']!.available ? Colors.green : Colors.red)),
               SizedBox(width: 8),
-              Expanded(child: _buildBloodTypeCard('B-', widget.hospital.bloodStock['B-']!.count.toString(), widget.hospital.bloodStock['B-']!.available ? Colors.green : Colors.red)),
+              Expanded(child: _buildBloodTypeCard('B-', widget.hospital.bloodStockInfo['B-']!.count.toString(), widget.hospital.bloodStockInfo['B-']!.available ? Colors.green : Colors.red)),
               SizedBox(width: 8),
-              Expanded(child: _buildBloodTypeCard('AB-', widget.hospital.bloodStock['AB-']!.count.toString(), widget.hospital.bloodStock['AB-']!.available ? Colors.green : Colors.red)),
+              Expanded(child: _buildBloodTypeCard('AB-', widget.hospital.bloodStockInfo['AB-']!.count.toString(), widget.hospital.bloodStockInfo['AB-']!.available ? Colors.green : Colors.red)),
               SizedBox(width: 8),
-              Expanded(child: _buildBloodTypeCard('O+', widget.hospital.bloodStock['O+']!.count.toString(), widget.hospital.bloodStock['O+']!.available ? Colors.green : Colors.red)),
+              Expanded(child: _buildBloodTypeCard('O+', widget.hospital.bloodStockInfo['O+']!.count.toString(), widget.hospital.bloodStockInfo['O+']!.available ? Colors.green : Colors.red)),
             ],
           ),
         ],

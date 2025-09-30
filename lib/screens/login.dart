@@ -632,12 +632,13 @@ class _RegisterPageState extends State<RegisterPage> {
       ),
       child: const Center(
         child: Text(
-          'INOTAL',
+          'Digital Hospital',
           style: TextStyle(
             fontSize: 48,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
             letterSpacing: 2,
+            fontFamily: 'KolkerBrush',
           ),
         ),
       ),

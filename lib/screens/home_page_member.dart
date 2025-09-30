@@ -17,6 +17,9 @@ import 'package:inocare/models/hospital_model.dart';
 import 'package:inocare/services/hospital_service.dart';
 import 'package:inocare/widgets/nearest_hospital_widget.dart';
 import 'package:inocare/screens/doctor_search_result_page.dart';
+import 'package:inocare/screens/Bloodstocksearch.dart';
+import 'package:inocare/screens/bedavailabilitypage.dart';
+import 'package:inocare/screens/ambulanceavailabilitpage.dart';
 
 class HomePageMember extends StatefulWidget {
   final VoidCallback? onHospitalSelected;
@@ -873,7 +876,7 @@ class _HomePageMemberState extends State<HomePageMember> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => RumahSakitMemberPage(),
+                    builder: (context) => BloodStockPage(),
                   ),
                 );
               },
@@ -887,7 +890,7 @@ class _HomePageMemberState extends State<HomePageMember> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => RumahSakitMemberPage(),
+                    builder: (context) => BedAvailabilityPage(),
                   ),
                 );
               },
@@ -901,7 +904,7 @@ class _HomePageMemberState extends State<HomePageMember> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => RumahSakitMemberPage(),
+                    builder: (context) => AmbulanceAvailabilityPage(),
                   ),
                 );
               },
