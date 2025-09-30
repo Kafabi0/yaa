@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:inocare/services/user_prefs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -13,6 +15,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Map<String, String?>? userData;
   Map<String, String> additionalData = {};
   bool isLoading = true;
+  File? _profileImage;
 
   @override
   void initState() {
@@ -20,45 +23,98 @@ class _ProfilePageState extends State<ProfilePage> {
     _loadUserData();
   }
 
-Future<void> _loadUserData() async {
-  final user = await UserPrefs.getCurrentUser();
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await showDialog<XFile?>(
+      context: context,
+      builder: (BuildContext context) {
+        return SimpleDialog(
+          title: const Text("Pilih Foto"),
+          children: [
+            SimpleDialogOption(
+              onPressed: () async {
+                Navigator.pop(
+                  context,
+                  await picker.pickImage(source: ImageSource.camera),
+                );
+              },
+              child: const Text("Ambil dari Kamera"),
+            ),
+            SimpleDialogOption(
+              onPressed: () async {
+                Navigator.pop(
+                  context,
+                  await picker.pickImage(source: ImageSource.gallery),
+                );
+              },
+              child: const Text("Pilih dari Galeri"),
+            ),
+          ],
+        );
+      },
+    );
 
-  if (user != null) {
-    final nik = user['nik']!; // ambil NIK dari user aktif
-    final profileData = await UserPrefs.getProfileData(nik);
-
-    print("User: $user");
-    print("Profile: $profileData");
-
-    if (mounted) {
+    if (pickedFile != null) {
       setState(() {
-        userData = user;
-        additionalData = {
-          'phone': profileData['phone'] ?? '081234567890',
-          'bpjs': profileData['bpjs'] ?? '0001234567890',
-          'address': profileData['address'] ?? 'Jl. Contoh Alamat No. 123, RT/RW 01/02',
-          'province': profileData['province'] ?? 'Lampung',
-          'district': profileData['district'] ?? 'Tanjung Karang Pusat',
-          'regency': profileData['regency'] ?? 'Bandar Lampung',
-          'village': profileData['village'] ?? 'Penengahan',
-          'rt': profileData['rt'] ?? '01',
-          'rw': profileData['rw'] ?? '02',
-          'birthDate': profileData['birthDate'] ?? '01 Januari 1990',
-          'familyCardNumber': profileData['familyCardNumber'] ?? '1234567890123456',
-          'gender': profileData['gender'] ?? 'Laki-laki',
-        };
-        isLoading = false;
+        _profileImage = File(pickedFile.path);
       });
-    }
-  } else {
-    if (mounted) {
-      setState(() {
-        isLoading = false;
-      });
+
+      // simpan path ke SharedPreferences biar ga hilang
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('profile_image_path', pickedFile.path);
     }
   }
-}
 
+  Future<void> _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance(); // ✅ tambahkan ini
+
+    final user = await UserPrefs.getCurrentUser();
+    final imagePath = prefs.getString('profile_image_path'); // ✅ ada variabel
+
+    if (imagePath != null) {
+      setState(() {
+        _profileImage = File(imagePath);
+      });
+    }
+
+    if (user != null) {
+      final nik = user['nik']!; // ambil NIK dari user aktif
+      final profileData = await UserPrefs.getProfileData(nik);
+
+      print("User: $user");
+      print("Profile: $profileData");
+
+      if (mounted) {
+        setState(() {
+          userData = user;
+          additionalData = {
+            'phone': profileData['phone'] ?? '081234567890',
+            'bpjs': profileData['bpjs'] ?? '0001234567890',
+            'address':
+                profileData['address'] ??
+                'Jl. Contoh Alamat No. 123, RT/RW 01/02',
+            'province': profileData['province'] ?? 'Lampung',
+            'district': profileData['district'] ?? 'Tanjung Karang Pusat',
+            'regency': profileData['regency'] ?? 'Bandar Lampung',
+            'village': profileData['village'] ?? 'Penengahan',
+            'rt': profileData['rt'] ?? '01',
+            'rw': profileData['rw'] ?? '02',
+            'birthDate': profileData['birthDate'] ?? '01 Januari 1990',
+            'familyCardNumber':
+                profileData['familyCardNumber'] ?? '1234567890123456',
+            'gender': profileData['gender'] ?? 'Laki-laki',
+          };
+          isLoading = false;
+        });
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    }
+  }
 
   Future<void> _saveAdditionalData() async {
     final prefs = await SharedPreferences.getInstance();
@@ -73,9 +129,7 @@ Future<void> _loadUserData() async {
       return Scaffold(
         backgroundColor: Colors.grey[50],
         body: const Center(
-          child: CircularProgressIndicator(
-            color: Color(0xFFFF6B35),
-          ),
+          child: CircularProgressIndicator(color: Color(0xFFFF6B35)),
         ),
       );
     }
@@ -163,31 +217,44 @@ Future<void> _loadUserData() async {
           // Profile avatar and name
           Column(
             children: [
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Text(
-                    userData?['name']?.isNotEmpty == true
-                        ? userData!['name']![0].toUpperCase()
-                        : 'P',
-                    style: const TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFFFF6B35),
-                    ),
+              GestureDetector(
+                onTap: _pickImage,
+                child: Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                    image:
+                        _profileImage != null
+                            ? DecorationImage(
+                              image: FileImage(_profileImage!),
+                              fit: BoxFit.cover,
+                            )
+                            : null,
                   ),
+                  child:
+                      _profileImage == null
+                          ? Center(
+                            child: Text(
+                              userData?['name']?.isNotEmpty == true
+                                  ? userData!['name']![0].toUpperCase()
+                                  : 'P',
+                              style: const TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFFFF6B35),
+                              ),
+                            ),
+                          )
+                          : null,
                 ),
               ),
               const SizedBox(height: 12),
@@ -203,11 +270,7 @@ Future<void> _loadUserData() async {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  const Icon(
-                    Icons.edit,
-                    size: 16,
-                    color: Colors.white70,
-                  ),
+                  const Icon(Icons.edit, size: 16, color: Colors.white70),
                 ],
               ),
             ],
