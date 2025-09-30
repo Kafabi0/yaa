@@ -19,7 +19,6 @@ import 'package:inocare/screens/order.dart';
 import 'package:inocare/screens/riwayat_registrasi_page.dart';
 import 'package:inocare/services/user_prefs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'rumahsakitmember.dart';
 import 'profilepagepasien.dart'; // Import halaman profile yang baru dibuat
 import 'registrasi_igd.dart';
 import 'registrasi_rajal.dart';
@@ -29,7 +28,11 @@ import 'notifikasi.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'webview_page.dart';
 import 'settings_screen.dart';
+<<<<<<< Updated upstream
 import 'dart:io';
+=======
+import 'package:inocare/models/hospital_model.dart';
+>>>>>>> Stashed changes
 
 class HomePagePasien extends StatefulWidget {
   final Hospital selectedHospital;

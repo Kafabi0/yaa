@@ -1,4 +1,3 @@
-// hospital_model.dart
 class Hospital {
   final String id;
   final String name;
@@ -14,11 +13,46 @@ class Hospital {
   final bool hasIGD;
   final bool hasMCU;
   final Map<String, int>? bloodStock;
-  final Map<String, Map<String, int>>? bedAvailability; // Tambahkan ini
-  final Map<String, Map<String, int>>? mobilAvailability; // Tambahkan ini
+  final Map<String, Map<String, int>>? bedAvailability;
+  final Map<String, Map<String, int>>? mobilAvailability;
   final double rating;
   final String operatingHours;
-  double? distance;
+  final double? distance;
+  
+  // Getter untuk kompatibilitas
+  int get reviewCount => 0;
+  bool get isOpen => isOpen24Hours;
+  String get imagePath => imageUrl;
+  String get type => acceptsBPJS ? 'RS Pemerintah' : 'RS Swasta';
+  
+  Map<String, BloodStock> get bloodStockInfo {
+    Map<String, BloodStock> result = {};
+    if (bloodStock != null) {
+      bloodStock!.forEach((type, count) {
+        result[type] = BloodStock(
+          type: type,
+          available: count > 0,
+          count: count,
+        );
+      });
+    } else {
+      for (String type in ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']) {
+        result[type] = BloodStock(type: type, available: false, count: 0);
+      }
+    }
+    return result;
+  }
+  
+  Map<String, dynamic> get facilities {
+    return {
+      'kamarVip': services.contains('Rawat Inap') ? 10 : 0,
+      'igd': hasIGD ? 5 : 0,
+      'dokter': 25,
+      'antrian': isOpen24Hours ? 'Pendek' : 'Sedang',
+    };
+  }
+  
+  List<String> get specialties => [];
 
   Hospital({
     required this.id,
@@ -35,28 +69,28 @@ class Hospital {
     required this.hasIGD,
     required this.hasMCU,
     this.bloodStock,
-    this.bedAvailability, // Tambahkan ini
-    this.mobilAvailability, // Tambahkan ini
+    this.bedAvailability,
+    this.mobilAvailability,
     required this.rating,
     required this.operatingHours,
-    this.distance,
+    this.distance, // <-- BERI DEFAULT VALUE
   });
 
   factory Hospital.fromJson(Map<String, dynamic> json) {
     return Hospital(
-      id: json['id'],
-      name: json['name'],
-      address: json['address'],
-      phone: json['phone'],
-      latitude: json['latitude'],
-      longitude: json['longitude'],
-      imageUrl: json['imageUrl'],
-      services: List<String>.from(json['services']),
-      isOpen24Hours: json['isOpen24Hours'],
-      hasBloodStock: json['hasBloodStock'],
-      acceptsBPJS: json['acceptsBPJS'],
-      hasIGD: json['hasIGD'],
-      hasMCU: json['hasMCU'],
+      id: json['id'] ?? '',
+      name: json['name'] ?? '',
+      address: json['address'] ?? '',
+      phone: json['phone'] ?? '',
+      latitude: (json['latitude'] ?? 0).toDouble(),
+      longitude: (json['longitude'] ?? 0).toDouble(),
+      imageUrl: json['imageUrl'] ?? '',
+      services: List<String>.from(json['services'] ?? []),
+      isOpen24Hours: json['isOpen24Hours'] ?? false,
+      hasBloodStock: json['hasBloodStock'] ?? false,
+      acceptsBPJS: json['acceptsBPJS'] ?? false,
+      hasIGD: json['hasIGD'] ?? false,
+      hasMCU: json['hasMCU'] ?? false,
       bloodStock: json['bloodStock'] != null 
           ? Map<String, int>.from(json['bloodStock']) 
           : null,
@@ -74,13 +108,14 @@ class Hospital {
               )
             ) 
           : null,
-      rating: json['rating'],
-      operatingHours: json['operatingHours'],
+      rating: (json['rating'] ?? 0).toDouble(),
+      operatingHours: json['operatingHours'] ?? '',
+      distance: null, // <-- DEFAULT
     );
   }
 
   Hospital copyWith({
-    double? distance,
+    double? distance, // <-- GANTI DARI double? MENJADI String?
   }) {
     return Hospital(
       id: id,
@@ -104,4 +139,16 @@ class Hospital {
       distance: distance ?? this.distance,
     );
   }
+}
+
+class BloodStock {
+  final String type;
+  final bool available;
+  final int count;
+
+  BloodStock({
+    required this.type,
+    required this.available,
+    required this.count,
+  });
 }

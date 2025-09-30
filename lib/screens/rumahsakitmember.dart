@@ -5,7 +5,7 @@ import 'package:inocare/screens/home_page_member.dart';
 import 'package:geolocator/geolocator.dart';
 import '../services/hospital_service.dart';
 import '../services/location_service.dart';
-import '../models/hospital_model.dart' as service_model;
+import '../models/hospital_model.dart';
 
 class RumahSakitMemberPage extends StatefulWidget {
   const RumahSakitMemberPage({Key? key}) : super(key: key);
@@ -299,105 +299,40 @@ class _RumahSakitMemberPageState extends State<RumahSakitMemberPage> {
   }
 
   Future<void> _loadHospitals() async {
-    setState(() {
-      _isLoading = true;
-    });
+  setState(() {
+    _isLoading = true;
+  });
 
-    try {
-      double targetLat, targetLng;
-      
-      if (_useCurrentLocation && _currentPosition != null) {
-        targetLat = _currentPosition!.latitude;
-        targetLng = _currentPosition!.longitude;
-      } else {
-        // Use selected city coordinates
-        Map<String, double>? cityCoords = _provinceCitiesWithCoords[_selectedProvince]?[_selectedCity];
-        targetLat = cityCoords?['lat'] ?? -6.9175; // Default to Bandung
-        targetLng = cityCoords?['lng'] ?? 107.6191; // Default to Bandung
-      }
-
-      // Fetch hospitals from service
-      List<service_model.Hospital> serviceHospitals = await HospitalService.getNearbyHospitals(
-        latitude: targetLat,
-        longitude: targetLng,
-        radiusInKm: 50.0,
-      );
-
-      // Convert service hospitals to member hospitals
-      List<Hospital> memberHospitals = serviceHospitals.map((serviceHospital) {
-        return _convertToMemberHospital(serviceHospital);
-      }).toList();
-
-      setState(() {
-        _hospitals = memberHospitals;
-        _filteredHospitals = List.from(_hospitals);
-        _isLoading = false;
-      });
-    } catch (e) {
-      print('Error loading hospitals: $e');
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  Hospital _convertToMemberHospital(service_model.Hospital serviceHospital) {
-    // Convert blood stock
-    Map<String, BloodStock> bloodStockMap = {};
-    if (serviceHospital.bloodStock != null) {
-      serviceHospital.bloodStock!.forEach((type, count) {
-        bloodStockMap[type] = BloodStock(
-          type: type,
-          available: count > 0,
-          count: count,
-        );
-      });
+  try {
+    double targetLat, targetLng;
+    
+    if (_useCurrentLocation && _currentPosition != null) {
+      targetLat = _currentPosition!.latitude;
+      targetLng = _currentPosition!.longitude;
     } else {
-      // Default blood stock if not available
-      for (String type in ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']) {
-        bloodStockMap[type] = BloodStock(type: type, available: false, count: 0);
-      }
+      Map<String, double>? cityCoords = _provinceCitiesWithCoords[_selectedProvince]?[_selectedCity];
+      targetLat = cityCoords?['lat'] ?? -6.9175;
+      targetLng = cityCoords?['lng'] ?? 107.6191;
     }
 
-    // Convert facilities
-    Map<String, dynamic> facilities = {
-      'kamarVip': serviceHospital.services.contains('Rawat Inap') ? 10 : 0,
-      'igd': serviceHospital.hasIGD ? 5 : 0,
-      'dokter': 25, // Default value
-      'antrian': serviceHospital.isOpen24Hours ? 'Pendek' : 'Sedang',
-    };
-
-    // Convert specialties - default empty list
-    List<String> specialties = [];
-
-    // Determine hospital type
-    String type = serviceHospital.acceptsBPJS ? 'RS Pemerintah' : 'RS Swasta';
-
-    // Convert distance
-    String distanceStr = serviceHospital.distance != null 
-        ? '${serviceHospital.distance!.toStringAsFixed(1)} km' 
-        : 'Unknown';
-
-    return Hospital(
-      name: serviceHospital.name,
-      address: serviceHospital.address,
-      phone: serviceHospital.phone ?? 'Tidak tersedia',
-      distance: distanceStr,
-      rating: serviceHospital.rating,
-      reviewCount: 0, // Not available in service model
-      isOpen: serviceHospital.isOpen24Hours,
-      services: serviceHospital.services,
-      imagePath: serviceHospital.imageUrl,
-      operatingHours: serviceHospital.operatingHours,
-      type: type,
-      bloodStock: bloodStockMap,
-      facilities: facilities,
-      specialties: specialties,
-      mobilAvailability: serviceHospital.mobilAvailability,
-      // Tambahkan data bed availability
-      bedAvailability: serviceHospital.bedAvailability,
+    List<Hospital> hospitals = await HospitalService.getNearbyHospitals(
+      latitude: targetLat,
+      longitude: targetLng,
+      radiusInKm: 50.0,
     );
+
+    setState(() {
+      _hospitals = hospitals;
+      _filteredHospitals = List.from(_hospitals);
+      _isLoading = false;
+    });
+  } catch (e) {
+    print('Error loading hospitals: $e');
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
 
   @override
   void dispose() {
@@ -425,21 +360,18 @@ class _RumahSakitMemberPageState extends State<RumahSakitMemberPage> {
       // Sort hospitals
       if (_selectedSort == 'Terdekat') {
         _filteredHospitals.sort((a, b) {
-          double distA = double.tryParse(a.distance.split(' ')[0]) ?? double.infinity;
-          double distB = double.tryParse(b.distance.split(' ')[0]) ?? double.infinity;
+          double distA = a.distance ?? double.infinity;
+          double distB = b.distance ?? double.infinity;
           return distA.compareTo(distB);
         });
-      } else if (_selectedSort == 'Rating Tertinggi') {
-        _filteredHospitals.sort((a, b) => b.rating.compareTo(a.rating));
-      } else if (_selectedSort == 'Nama A-Z') {
-        _filteredHospitals.sort((a, b) => a.name.compareTo(b.name));
-      } else if (_selectedSort == 'Paling Populer') {
-        // Use rating as popularity indicator
-        _filteredHospitals.sort((a, b) => b.rating.compareTo(a.rating));
       }
-      // No specific implementation for 'Harga Termurah' as pricing data not available
-    });
-  }
+
+      if (_selectedSort == 'Paling Populer') {
+            // Use rating as popularity indicator
+            _filteredHospitals.sort((a, b) => b.rating.compareTo(a.rating));
+          }
+        });
+      }
 
   @override
   Widget build(BuildContext context) {
@@ -1008,7 +940,9 @@ class _RumahSakitMemberPageState extends State<RumahSakitMemberPage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        hospital.distance,
+                        hospital.distance != null
+                            ? "${hospital.distance!.toStringAsFixed(2)} km"
+                            : "0 km", // kalau null kasih default
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 10,
@@ -1073,32 +1007,32 @@ class _RumahSakitMemberPageState extends State<RumahSakitMemberPage> {
                 ),
                 SizedBox(height: 6),
                 // Di dalam method _buildHospitalCard, cari bagian Row yang menampilkan jam operasional
-Row(
-  children: [
-    Icon(Icons.phone, color: Colors.green, size: 14),
-    SizedBox(width: 4),
-    Text(
-      hospital.phone,
-      style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-    ),
-    Spacer(),
-    Icon(
-      Icons.access_time,
-      color: hospital.isOpen ? Colors.green : Colors.grey[500],
-      size: 14,
-    ),
-    SizedBox(width: 4),
-    Text(
-      // Ganti teks jam operasional berdasarkan status buka 24 jam
-      hospital.isOpen ? hospital.operatingHours : 'Tidak 24 jam',
-      style: TextStyle(
-        fontSize: 11,
-        color: hospital.isOpen ? Colors.green : Colors.grey[500],
-        fontWeight: FontWeight.w500,
-      ),
-    ),
-  ],
-),
+              Row(
+                children: [
+                  Icon(Icons.phone, color: Colors.green, size: 14),
+                  SizedBox(width: 4),
+                  Text(
+                    hospital.phone,
+                    style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                  ),
+                  Spacer(),
+                  Icon(
+                    Icons.access_time,
+                    color: hospital.isOpen ? Colors.green : Colors.grey[500],
+                    size: 14,
+                  ),
+                  SizedBox(width: 4),
+                  Text(
+                    // Ganti teks jam operasional berdasarkan status buka 24 jam
+                    hospital.isOpen ? hospital.operatingHours : 'Tidak 24 jam',
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: hospital.isOpen ? Colors.green : Colors.grey[500],
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
 
                 SizedBox(height: 12),
 
@@ -1153,32 +1087,32 @@ Row(
                 Row(
                   children: [
                     _buildBloodStockStatus(
-                        'A+', hospital.bloodStock['A+']?.available ?? false),
+                        'A+', hospital.bloodStockInfo['A+']?.available ?? false),
                     SizedBox(width: 8),
                     _buildBloodStockStatus(
-                        'A-', hospital.bloodStock['A-']?.available ?? false),
+                        'A-', hospital.bloodStockInfo['A-']?.available ?? false),
                     SizedBox(width: 8),
                     _buildBloodStockStatus(
-                        'B+', hospital.bloodStock['B+']?.available ?? false),
+                        'B+', hospital.bloodStockInfo['B+']?.available ?? false),
                     SizedBox(width: 8),
                     _buildBloodStockStatus(
-                        'B-', hospital.bloodStock['B-']?.available ?? false),
+                        'B-', hospital.bloodStockInfo['B-']?.available ?? false),
                   ],
                 ),
                 SizedBox(height: 8),
                 Row(
                   children: [
                     _buildBloodStockStatus(
-                        'AB+', hospital.bloodStock['AB+']?.available ?? false),
+                        'AB+', hospital.bloodStockInfo['AB+']?.available ?? false),
                     SizedBox(width: 8),
                     _buildBloodStockStatus(
-                        'AB-', hospital.bloodStock['AB-']?.available ?? false),
+                        'AB-', hospital.bloodStockInfo['AB-']?.available ?? false),
                     SizedBox(width: 8),
                     _buildBloodStockStatus(
-                        'O+', hospital.bloodStock['O+']?.available ?? false),
+                        'O+', hospital.bloodStockInfo['O+']?.available ?? false),
                     SizedBox(width: 8),
                     _buildBloodStockStatus(
-                        'O-', hospital.bloodStock['O-']?.available ?? false),
+                        'O-', hospital.bloodStockInfo['O-']?.available ?? false),
                   ],
                 ),
 
@@ -1420,61 +1354,4 @@ Row(
         return Color(0xFFFF6B35);
     }
   }
-}
-
-// Hospital model class with detailed information
-class Hospital {
-  final String name;
-  final String address;
-  final String phone;
-  final String distance;
-  final double rating;
-  final int reviewCount;
-  final bool isOpen;
-  final List<String> services;
-  final String imagePath;
-  final String operatingHours;
-  final String type;
-  final Map<String, BloodStock> bloodStock;
-  final Map<String, dynamic> facilities;
-  final List<String> specialties;
-  final Map<String, Map<String, int>>? bedAvailability; // Tambahkan ini
-  final Map<String, Map<String, int>>? mobilAvailability; // Tambahkan ini
-
-  Hospital({
-    required this.name,
-    required this.address,
-    required this.phone,
-    required this.distance,
-    required this.rating,
-    required this.reviewCount,
-    required this.isOpen,
-    required this.services,
-    required this.imagePath,
-    required this.operatingHours,
-    required this.type,
-    required this.bloodStock,
-    required this.facilities,
-    required this.specialties,
-    this.bedAvailability, // Tambahkan ini
-    this.mobilAvailability, // Tambahkan ini
-  });
-
-  // Ubah dari metode menjadi getter
-  bool get hasBloodStock {
-    return bloodStock.values.any((stock) => stock.available && stock.count > 0);
-  }
-}
-
-// Blood stock model
-class BloodStock {
-  final String type;
-  final bool available;
-  final int count;
-
-  BloodStock({
-    required this.type,
-    required this.available,
-    required this.count,
-  });
 }
