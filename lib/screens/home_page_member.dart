@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:inocare/screens/notifikasi.dart';
 import 'package:inocare/screens/order.dart';
 import 'package:inocare/screens/pilihrumahsakit.dart';
 import 'package:inocare/screens/rumahsakitmember.dart';
@@ -13,7 +14,7 @@ import 'webview_page.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:inocare/services/location_service.dart';
 import 'package:inocare/models/hospital_model.dart';
-import 'package:inocare/services/hospital_service.dart'; 
+import 'package:inocare/services/hospital_service.dart';
 import 'package:inocare/widgets/nearest_hospital_widget.dart';
 import 'package:inocare/screens/doctor_search_result_page.dart';
 
@@ -23,7 +24,7 @@ class HomePageMember extends StatefulWidget {
   final String? currentAddress; // Terima alamat dari login
 
   const HomePageMember({
-    Key? key, 
+    Key? key,
     this.onHospitalSelected,
     this.currentPosition,
     this.currentAddress,
@@ -35,12 +36,13 @@ class HomePageMember extends StatefulWidget {
 
 class _HomePageMemberState extends State<HomePageMember> {
   final TextEditingController _searchController = TextEditingController();
-  final TextEditingController _doctorSearchController = TextEditingController(); // Controller untuk pencarian dokter
+  final TextEditingController _doctorSearchController =
+      TextEditingController(); // Controller untuk pencarian dokter
   final PageController _promoPageController = PageController();
   int _currentPromoIndex = 0;
   int _currentIndex = 0;
   String? _userName;
-  
+
   // Location variables
   Position? _currentPosition;
   String _currentAddress = 'Mendapatkan lokasi...';
@@ -74,11 +76,11 @@ class _HomePageMemberState extends State<HomePageMember> {
       setState(() {
         _isLoadingLocation = true;
         _currentAddress = 'Mendapatkan lokasi...';
-        _fullAddress = 'Mendapatkan lokasi...'; 
+        _fullAddress = 'Mendapatkan lokasi...';
       });
 
       Position? position = await LocationService.getCurrentPosition();
-      
+
       if (position != null) {
         setState(() {
           _currentPosition = position;
@@ -86,12 +88,12 @@ class _HomePageMemberState extends State<HomePageMember> {
 
         // Dapatkan alamat dari koordinat
         String address = await LocationService.getAddressFromCoordinates(
-          position.latitude, 
-          position.longitude
+          position.latitude,
+          position.longitude,
         );
 
         setState(() {
-          _fullAddress = address; 
+          _fullAddress = address;
           _currentAddress = _truncateAddress(address);
           _isLoadingLocation = false;
         });
@@ -101,7 +103,7 @@ class _HomePageMemberState extends State<HomePageMember> {
           _fullAddress = 'Lokasi tidak tersedia';
           _isLoadingLocation = false;
         });
-        
+
         _showLocationPermissionDialog();
       }
     } catch (e) {
@@ -124,15 +126,15 @@ class _HomePageMemberState extends State<HomePageMember> {
     if (address.contains('Mendapatkan') || address.contains('Gagal')) {
       return address.length > 25 ? '${address.substring(0, 25)}...' : address;
     }
-    
+
     // Ambil bagian penting dari alamat (kota/kecamatan)
     List<String> parts = address.split(', ');
     if (parts.length >= 2) {
       String result = parts.length >= 3 ? parts[2] : parts[1];
-      return result.length > 25 ? '${result.substring(0, 25)}...' : result; 
+      return result.length > 25 ? '${result.substring(0, 25)}...' : result;
     }
-    
-    return address.length > 25 ? '${address.substring(0, 25)}...' : address; 
+
+    return address.length > 25 ? '${address.substring(0, 25)}...' : address;
   }
 
   void _showLocationPermissionDialog() {
@@ -277,7 +279,10 @@ class _HomePageMemberState extends State<HomePageMember> {
                       },
                       style: TextButton.styleFrom(
                         foregroundColor: Color(0xFFFF6B35),
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                         minimumSize: Size(60, 30),
                       ),
                       child: Text(
@@ -301,7 +306,10 @@ class _HomePageMemberState extends State<HomePageMember> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -337,7 +345,7 @@ class _HomePageMemberState extends State<HomePageMember> {
       },
       onLongPress: _showFullLocationDialog,
       child: Container(
-        constraints: BoxConstraints(maxWidth: 120), 
+        constraints: BoxConstraints(maxWidth: 120),
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.15),
@@ -349,13 +357,13 @@ class _HomePageMemberState extends State<HomePageMember> {
           children: [
             _isLoadingLocation
                 ? SizedBox(
-                    width: 12,
-                    height: 12,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 1.5,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  )
+                  width: 12,
+                  height: 12,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 1.5,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                )
                 : Icon(Icons.location_on, color: Colors.white, size: 12),
             const SizedBox(width: 3),
             Flexible(
@@ -500,7 +508,7 @@ class _HomePageMemberState extends State<HomePageMember> {
                   ),
                 ),
               ),
-              
+
               // Kanan - Notifikasi + Lokasi (Stacked)
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -516,10 +524,10 @@ class _HomePageMemberState extends State<HomePageMember> {
                       // Notifikasi
                       GestureDetector(
                         onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Fitur notifikasi akan segera hadir'),
-                              backgroundColor: Color(0xFFFF6B35),
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const NotificationsPage(),
                             ),
                           );
                         },
@@ -721,14 +729,12 @@ class _HomePageMemberState extends State<HomePageMember> {
       onSeeAllPressed: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => RumahSakitMemberPage(),
-          ),
+          MaterialPageRoute(builder: (context) => RumahSakitMemberPage()),
         );
       },
       onLocationRefresh: () {
         _getCurrentLocation();
-      }
+      },
     );
   }
 
@@ -964,111 +970,109 @@ class _HomePageMemberState extends State<HomePageMember> {
 
   // Tambahkan metode baru untuk card pencarian dokter
   Widget _buildDoctorSearchSection() {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 20),
-    child: Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            spreadRadius: 1,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Icon(Icons.person_search, color: Color(0xFFFF6B35)),
-              const SizedBox(width: 8),
-              Text(
-                'Cari Dokter',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _doctorSearchController,
-            decoration: InputDecoration(
-              hintText: 'Masukkan nama dokter...',
-              prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Colors.grey[300]!),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide(color: Color(0xFFFF6B35)),
-              ),
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 8,
+              offset: const Offset(0, 2),
             ),
-          ),
-          const SizedBox(height: 16),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                if (_doctorSearchController.text.trim().isNotEmpty) {
-                  // Navigasi ke halaman hasil pencarian dokter
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => DoctorSearchResultPage(
-                        doctorName: _doctorSearchController.text.trim(),
-                      ),
-                    ),
-                  );
-                } else {
-                  // Tampilkan pesan error jika input kosong
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Masukkan nama dokter yang ingin dicari'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFFFF6B35),
-                foregroundColor: Colors.white,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.person_search, color: Color(0xFFFF6B35)),
+                const SizedBox(width: 8),
+                Text(
+                  'Cari Dokter',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _doctorSearchController,
+              decoration: InputDecoration(
+                hintText: 'Masukkan nama dokter...',
+                prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+                border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 16),
-              ),
-              child: Text(
-                'Cari Dokter',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Colors.grey[300]!),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: Color(0xFFFF6B35)),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 16,
                 ),
               ),
             ),
-          ),
-        ],
+            const SizedBox(height: 16),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_doctorSearchController.text.trim().isNotEmpty) {
+                    // Navigasi ke halaman hasil pencarian dokter
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => DoctorSearchResultPage(
+                              doctorName: _doctorSearchController.text.trim(),
+                            ),
+                      ),
+                    );
+                  } else {
+                    // Tampilkan pesan error jika input kosong
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Masukkan nama dokter yang ingin dicari'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFFFF6B35),
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+                child: Text(
+                  'Cari Dokter',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _buildPromoSection() {
     return Padding(
@@ -1934,7 +1938,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  _buildStepItem('Daftar Rawat Jalan langsung dari aplikasi',),
+                  _buildStepItem('Daftar Rawat Jalan langsung dari aplikasi'),
                   _buildStepItem('Antri IGD jika darurat'),
                   _buildStepItem('MCU sesuai jadwal'),
                   _buildStepItem('Rujukan bila perlu pemeriksaan lanjutan'),
@@ -2205,7 +2209,11 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
   }
 
   // 添加缺失的方法 _buildAdditionalFeatureItem
-  Widget _buildAdditionalFeatureItem(IconData icon, String title, String subtitle) {
+  Widget _buildAdditionalFeatureItem(
+    IconData icon,
+    String title,
+    String subtitle,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
@@ -2234,10 +2242,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey[600],
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                 ),
               ],
             ),
@@ -2258,10 +2263,7 @@ class _PanduanSingkatWidgetState extends State<PanduanSingkatWidget> {
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey[700],
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey[700]),
             ),
           ),
         ],

@@ -29,6 +29,7 @@ import 'notifikasi.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'webview_page.dart';
 import 'settings_screen.dart';
+import 'dart:io';
 
 class HomePagePasien extends StatefulWidget {
   final Hospital selectedHospital;
@@ -44,6 +45,7 @@ class _HomePagePasienState extends State<HomePagePasien> {
   int _currentIndex = 0;
   String _patientName = 'Loading...';
   String? _userName;
+  File? _profileImage;
 
   final PageController _promoPageController = PageController();
   int _currentPromoIndex = 0;
@@ -93,6 +95,7 @@ class _HomePagePasienState extends State<HomePagePasien> {
           _antrianRajal = null;
           _antrianMCU = null;
           _antrianRanap = null;
+          _profileImage = null; // reset foto
         });
         return;
       }
@@ -103,6 +106,9 @@ class _HomePagePasienState extends State<HomePagePasien> {
       final mcu = prefs.getString('user_${currentNik}_nomorAntrian_MCU');
       final ranap = prefs.getString('user_${currentNik}_nomorAntrian_RANAP');
 
+      // ✅ ambil foto profil path
+      final imagePath = prefs.getString('profile_image_path');
+
       setState(() {
         _patientName = (name != null && name.isNotEmpty) ? name : 'Guest';
 
@@ -110,10 +116,16 @@ class _HomePagePasienState extends State<HomePagePasien> {
         _antrianRajal = rajal;
         _antrianMCU = mcu;
         _antrianRanap = ranap;
+
+        _profileImage =
+            (imagePath != null && imagePath.isNotEmpty)
+                ? File(imagePath)
+                : null;
       });
     } catch (e) {
       setState(() {
         _patientName = 'Guest';
+        _profileImage = null;
       });
     }
   }
@@ -213,20 +225,33 @@ class _HomePagePasienState extends State<HomePagePasien> {
                             offset: Offset(0, 2),
                           ),
                         ],
+                        image:
+                            _profileImage != null
+                                ? DecorationImage(
+                                  image: FileImage(
+                                    _profileImage!,
+                                  ), // tampilkan foto dari galeri/kamera
+                                  fit: BoxFit.cover,
+                                )
+                                : null, // kalau null, fallback ke inisial
                       ),
-                      child: Center(
-                        child: Text(
-                          _patientName.isNotEmpty
-                              ? _patientName[0].toUpperCase()
-                              : 'P',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFFFF6B35),
-                          ),
-                        ),
-                      ),
+                      child:
+                          _profileImage == null
+                              ? Center(
+                                child: Text(
+                                  _patientName.isNotEmpty
+                                      ? _patientName[0].toUpperCase()
+                                      : 'P',
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFFFF6B35),
+                                  ),
+                                ),
+                              )
+                              : null,
                     ),
+
                     SizedBox(width: 12),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
