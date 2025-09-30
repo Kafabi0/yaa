@@ -3,6 +3,7 @@ import 'package:inocare/services/user_prefs.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:photo_view/photo_view.dart';
 
 class ProfilePagePasien extends StatefulWidget {
   const ProfilePagePasien({Key? key}) : super(key: key);
@@ -209,43 +210,83 @@ class _ProfilePagePasienState extends State<ProfilePagePasien> {
 
           // Profile avatar and name
           GestureDetector(
-            onTap: _pickImage,
-            child: Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 10,
-                    offset: const Offset(0, 2),
+            onTap: () {
+              if (_profileImage != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder:
+                        (context) => FullScreenImage(imageFile: _profileImage!),
                   ),
-                ],
-                image:
-                    _profileImage != null
-                        ? DecorationImage(
-                          image: FileImage(_profileImage!),
-                          fit: BoxFit.cover,
-                        )
-                        : null,
-              ),
-              child:
-                  _profileImage == null
-                      ? Center(
-                        child: Text(
-                          userData?['name']?.isNotEmpty == true
-                              ? userData!['name']![0].toUpperCase()
-                              : 'P',
-                          style: const TextStyle(
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFFFF6B35),
-                          ),
-                        ),
-                      )
-                      : null,
+                );
+              } else {
+                _pickImage(); // kalau belum ada foto, langsung buka pilih foto
+              }
+            },
+            child: Stack(
+              alignment: Alignment.bottomRight,
+              children: [
+                // Foto profil
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                    image:
+                        _profileImage != null
+                            ? DecorationImage(
+                              image: FileImage(_profileImage!),
+                              fit: BoxFit.cover,
+                            )
+                            : null,
+                  ),
+                  child:
+                      _profileImage == null
+                          ? Center(
+                            child: Text(
+                              userData?['name']?.isNotEmpty == true
+                                  ? userData!['name']![0].toUpperCase()
+                                  : 'P',
+                              style: const TextStyle(
+                                fontSize: 32,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFFFF6B35),
+                              ),
+                            ),
+                          )
+                          : null,
+                ),
+
+                // Tombol edit kamera
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: _pickImage, // langsung buka pilih foto
+                    child: Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFF6B35),
+                        shape: BoxShape.circle,
+                        border: Border.all(color: Colors.white, width: 2),
+                      ),
+                      child: const Icon(
+                        Icons.camera_alt,
+                        size: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
 
@@ -262,7 +303,7 @@ class _ProfilePagePasienState extends State<ProfilePagePasien> {
                 ),
               ),
               const SizedBox(width: 8),
-              const Icon(Icons.edit, size: 16, color: Colors.white70),
+              // const Icon(Icons.edit, size: 16, color: Colors.white70),
             ],
           ),
         ],
@@ -407,6 +448,52 @@ class _ProfilePagePasienState extends State<ProfilePagePasien> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class FullScreenImage extends StatelessWidget {
+  final File imageFile;
+
+  const FullScreenImage({Key? key, required this.imageFile}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          // Foto yang bisa di-zoom & geser
+          GestureDetector(
+            onTap: () => Navigator.pop(context),
+            child: PhotoView(
+              imageProvider: FileImage(imageFile),
+              backgroundDecoration: const BoxDecoration(color: Colors.black),
+            ),
+          ),
+
+          // Tombol back di kiri atas
+          Positioned(
+            top: 40,
+            left: 16,
+            child: GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

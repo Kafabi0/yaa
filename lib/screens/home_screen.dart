@@ -775,7 +775,7 @@ Widget _buildLocationWidget() {
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.9),
                       fontSize: 12,
-                      decoration: TextDecoration.underline,
+                      // decoration: TextDecoration.underline,
                     ),
                   ),
                 ),
