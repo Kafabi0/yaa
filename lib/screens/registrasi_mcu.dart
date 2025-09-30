@@ -369,7 +369,7 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
               if (isRequired)
                 const TextSpan(
                   text: ' *',
-                  style: TextStyle(color: Color(0xFFFF6B35)),
+                  style: TextStyle(color: Colors.white),
                 ),
             ],
           ),
@@ -602,7 +602,7 @@ class _RegistrasiMCUPageState extends State<RegistrasiMCUPage> {
         style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
-          color: color ?? const Color(0xFFFF6B35),
+          color: color ??  Colors.white,
         ),
       ),
     );
